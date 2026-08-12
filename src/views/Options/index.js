@@ -1,6 +1,5 @@
 import { Routes, Route, HashRouter } from "react-router-dom";
 import About from "./About";
-import Rules from "./Rules";
 import Setting from "./Setting";
 import Layout from "./Layout";
 import SyncSetting from "./SyncSetting";
@@ -23,12 +22,6 @@ import { kissLog } from "../../libs/log";
 
 const getOptionsStartupSyncTasks = () => {
   const hashPath = window.location.hash.replace(/^#/, "") || "/";
-  if (hashPath === "/rules" || hashPath.startsWith("/rules/")) {
-    return {
-      requiredSync: trySyncRules,
-      backgroundSyncs: [trySyncSetting, trySyncWords],
-    };
-  }
 
   if (hashPath === "/words" || hashPath.startsWith("/words/")) {
     return {
@@ -47,7 +40,7 @@ const getOptionsStartupSyncTasks = () => {
  * 选项设置中心 (Options) 根入口组件
  */
 export default function Options() {
-  const [syncingRequiredData, setSyncingRequiredData] = useState(true); // 是否正在同步当前页面必须的数据 (setting/rules/words)，若是则阻塞页面其他部分访问 storage 接口
+  const [syncingRequiredData, setSyncingRequiredData] = useState(true); // 阻塞当前页面必须的数据同步，避免页面组件过早访问 storage
 
   useEffect(() => {
     (async () => {
@@ -75,7 +68,6 @@ export default function Options() {
                 <Route path="/" element={<Layout />}>
                   {/* 子页面路由注册 */}
                   <Route index element={<Setting />} />
-                  <Route path="rules" element={<Rules />} />
                   <Route path="styles" element={<StylesSetting />} />
                   <Route path="tranbox" element={<Tranbox />} />
                   <Route path="mousehover" element={<MouseHoverSetting />} />

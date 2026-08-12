@@ -80,7 +80,6 @@ function mockComponent(testId) {
 
 jest.mock("./Header", () => mockComponent("options-header"));
 jest.mock("./Navigator", () => mockComponent("options-nav"));
-jest.mock("./Rules", () => mockComponent("rules-page"));
 jest.mock("./FavWords", () => mockComponent("words-page"));
 jest.mock("./Apis", () => mockComponent("apis-page"));
 jest.mock("./Setting", () => mockComponent("setting-page"));
@@ -142,38 +141,6 @@ describe("Options startup sync", () => {
   afterEach(() => {
     window.location.hash = "";
     delete window.APP_INFO;
-  });
-
-  test("renders rules page while waiting for rules sync", async () => {
-    const rulesSync = createDeferred();
-    trySyncRules.mockReturnValueOnce(rulesSync.promise);
-
-    const view = renderOptions("#/rules");
-    await flushEffects();
-
-    expect(view.container.querySelector("[data-testid='rules-page']")).not.toBe(
-      null
-    );
-    expect(
-      view.container.querySelector("[data-testid='options-sync-backdrop']")
-    ).not.toBe(null);
-    expect(trySyncRules).toHaveBeenCalledTimes(1);
-    expect(trySyncSetting).not.toHaveBeenCalled();
-    expect(trySyncWords).not.toHaveBeenCalled();
-
-    await act(async () => {
-      rulesSync.resolve();
-      await rulesSync.promise;
-    });
-    await flushEffects();
-
-    expect(
-      view.container.querySelector("[data-testid='options-sync-backdrop']")
-    ).toBe(null);
-    expect(trySyncSetting).toHaveBeenCalledTimes(1);
-    expect(trySyncWords).toHaveBeenCalledTimes(1);
-
-    view.unmount();
   });
 
   test("waits for words sync on favorite words page", async () => {
@@ -261,9 +228,4 @@ describe("Options startup sync", () => {
 
     view.unmount();
   });
-
-
-
-
-
 });

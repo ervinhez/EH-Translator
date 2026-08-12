@@ -94,7 +94,7 @@ pnpm build:chrome
 - chrome [chrome://extensions/shortcuts](chrome://extensions/shortcuts)
 - firefox [about:addons](about:addons)
 
-### 规则设置的优先级是如何的
+### 网页翻译规则的优先级
 
 个人规则 > 订阅规则 > 全局规则
 

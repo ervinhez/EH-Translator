@@ -1,3 +1,7 @@
+## EH-Translator 0.0.1
+
+- 将网页翻译通用默认设置并入基本设置页面，移除独立规则设置页面及其导航入口。
+
 ## v2.0.31
 
 - Gemini 接口恢复 Generate Content 兼容支持，并可适配 Generate Content 与 Interactions 双协议、模型列表地址及不同模型的思考参数。
