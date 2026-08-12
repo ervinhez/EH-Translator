@@ -96,14 +96,12 @@ describe("settings storage migration", () => {
       STOKEY_SETTING,
       JSON.stringify({
         version: SETTINGS_VERSION_V3,
-        inputRule: { apiSlug: OPT_TRANS_TENCENT },
         tranboxSetting: { apiSlugs: [OPT_TRANS_TENCENT] },
         subtitleSetting: { apiSlug: OPT_TRANS_TENCENT },
       })
     );
 
     await expect(getSettingWithDefault()).resolves.toMatchObject({
-      inputRule: { apiSlug: OPT_TRANS_TENCENT },
       tranboxSetting: { apiSlugs: [OPT_TRANS_TENCENT] },
       subtitleSetting: { apiSlug: OPT_TRANS_TENCENT },
     });

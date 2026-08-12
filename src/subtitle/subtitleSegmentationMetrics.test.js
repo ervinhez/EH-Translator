@@ -25,7 +25,7 @@ describe("subtitleSegmentationMetrics", () => {
         { text: "hello", start: 0, end: 500 },
         { text: "world", start: 500, end: 1000 },
       ],
-      // 同时构造重叠、重复和遗漏，确保 CLI 与 Playground 使用同一错误分类。
+      // 同时构造重叠、重复和遗漏，确保 CLI 使用同一错误分类。
       cues: [
         { text: "hello", start: 0, end: 700 },
         { text: "hello", start: 600, end: 1000 },

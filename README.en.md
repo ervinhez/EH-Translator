@@ -7,9 +7,9 @@ A personalized Chrome bilingual translation extension, forked from the open-sour
 ## Personal Customizations
 
 - Auto-translates webpages on open by default (including page titles)
-- UI defaults to Simplified Chinese; input-box / selection / subtitle translation all target Simplified Chinese by default
+- UI defaults to Simplified Chinese; selection / subtitle translation target Simplified Chinese by default
 - Default translation provider: Microsoft (free, zero configuration)
-- Shortcuts follow the upstream: `Alt+Q` translate / `Alt+C` toggle style / `Alt+K` tranbox / `Alt+S` selection translation / `Alt+O` options / `Alt+I` input-box translation
+- Shortcuts follow the upstream: `Alt+Q` translate / `Alt+C` toggle style / `Alt+K` tranbox / `Alt+S` selection translation / `Alt+O` options
 
 ## Features
 
@@ -24,7 +24,6 @@ A personalized Chrome bilingual translation extension, forked from the open-sour
   - [x] Chrome BuiltinAI
 - [x] Common translation scenarios
   - [x] Bilingual webpage translation
-  - [x] Input-box translation (via shortcut)
   - [x] Selection translation with dictionary lookup and word favorites
   - [x] Mouse-hover translation
   - [x] YouTube subtitle translation (bilingual display, sentence merging, AI segmentation, custom styles)
@@ -48,17 +47,16 @@ A personalized Chrome bilingual translation extension, forked from the open-sour
 
 ## Installation
 
-> Personal fork, not published to app stores. Build locally and load as an unpacked extension.
+> Personal fork, not published to app stores. Build locally and load as an unpacked Chrome extension.
 
-### Browser extension (Chrome/Edge)
+### Chrome extension
 
 ```sh
 pnpm install
 pnpm build:chrome
 ```
 
-Open [chrome://extensions](chrome://extensions) (or `edge://extensions`), enable "Developer mode", click "Load unpacked", and select the `build/chrome` directory.
-
+Open [chrome://extensions](chrome://extensions), enable "Developer mode", click "Load unpacked", and select the `build/chrome` directory.
 ## Related Projects (upstream ecosystem)
 
 - Data sync service: [https://github.com/fishjar/kiss-worker](https://github.com/fishjar/kiss-worker)
@@ -69,15 +67,10 @@ Open [chrome://extensions](chrome://extensions) (or `edge://extensions`), enable
 ### How to change shortcuts
 
 - chrome [chrome://extensions/shortcuts](chrome://extensions/shortcuts)
-- firefox [about:addons](about:addons)
-
 ### Rule priority
 
 Personal rules > subscribed rules > global rules
 
-### Custom API not working in Tampermonkey
-
-The userscript requires domain whitelisting for cross-origin requests.
 
 ### Custom API hook examples
 
@@ -100,7 +93,6 @@ pnpm build
 // `toggle_popup`       toggle control panel
 // `toggle_transbox`    toggle translation box
 // `toggle_hover_node`  translate hovered paragraph
-// `input_translate`    translate input box
 window.dispatchEvent(new CustomEvent("eh_translator", {detail: { action: "toggle_translate" }}));
 ```
 

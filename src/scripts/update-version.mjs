@@ -6,10 +6,10 @@ import { $, argv } from "zx";
  * 使用 npm version 命令更新 package.json 中的版本号，然后自动同步到其他文件
  * 
  * 用法:
- *   pnpm version:patch  // 2.0.19 -> 2.0.20
- *   pnpm version:minor  // 2.0.19 -> 2.1.0
- *   pnpm version:major  // 2.0.19 -> 3.0.0
- *   pnpm version:set -- 2.1.0  // 手动指定版本号
+ *   pnpm version:patch  // 0.0.1 -> 0.0.2
+ *   pnpm version:minor  // 0.0.1 -> 0.1.0
+ *   pnpm version:major  // 0.0.1 -> 1.0.0
+ *   pnpm version:set -- 0.0.1  // 手动指定版本号
  */
 
 const rootDir = path.resolve(__dirname, "../..");
@@ -30,7 +30,7 @@ try {
     if (versionType === "set") {
         const newVersion = argv._[1];
         if (!newVersion) {
-            console.error(chalk.red("❌ 错误: 请指定版本号，例如: pnpm version:set -- 2.1.0"));
+            console.error(chalk.red("❌ 错误: 请指定版本号，例如: pnpm version:set -- 0.0.1"));
             process.exit(1);
         }
         await $`npm version ${newVersion} --no-git-tag-version`;

@@ -2,7 +2,6 @@ const mockTranslatorInstances = [];
 const mockTranslatorArgs = [];
 const mockTransboxInstances = [];
 const mockTransboxArgs = [];
-const mockInputTranslatorInstances = [];
 const mockPopupInstances = [];
 const mockFabInstances = [];
 const activeManagers = [];
@@ -11,7 +10,6 @@ jest.mock("../config", () => ({
   EVENT_EH_INNER: "eh-inner",
   EVENT_EH_TRANSLATOR: "eh-translator",
   MSG_HOVERNODE_TOGGLE: "hovernode-toggle",
-  MSG_INPUT_TRANSLATE: "input-translate",
   MSG_TRANS_TOGGLE: "trans-toggle",
   MSG_TRANS_TOGGLE_ONLY: "trans-toggle-only",
   MSG_TRANS_TOGGLE_STYLE: "trans-toggle-style",
@@ -21,7 +19,6 @@ jest.mock("../config", () => ({
   MSG_TRANSBOX_TOGGLE: "transbox-toggle",
   MSG_POPUP_TOGGLE: "popup-toggle",
   MSG_MOUSEHOVER_TOGGLE: "mousehover-toggle",
-  MSG_TRANSINPUT_TOGGLE: "transinput-toggle",
   OPT_SHORTCUT_TRANSLATE: "translate",
   OPT_SHORTCUT_TRANSONLY: "transonly",
   OPT_SHORTCUT_STYLE: "style",
@@ -60,9 +57,6 @@ jest.mock("./translator", () => ({
           !this.setting.tranboxSetting.transOpen;
       }),
       toggleMouseHover: jest.fn(),
-      toggleInputTranslate: jest.fn(function toggleInputTranslate() {
-        this.setting.inputRule.transOpen = !this.setting.inputRule.transOpen;
-      }),
       toggleHoverNode: jest.fn(),
     };
     mockTranslatorInstances.push(instance);
@@ -82,17 +76,6 @@ jest.mock("./tranbox", () => ({
   }),
 }));
 
-jest.mock("./inputTranslate", () => ({
-  InputTranslator: jest.fn().mockImplementation(() => {
-    const instance = {
-      disable: jest.fn(),
-      toggle: jest.fn(),
-      handleTranslate: jest.fn(),
-    };
-    mockInputTranslatorInstances.push(instance);
-    return instance;
-  }),
-}));
 
 jest.mock("./popupManager", () => ({
   PopupManager: jest.fn().mockImplementation(() => {
@@ -137,7 +120,6 @@ jest.mock("./log", () => ({
 const { browser } = require("./browser");
 const { Translator } = require("./translator");
 const { TransboxManager } = require("./tranbox");
-const { InputTranslator } = require("./inputTranslate");
 const { PopupManager } = require("./popupManager");
 const { FabManager } = require("./fabManager");
 const TranslatorManager = require("./translatorManager").default;
@@ -161,9 +143,6 @@ function setupMockConstructors() {
           !this.setting.tranboxSetting.transOpen;
       }),
       toggleMouseHover: jest.fn(),
-      toggleInputTranslate: jest.fn(function toggleInputTranslate() {
-        this.setting.inputRule.transOpen = !this.setting.inputRule.transOpen;
-      }),
       toggleHoverNode: jest.fn(),
     };
     mockTranslatorInstances.push(instance);
@@ -180,15 +159,6 @@ function setupMockConstructors() {
     return instance;
   });
 
-  InputTranslator.mockImplementation(() => {
-    const instance = {
-      disable: jest.fn(),
-      toggle: jest.fn(),
-      handleTranslate: jest.fn(),
-    };
-    mockInputTranslatorInstances.push(instance);
-    return instance;
-  });
 
   PopupManager.mockImplementation(() => {
     const instance = {
@@ -218,7 +188,6 @@ function createManager({
       touchModes: [],
       shortcuts: {},
       tranboxSetting: { transOpen: true },
-      inputRule: { transOpen: true },
       contextMenuType: 0,
       ...setting,
     },
@@ -252,7 +221,6 @@ describe("TranslatorManager SPA lifecycle", () => {
     mockTranslatorArgs.length = 0;
     mockTransboxInstances.length = 0;
     mockTransboxArgs.length = 0;
-    mockInputTranslatorInstances.length = 0;
     mockPopupInstances.length = 0;
     mockFabInstances.length = 0;
     activeManagers.length = 0;
@@ -298,7 +266,6 @@ describe("TranslatorManager SPA lifecycle", () => {
       rule: { transOpen: "false" },
       setting: {
         tranboxSetting: { transOpen: false },
-        inputRule: { transOpen: false },
       },
     });
     manager.start();
@@ -309,7 +276,6 @@ describe("TranslatorManager SPA lifecycle", () => {
 
     expect(mockTranslatorArgs[1].rule.transOpen).toBe("false");
     expect(mockTransboxArgs[1].tranboxSetting.transOpen).toBe(false);
-    expect(mockTranslatorArgs[1].setting.inputRule.transOpen).toBe(false);
   });
 
   test("coalesces navigation rescan and body replacement into one restart", async () => {
@@ -344,7 +310,6 @@ describe("TranslatorManager SPA lifecycle", () => {
 
     expect(TransboxManager).toHaveBeenCalledTimes(1);
     expect(Translator).not.toHaveBeenCalled();
-    expect(InputTranslator).not.toHaveBeenCalled();
     expect(PopupManager).not.toHaveBeenCalled();
     expect(FabManager).not.toHaveBeenCalled();
     expect(browser.runtime.onMessage.addListener).toHaveBeenCalledTimes(1);

@@ -69,7 +69,7 @@ const compareCoverage = (flatEvents, cues, isNoSpace) => {
 };
 
 /**
- * 计算 CLI 和 Playground 共用的字幕断句结构及可读性指标。
+ * 计算 CLI 共用的字幕断句结构及可读性指标。
  */
 export function buildSegmentationMetrics({
   rawEvents = [],

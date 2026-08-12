@@ -1,13 +1,11 @@
 import { browser } from "./browser";
 import { Translator } from "./translator";
-import { InputTranslator } from "./inputTranslate";
 import { TransboxManager } from "./tranbox";
 import { sendIframeMsg } from "./iframe";
 import {
   EVENT_EH_INNER,
   EVENT_EH_TRANSLATOR,
   MSG_HOVERNODE_TOGGLE,
-  MSG_INPUT_TRANSLATE,
 } from "../config";
 import { touchTapListener } from "./touch";
 import { PopupManager } from "./popupManager";
@@ -22,15 +20,14 @@ import {
   MSG_TRANSBOX_TOGGLE,
   MSG_POPUP_TOGGLE,
   MSG_MOUSEHOVER_TOGGLE,
-  MSG_TRANSINPUT_TOGGLE,
 } from "../config";
 import { logger } from "./log";
 
 /**
  * 前台翻译业务的总生命周期管理器。
  *
- * 这个类负责把网页翻译核心、划词翻译、输入框翻译、弹出面板、
- * 悬浮球、快捷键、油猴菜单和跨 iframe 消息分发组织到同一个
+ * 这个类负责把网页翻译核心、划词翻译、弹出面板、
+ * 悬浮球、快捷键和跨 iframe 消息分发组织到同一个
  * start/stop/restart 生命周期里。构造函数刻意不创建 DOM 相关子模块，
  * 因为 SPA 页面可能替换 body/html，运行期子模块必须能被销毁并重建。
  */
@@ -69,7 +66,6 @@ export default class TranslatorManager {
   // 运行期子模块实例。它们可能挂载 DOM，因此随 restart 销毁并重建。
   _translator = null;
   _transboxManager = null;
-  _inputTranslator = null;
   _popupManager = null;
   _fabManager = null;
 
@@ -132,7 +128,7 @@ export default class TranslatorManager {
    *
    * restart 不会重新注册全局消息监听、快捷键、触屏手势或油猴菜单。
    * 它只快照当前运行期状态，销毁挂 DOM 的子模块，再用快照创建新实例。
-   * 这能保留用户当前的翻译开关、划词翻译开关和输入框翻译开关。
+   * 这能保留用户当前的全文翻译和划词翻译开关。
    */
   restart(reason = "spa-navigation") {
     if (!this.#isActive) {
@@ -216,9 +212,6 @@ export default class TranslatorManager {
 
     // iframe 内只跑核心翻译，不创建顶层页面专属交互 UI。
     if (!this.#isIframe) {
-      this._inputTranslator = new InputTranslator(
-        this.#cloneConfig(this.#setting)
-      );
       this._popupManager = new PopupManager({
         translator: this._translator,
         processActions: this.#processActions.bind(this),
@@ -240,12 +233,10 @@ export default class TranslatorManager {
     this._popupManager?.destroy();
     this._fabManager?.destroy();
     this._transboxManager?.disable();
-    this._inputTranslator?.disable();
     this._translator?.stop();
 
     this._translator = null;
     this._transboxManager = null;
-    this._inputTranslator = null;
     this._popupManager = null;
     this._fabManager = null;
   }
@@ -272,7 +263,7 @@ export default class TranslatorManager {
    * 从当前运行期实例读取最新状态，作为 restart 重建子模块的输入。
    *
    * Translator 的 getter 会返回当前 rule/setting 的副本，所以可保留
-   * 用户在页面内切换过的全文翻译、划词翻译、输入框翻译等开关。
+   * 用户在页面内切换过的全文翻译和划词翻译开关。
    */
   #snapshotRuntimeState() {
     return {
@@ -597,15 +588,8 @@ export default class TranslatorManager {
       case MSG_MOUSEHOVER_TOGGLE:
         this._translator?.toggleMouseHover();
         break;
-      case MSG_TRANSINPUT_TOGGLE:
-        this._inputTranslator?.toggle();
-        this._translator?.toggleInputTranslate();
-        break;
       case MSG_HOVERNODE_TOGGLE:
         this._translator?.toggleHoverNode();
-        break;
-      case MSG_INPUT_TRANSLATE:
-        this._inputTranslator?.handleTranslate();
         break;
       default:
         logger.info(`Message action is unavailable: ${action}`);

@@ -18,7 +18,6 @@ import {
   MSG_COMMAND_SHORTCUTS,
   MSG_TRANSBOX_TOGGLE,
   MSG_MOUSEHOVER_TOGGLE,
-  MSG_TRANSINPUT_TOGGLE,
   OPT_LANGS_FROM_REVERSED as OPT_LANGS_FROM,
   OPT_LANGS_TO_REVERSED as OPT_LANGS_TO,
 } from "../../config";
@@ -160,26 +159,6 @@ export default function PopupCont({
     }
   };
 
-  // 切换“输入框快捷翻译”的开启/关闭状态
-  const handleInputTransToggle = async (e) => {
-    try {
-      setSetting((pre) => ({
-        ...pre,
-        inputRule: {
-          ...pre.inputRule,
-          transOpen: e.target.checked,
-        },
-      }));
-
-      if (!processActions) {
-        await sendTabMsg(MSG_TRANSINPUT_TOGGLE);
-      } else {
-        processActions({ action: MSG_TRANSINPUT_TOGGLE });
-      }
-    } catch (err) {
-      kissLog("toggle inputtrans", err);
-    }
-  };
 
   // 统一处理翻译规则通用设置项的更新（如自动扫描、扫描全部节点、保留排版、仅显示译文等）
   const handleChange = async (e) => {
@@ -303,7 +282,6 @@ export default function PopupCont({
   // 快捷提取各种交互开关的当前启用状态
   const tranboxEnabled = setting?.tranboxSetting?.transOpen;
   const mouseHoverEnabled = setting?.mouseHoverSetting?.useMouseHover;
-  const inputTransEnabled = setting?.inputRule?.transOpen;
 
   const {
     transOpen,
@@ -427,21 +405,6 @@ export default function PopupCont({
               />
             }
             label={i18n("mousehover_translate")}
-          />
-        </Grid>
-        {/* 开关：开启输入框快捷翻译 */}
-        <Grid item xs={6}>
-          <FormControlLabel
-            control={
-              <Switch
-                size="small"
-                name="inputTransEnabled"
-                value={!inputTransEnabled}
-                checked={inputTransEnabled}
-                onChange={handleInputTransToggle}
-              />
-            }
-            label={i18n("input_translate")}
           />
         </Grid>
         {/* 开关：纯文本扫描翻译模式 (更高性能，但不支持排版保留) */}

@@ -12,10 +12,8 @@ import { AlertProvider } from "../../hooks/Alert";
 import { ConfirmProvider } from "../../hooks/Confirm";
 import Apis from "./Apis";
 import Prompts from "./Prompts";
-import InputSetting from "./InputSetting";
 import Tranbox from "./Tranbox";
 import FavWords from "./FavWords";
-import Playgound from "./Playground";
 import MouseHoverSetting from "./MouseHover";
 import SubtitleSetting from "./Subtitle";
 import StylesSetting from "./StylesSetting";
@@ -79,7 +77,6 @@ export default function Options() {
                   <Route index element={<Setting />} />
                   <Route path="rules" element={<Rules />} />
                   <Route path="styles" element={<StylesSetting />} />
-                  <Route path="input" element={<InputSetting />} />
                   <Route path="tranbox" element={<Tranbox />} />
                   <Route path="mousehover" element={<MouseHoverSetting />} />
                   <Route path="subtitle" element={<SubtitleSetting />} />
@@ -87,7 +84,6 @@ export default function Options() {
                   <Route path="prompts" element={<Prompts />} />
                   <Route path="sync" element={<SyncSetting />} />
                   <Route path="words" element={<FavWords />} />
-                  <Route path="playground" element={<Playgound />} />
                   <Route path="about" element={<About />} />
                 </Route>
               </Routes>

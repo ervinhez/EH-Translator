@@ -7,16 +7,11 @@ import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import DoneIcon from "@mui/icons-material/Done";
-import CircularProgress from "@mui/material/CircularProgress";
 import ContentPasteIcon from "@mui/icons-material/ContentPaste";
 import { useI18n } from "../../hooks/I18n";
 import {
   OPT_LANGS_FROM_REVERSED as OPT_LANGS_FROM,
   OPT_LANGS_TO_REVERSED as OPT_LANGS_TO,
-  OPT_LANGDETECTOR_ALL,
-  OPT_DICT_ALL,
-  OPT_SUG_ALL,
-  OPT_LANGS_MAP,
   OPT_DICT_MAP,
   OPT_SUG_MAP,
   PROMPT_MODE_FOLLOW_API,
@@ -55,7 +50,6 @@ export default function TranForm({
   aiDictPromptSlug = PROMPT_MODE_FOLLOW_API,
   prompts = [],
   selectionContext = "",
-  isPlaygound = false,
 }) {
   const i18n = useI18n();
 
@@ -67,15 +61,14 @@ export default function TranForm({
   const [hasUserChangedApiSlugs, setHasUserChangedApiSlugs] = useState(false);
   const [fromLang, setFromLang] = useState(initFromLang);
   const [toLang, setToLang] = useState(initToLang);
-  const [toLang2, setToLang2] = useState(initToLang2);
-  const [langDetector, setLangDetector] = useState(initLangDetector);
-  const [enDict, setEnDict] = useState(initEnDict);
-  const [enSug, setEnSug] = useState(initEnSug);
+  const [toLang2] = useState(initToLang2);
+  const [langDetector] = useState(initLangDetector);
+  const [enDict] = useState(initEnDict);
+  const [enSug] = useState(initEnSug);
   const [dictTab, setDictTab] = useState("default");
   const hasUserChangedDictTabRef = useRef(false);
   // 异步自动检测到的源文本语言代码 (例如 "en", "zh")
   const [deLang, setDeLang] = useState("");
-  const [deLoading, setDeLoading] = useState(false);
   const inputRef = useRef(null);
 
   // 挂载时：输入框自动获取焦点，并将光标定位在文本尾部
@@ -122,18 +115,15 @@ export default function TranForm({
 
     (async () => {
       try {
-        setDeLoading(true);
         const deLang = await tryDetectLang(text, langDetector);
         if (deLang) {
           setDeLang(deLang);
         }
       } catch (err) {
         kissLog("tranbox: detect lang", err);
-      } finally {
-        setDeLoading(false);
       }
     })();
-  }, [text, langDetector, setDeLang, setDeLoading]);
+  }, [text, langDetector]);
 
   // 从剪贴板粘贴文本到翻译框
   const handlePaste = async () => {
@@ -172,8 +162,6 @@ export default function TranForm({
   );
 
   const isWord = useMemo(() => isValidWord(text), [text]);
-  const xs = useMemo(() => (isPlaygound ? 6 : 4), [isPlaygound]);
-  const md = useMemo(() => (isPlaygound ? 3 : 4), [isPlaygound]);
 
   const activeApiSlugs = useMemo(() => {
     const validSlugs = new Set(optApis.map((api) => api.key));
@@ -238,12 +226,12 @@ export default function TranForm({
             {/* 各类服务参数、语种设置下拉菜单网格 */}
             <Grid container spacing={2} columns={12}>
               {/* 多选框：允许同时勾选多个翻译引擎进行结果对比 */}
-              <Grid item xs={xs} md={md}>
+              <Grid item xs={4}>
                 <TextField
                   select
                   SelectProps={{
                     multiple: true,
-                    MenuProps: { disablePortal: !isPlaygound },
+                    MenuProps: { disablePortal: true },
                   }}
                   fullWidth
                   size="small"
@@ -263,10 +251,10 @@ export default function TranForm({
                 </TextField>
               </Grid>
               {/* 源语言 */}
-              <Grid item xs={xs} md={md}>
+              <Grid item xs={4}>
                 <TextField
                   select
-                  SelectProps={{ MenuProps: { disablePortal: !isPlaygound } }}
+                  SelectProps={{ MenuProps: { disablePortal: true } }}
                   fullWidth
                   size="small"
                   name="fromLang"
@@ -284,10 +272,10 @@ export default function TranForm({
                 </TextField>
               </Grid>
               {/* 目标语言 */}
-              <Grid item xs={xs} md={md}>
+              <Grid item xs={4}>
                 <TextField
                   select
-                  SelectProps={{ MenuProps: { disablePortal: !isPlaygound } }}
+                  SelectProps={{ MenuProps: { disablePortal: true } }}
                   fullWidth
                   size="small"
                   name="toLang"
@@ -305,122 +293,6 @@ export default function TranForm({
                 </TextField>
               </Grid>
 
-              {/* 如果是 Playground 设置测试环境，展示更丰富的参数调节滑块 */}
-              {isPlaygound && (
-                <>
-                  {/* 第二备用目标语言 */}
-                  <Grid item xs={xs} md={md}>
-                    <TextField
-                      select
-                      SelectProps={{
-                        MenuProps: { disablePortal: !isPlaygound },
-                      }}
-                      fullWidth
-                      size="small"
-                      name="toLang2"
-                      value={toLang2}
-                      label={i18n("to_lang2")}
-                      onChange={(e) => {
-                        setToLang2(e.target.value);
-                      }}
-                    >
-                      {OPT_LANGS_TO.map(([lang, name]) => (
-                        <MenuItem key={lang} value={lang}>
-                          {name}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                  </Grid>
-                  {/* 查词所用英语词典 */}
-                  <Grid item xs={xs} md={md}>
-                    <TextField
-                      select
-                      SelectProps={{
-                        MenuProps: { disablePortal: !isPlaygound },
-                      }}
-                      fullWidth
-                      size="small"
-                      name="enDict"
-                      value={enDict}
-                      label={i18n("english_dict")}
-                      onChange={(e) => {
-                        setEnDict(e.target.value);
-                      }}
-                    >
-                      <MenuItem value={"-"}>{i18n("disable")}</MenuItem>
-                      {OPT_DICT_ALL.map((item) => (
-                        <MenuItem value={item} key={item}>
-                          {item}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                  </Grid>
-                  {/* 输入建议联想服务 */}
-                  <Grid item xs={xs} md={md}>
-                    <TextField
-                      select
-                      SelectProps={{
-                        MenuProps: { disablePortal: !isPlaygound },
-                      }}
-                      fullWidth
-                      size="small"
-                      name="enSug"
-                      value={enSug}
-                      label={i18n("english_suggest")}
-                      onChange={(e) => {
-                        setEnSug(e.target.value);
-                      }}
-                    >
-                      <MenuItem value={"-"}>{i18n("disable")}</MenuItem>
-                      {OPT_SUG_ALL.map((item) => (
-                        <MenuItem value={item} key={item}>
-                          {item}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                  </Grid>
-                  {/* 语种检测引擎选择 */}
-                  <Grid item xs={xs} md={md}>
-                    <TextField
-                      select
-                      SelectProps={{
-                        MenuProps: { disablePortal: !isPlaygound },
-                      }}
-                      fullWidth
-                      size="small"
-                      name="langDetector"
-                      value={langDetector}
-                      label={i18n("detected_lang")}
-                      onChange={(e) => {
-                        setLangDetector(e.target.value);
-                      }}
-                    >
-                      <MenuItem value={"-"}>{i18n("disable")}</MenuItem>
-                      {OPT_LANGDETECTOR_ALL.map((item) => (
-                        <MenuItem value={item} key={item}>
-                          {item}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                  </Grid>
-                  {/* 语种检测的实时计算结果展示 (只读) */}
-                  <Grid item xs={xs} md={md}>
-                    <TextField
-                      fullWidth
-                      size="small"
-                      name="deLang"
-                      value={deLang && OPT_LANGS_MAP.get(deLang)}
-                      label={i18n("detected_result")}
-                      disabled
-                      InputProps={{
-                        startAdornment: deLoading ? (
-                          <CircularProgress size={16} />
-                        ) : null,
-                      }}
-                    />
-                  </Grid>
-                </>
-              )}
             </Grid>
           </Box>
 
@@ -432,7 +304,7 @@ export default function TranForm({
               fullWidth
               multiline
               inputRef={inputRef}
-              minRows={isPlaygound ? 2 : 1}
+              minRows={1}
               maxRows={10}
               sx={{
                 "& textarea": {

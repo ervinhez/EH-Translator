@@ -84,7 +84,6 @@ describe("common extension startup", () => {
     getSettingWithDefault.mockResolvedValue({
       blacklist: "",
       tranboxSetting: { blacklist: "", transOpen: true },
-      inputRule: { blacklist: "", transOpen: true },
       mouseHoverSetting: { blacklist: "", useMouseHover: true },
       logLevel: 1,
     });

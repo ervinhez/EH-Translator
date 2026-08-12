@@ -11,13 +11,11 @@ import DesignServicesIcon from "@mui/icons-material/DesignServices";
 import { useI18n } from "../../hooks/I18n";
 import SyncIcon from "@mui/icons-material/Sync";
 import ApiIcon from "@mui/icons-material/Api";
-import InputIcon from "@mui/icons-material/Input";
 import SelectAllIcon from "@mui/icons-material/SelectAll";
 import EventNoteIcon from "@mui/icons-material/EventNote";
 import MouseIcon from "@mui/icons-material/Mouse";
 import SubtitlesIcon from "@mui/icons-material/Subtitles";
 import FormatColorText from "@mui/icons-material/FormatColorText";
-import BugReportIcon from "@mui/icons-material/BugReport";
 import TextSnippetIcon from "@mui/icons-material/TextSnippet";
 
 /**
@@ -78,12 +76,6 @@ export default function Navigator(props) {
       icon: <SyncIcon />,
     },
     {
-      id: "input_translate",
-      label: i18n("input_translate"),
-      url: "/input",
-      icon: <InputIcon />,
-    },
-    {
       id: "selection_translate",
       label: i18n("selection_translate"),
       url: "/tranbox",
@@ -106,12 +98,6 @@ export default function Navigator(props) {
       label: i18n("favorite_words"),
       url: "/words",
       icon: <EventNoteIcon />,
-    },
-    {
-      id: "playground",
-      label: "Playground",
-      url: "/playground",
-      icon: <BugReportIcon />,
     },
     { id: "about", label: i18n("about"), url: "/about", icon: <InfoIcon /> },
   ];

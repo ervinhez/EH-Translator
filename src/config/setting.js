@@ -67,26 +67,6 @@ export const DEFAULT_SYNC = {
   dataCaches: {}, // 各类缓存项的最近同步时间
 };
 
-// --- 输入框即时翻译图标(点)的显示策略 ---
-export const OPT_INPUT_DOT_DISABLE = "-"; // 彻底不显示图标
-export const OPT_INPUT_DOT_MOBILE = "mobile"; // 仅在移动端浏览器中显示
-export const OPT_INPUT_DOT_ALWAYS = "always"; // 始终显示在输入框边缘
-
-// --- 输入框即时翻译配置 ---
-export const OPT_INPUT_TRANS_SIGNS = ["/", "//", "\\", "\\\\", ">", ">>"]; // 支持的触发翻译符号
-export const DEFAULT_INPUT_SHORTCUT = ["AltLeft", "KeyI"]; // 触发输入框翻译的键盘快捷键
-export const DEFAULT_INPUT_RULE = {
-  transOpen: true, // 是否开启输入框翻译功能
-  blacklist: "", // 禁用输入框翻译的域名列表
-  apiSlug: OPT_TRANS_MICROSOFT, // 默认使用的翻译服务 API 标识
-  fromLang: "auto", // 默认自动检测输入源语言
-  toLang: "zh-CN", // 默认翻译目标语言为简体中文
-  triggerShortcut: DEFAULT_INPUT_SHORTCUT, // 快捷键组合
-  triggerCount: 1, // 快捷键连续敲击次数
-  triggerTime: 200, // 敲击时间间隔 (毫秒)
-  transSign: OPT_INPUT_TRANS_SIGNS[0], // 默认以斜杠（"/"）结尾时触发翻译
-  showDot: OPT_INPUT_DOT_MOBILE, // 图标指示器显示策略
-};
 
 // --- 划词/选区翻译配置 ---
 export const PHONIC_MAP = {
@@ -263,7 +243,6 @@ export const DEFAULT_SETTING = {
   deletedTransApiSlugs: [], // 用户手动删除的默认翻译接口标识
   // mouseKey: OPT_TIMING_PAGESCROLL, // 翻译时机/鼠标悬停翻译(移至rule，作废)
   shortcuts: DEFAULT_SHORTCUTS, // 键盘快捷键配置对象
-  inputRule: DEFAULT_INPUT_RULE, // 输入框即时翻译相关配置
   tranboxSetting: DEFAULT_TRANBOX_SETTING, // 划词翻译及字典结果面板配置
   // touchTranslate: 2, // 触屏翻译 {5:单指双击，6:单指三击，7:双指双击} (作废)
   touchModes: [2], // 触屏移动端翻译触发行为配置 (数组，支持多选，如单指双击/三击)

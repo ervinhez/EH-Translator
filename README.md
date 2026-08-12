@@ -7,9 +7,9 @@
 ## 个人定制说明
 
 - 默认自动开启整页双语翻译（打开外文网页即翻译，含页面标题）
-- 设置界面默认中文，输入框/划词/字幕翻译默认目标语言均为简体中文
+- 设置界面默认中文，划词/字幕翻译默认目标语言均为简体中文
 - 默认翻译服务为 Microsoft（免费、无需配置，开箱即用）
-- 快捷键沿用原版：`Alt+Q` 翻译 / `Alt+C` 切换样式 / `Alt+K` 翻译弹窗 / `Alt+S` 划词翻译 / `Alt+O` 设置 / `Alt+I` 输入框翻译
+- 快捷键沿用原版：`Alt+Q` 翻译 / `Alt+C` 切换样式 / `Alt+K` 翻译弹窗 / `Alt+S` 划词翻译 / `Alt+O` 设置
 
 ## 特性
 
@@ -24,8 +24,6 @@
   - [x] Chrome浏览器内置AI翻译(BuiltinAI)
 - [x] 覆盖常见翻译场景
   - [x] 网页双语对照翻译
-  - [x] 输入框翻译
-    - 通过快捷键立即将输入框内文本翻译成其他语言
   - [x] 划词翻译
     - [x] 任意页面打开翻译框，可用多种翻译服务对比翻译
     - [x] 英文词典翻译
@@ -62,13 +60,12 @@
   - `Alt+K` 打开设置弹窗
   - `Alt+S` 打开翻译弹窗/翻译选中文字
   - `Alt+O` 打开设置页面
-  - `Alt+I` 输入框翻译
 
 ## 安装
 
 > 个人 fork，未发布到应用商店，请本地构建后以开发者模式加载。
 
-### 浏览器扩展（Chrome/Edge）
+### 浏览器扩展（Chrome）
 
 ```sh
 pnpm install
@@ -77,10 +74,6 @@ pnpm build:chrome
 
 打开 [chrome://extensions](chrome://extensions)（或 Edge 的 `edge://extensions`），开启"开发者模式"，点击"加载已解压的扩展程序"，选择 `build/chrome` 目录。
 
-> 注：基于以下原因，建议优先使用浏览器扩展
->
-> - 浏览器扩展的功能更完整（本地语言识别、右键菜单等）
-> - 油猴脚本会遇到更多使用上的问题（跨域问题、脚本冲突等）
 
 ## 关联项目（上游生态）
 
@@ -153,7 +146,6 @@ pnpm build
 // `toggle_popup`       打开/关闭控制面板
 // `toggle_transbox`    打开/关闭翻译弹窗
 // `toggle_hover_node`  翻译鼠标悬停段落
-// `input_translate`    翻译输入框
 window.dispatchEvent(new CustomEvent("eh_translator", {detail: { action: "toggle_translate" }}));
 ```
 

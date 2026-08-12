@@ -193,14 +193,10 @@ export async function run() {
       return;
     }
 
-    // 6. 细粒度划词/输入框/鼠标悬停组件的专属黑名单拦截，若命中则单独禁用该交互组件
     if (isInBlacklist(href, setting.tranboxSetting?.blacklist)) {
       setting.tranboxSetting.transOpen = false;
     }
 
-    if (isInBlacklist(href, setting.inputRule?.blacklist)) {
-      setting.inputRule.transOpen = false;
-    }
 
     if (isInBlacklist(href, setting.mouseHoverSetting?.blacklist)) {
       setting.mouseHoverSetting.useMouseHover = false;

@@ -1,7 +1,7 @@
 {
   "name": "eh-translator",
-  "description": "A personalized bilingual translation extension & Greasemonkey script, forked from KISS Translator",
-  "version": "2.0.31",
+  "description": "A personalized Chrome bilingual translation extension, forked from KISS Translator",
+  "version": "0.0.1",
   "author": "ervinhez",
   "private": true,
   "dependencies": {

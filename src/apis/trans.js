@@ -251,7 +251,7 @@ const getPauseLevel = (gapMs) => {
 };
 
 /**
- * 根据提示词识别字幕断句协议，供请求格式、缓存和 Playground 共用。
+ * 根据提示词识别字幕断句协议，供请求格式和缓存共用。
  */
 export const detectSubtitleProtocol = (prompt = "") => {
   const normalizedPrompt = String(prompt);

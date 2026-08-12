@@ -3969,10 +3969,6 @@ overflow-wrap: anywhere !important;`;
       !this.#setting.tranboxSetting.transOpen;
   }
 
-  // 切换输入框翻译
-  toggleInputTranslate() {
-    this.#setting.inputRule.transOpen = !this.#setting.inputRule.transOpen;
-  }
 
   // 停止运行
   stop() {

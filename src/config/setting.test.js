@@ -1,5 +1,4 @@
 import {
-  DEFAULT_INPUT_RULE,
   DEFAULT_MOUSE_HOVER_SETTING,
   DEFAULT_SETTING,
   DEFAULT_SUBTITLE_SETTING,
@@ -13,8 +12,7 @@ describe("translation box defaults", () => {
     expect(DEFAULT_SETTING.translateVariants).toBe(true);
   });
 
-  test("uses Microsoft for every default translation entry point", () => {
-    expect(DEFAULT_INPUT_RULE.apiSlug).toBe(OPT_TRANS_MICROSOFT);
+  test("uses Microsoft for default tranbox and subtitle entry points", () => {
     expect(DEFAULT_TRANBOX_SETTING.apiSlugs).toEqual([OPT_TRANS_MICROSOFT]);
     expect(DEFAULT_SUBTITLE_SETTING.apiSlug).toBe(OPT_TRANS_MICROSOFT);
   });

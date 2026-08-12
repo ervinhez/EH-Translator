@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "__MSG_app_name__",
   "description": "__MSG_app_description__",
-  "version": "2.0.31",
+  "version": "0.0.1",
   "default_locale": "en",
   "author": "ervinhez",
   "homepage_url": "https://github.com/ervinhez/EH-Translator",
