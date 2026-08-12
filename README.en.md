@@ -40,9 +40,6 @@ A personalized Chrome bilingual translation extension, forked from the open-sour
   - [x] AI context memory
   - [x] Custom AI glossary
   - [x] Hooks & custom parameters for all providers
-- [x] Cross-client sync
-  - [x] KISS-Worker (cloudflare/docker)
-  - [x] WebDAV
 - [x] Custom translation rules (subscription/sharing, custom terms)
 - [x] Customizable shortcuts
 
@@ -60,7 +57,6 @@ pnpm build:chrome
 Open [chrome://extensions](chrome://extensions), enable "Developer mode", click "Load unpacked", and select the `build/chrome` directory.
 ## Related Projects (upstream ecosystem)
 
-- Data sync service: [https://github.com/fishjar/kiss-worker](https://github.com/fishjar/kiss-worker)
 - Community subscription rules: [https://github.com/fishjar/kiss-rules](https://github.com/fishjar/kiss-rules)
 
 ## FAQ

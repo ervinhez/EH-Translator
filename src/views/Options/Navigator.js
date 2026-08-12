@@ -7,7 +7,6 @@ import Toolbar from "@mui/material/Toolbar";
 import { NavLink, useMatch } from "react-router-dom";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { useI18n } from "../../hooks/I18n";
-import SyncIcon from "@mui/icons-material/Sync";
 import ApiIcon from "@mui/icons-material/Api";
 import SelectAllIcon from "@mui/icons-material/SelectAll";
 import EventNoteIcon from "@mui/icons-material/EventNote";
@@ -61,12 +60,6 @@ export default function Navigator(props) {
       label: i18n("styles_setting"),
       url: "/styles",
       icon: <FormatColorText />,
-    },
-    {
-      id: "sync",
-      label: i18n("sync_setting"),
-      url: "/sync",
-      icon: <SyncIcon />,
     },
     {
       id: "selection_translate",

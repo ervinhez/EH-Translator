@@ -2,7 +2,6 @@ import { Routes, Route, HashRouter } from "react-router-dom";
 import About from "./About";
 import Setting from "./Setting";
 import Layout from "./Layout";
-import SyncSetting from "./SyncSetting";
 import { SettingProvider } from "../../hooks/Setting";
 import ThemeProvider from "../../hooks/Theme";
 import { useEffect, useState } from "react";
@@ -74,7 +73,6 @@ export default function Options() {
                   <Route path="subtitle" element={<SubtitleSetting />} />
                   <Route path="apis" element={<Apis />} />
                   <Route path="prompts" element={<Prompts />} />
-                  <Route path="sync" element={<SyncSetting />} />
                   <Route path="words" element={<FavWords />} />
                   <Route path="about" element={<About />} />
                 </Route>

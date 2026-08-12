@@ -84,7 +84,6 @@ jest.mock("./FavWords", () => mockComponent("words-page"));
 jest.mock("./Apis", () => mockComponent("apis-page"));
 jest.mock("./Setting", () => mockComponent("setting-page"));
 jest.mock("./About", () => mockComponent());
-jest.mock("./SyncSetting", () => mockComponent());
 jest.mock("./Prompts", () => mockComponent());
 jest.mock("./Tranbox", () => mockComponent());
 jest.mock("./MouseHover", () => mockComponent());
