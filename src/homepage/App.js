@@ -56,7 +56,7 @@ function LogoMark({ tokens }) {
     <Box
       component="img"
       src="images/logo192.png"
-      alt="KISS Translator"
+      alt="EH Translator"
       sx={{
         width: { xs: 34, sm: 38 },
         height: { xs: 34, sm: 38 },
@@ -94,7 +94,7 @@ function Header({
         <LogoMark tokens={tokens} />
         <Box sx={{ minWidth: 0 }}>
           <Typography variant="h6" sx={{ fontWeight: 760, lineHeight: 1 }}>
-            KISS Translator
+            EH Translator
           </Typography>
           <Typography
             variant="caption"

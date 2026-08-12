@@ -296,12 +296,12 @@ describe("Options startup sync", () => {
     const settingSync = createDeferred();
     mockIsGm = true;
     trySyncSetting.mockReturnValueOnce(settingSync.promise);
-    process.env.REACT_APP_NAME = "KISS Translator";
+    process.env.REACT_APP_NAME = "EH Translator";
     process.env.REACT_APP_VERSION = "2.0.25";
     window.APP_INFO = {
-      name: "KISS Translator",
+      name: "EH Translator",
       version: "2.0.25",
-      eventName: "kiss-ping",
+      eventName: "eh-ping",
     };
 
     try {
@@ -309,7 +309,7 @@ describe("Options startup sync", () => {
 
       await flushEffects();
 
-      expect(adaptScript).toHaveBeenCalledWith("kiss-ping");
+      expect(adaptScript).toHaveBeenCalledWith("eh-ping");
       expect(runDataMigration).toHaveBeenCalledTimes(1);
       expect(runDataMigration.mock.invocationCallOrder[0]).toBeGreaterThan(
         adaptScript.mock.invocationCallOrder[0]
@@ -360,12 +360,12 @@ describe("Options startup sync", () => {
     const migration = createDeferred();
     mockIsGm = true;
     runDataMigration.mockReturnValueOnce(migration.promise);
-    process.env.REACT_APP_NAME = "KISS Translator";
+    process.env.REACT_APP_NAME = "EH Translator";
     process.env.REACT_APP_VERSION = "2.0.25";
     window.APP_INFO = {
-      name: "KISS Translator",
+      name: "EH Translator",
       version: "2.0.25",
-      eventName: "kiss-ping",
+      eventName: "eh-ping",
     };
 
     try {
@@ -373,7 +373,7 @@ describe("Options startup sync", () => {
 
       await flushEffects();
 
-      expect(adaptScript).toHaveBeenCalledWith("kiss-ping");
+      expect(adaptScript).toHaveBeenCalledWith("eh-ping");
       expect(runDataMigration).toHaveBeenCalledTimes(1);
       expect(mockSettingProvider).not.toHaveBeenCalled();
       expect(view.container.querySelector("[data-testid='apis-page']")).toBe(
@@ -417,12 +417,12 @@ describe("Options startup sync", () => {
     const originalVersion = process.env.REACT_APP_VERSION;
     let view;
     mockIsGm = true;
-    process.env.REACT_APP_NAME = "KISS Translator";
+    process.env.REACT_APP_NAME = "EH Translator";
     process.env.REACT_APP_VERSION = "2.0.25";
     window.APP_INFO = {
-      name: "KISS Translator",
+      name: "EH Translator",
       version: "2.1.0",
-      eventName: "kiss-ping",
+      eventName: "eh-ping",
     };
 
     try {
@@ -457,7 +457,7 @@ describe("Options startup sync", () => {
     const originalVersion = process.env.REACT_APP_VERSION;
     let view;
     mockIsGm = true;
-    process.env.REACT_APP_NAME = "KISS Translator";
+    process.env.REACT_APP_NAME = "EH Translator";
     process.env.REACT_APP_VERSION = "2.0.25";
 
     try {

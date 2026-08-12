@@ -33,7 +33,7 @@ function loadGmStorageModule() {
 describe("settings storage migration", () => {
   beforeEach(() => {
     window.localStorage.clear();
-    delete window.KISS_GM;
+    delete window.EH_GM;
     delete globalThis.GM;
     delete globalThis.GM_setValue;
     delete globalThis.GM_getValue;
@@ -191,9 +191,9 @@ describe("settings storage migration", () => {
     );
   });
 
-  test("GM storage uses KISS_GM when it is available", async () => {
+  test("GM storage uses EH_GM when it is available", async () => {
     const stored = new Map();
-    window.KISS_GM = {
+    window.EH_GM = {
       setValue: jest.fn(async (key, value) => stored.set(key, value)),
       getValue: jest.fn(async (key) => stored.get(key)),
       deleteValue: jest.fn(async (key) => stored.delete(key)),
@@ -209,19 +209,19 @@ describe("settings storage migration", () => {
     await expect(storage.getObj("gm-key")).resolves.toEqual({ local: true });
     await storage.del("gm-key");
 
-    expect(window.KISS_GM.setValue).toHaveBeenCalledWith(
+    expect(window.EH_GM.setValue).toHaveBeenCalledWith(
       "gm-key",
       JSON.stringify({ local: true })
     );
-    expect(window.KISS_GM.getValue).toHaveBeenCalledWith("gm-key");
-    expect(window.KISS_GM.deleteValue).toHaveBeenCalledWith("gm-key");
+    expect(window.EH_GM.getValue).toHaveBeenCalledWith("gm-key");
+    expect(window.EH_GM.deleteValue).toHaveBeenCalledWith("gm-key");
     expect(globalThis.GM.setValue).not.toHaveBeenCalled();
     expect(globalThis.GM.getValue).not.toHaveBeenCalled();
     expect(globalThis.GM.deleteValue).not.toHaveBeenCalled();
     expect(stored.has("gm-key")).toBe(false);
   });
 
-  test("GM storage uses native GM storage APIs without KISS_GM", async () => {
+  test("GM storage uses native GM storage APIs without EH_GM", async () => {
     const stored = new Map();
     globalThis.GM = {
       setValue: jest.fn(async (key, value) => stored.set(key, value)),

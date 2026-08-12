@@ -139,7 +139,7 @@ async function* fetchStreamGM(
     pushDecodedResponseText(delta, isFinal);
   };
 
-  const gmRequest = window.KISS_GM?.xmlHttpRequest || GM.xmlHttpRequest;
+  const gmRequest = window.EH_GM?.xmlHttpRequest || GM.xmlHttpRequest;
   const requestHandle = gmRequest({
     method,
     url: input,

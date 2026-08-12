@@ -44,7 +44,7 @@ function createHookHost() {
   function TestComponent() {
     Object.assign(
       hookResult,
-      useStorage("local-setting", { local: true }, "kiss-setting_v2.json")
+      useStorage("local-setting", { local: true }, "eh-setting_v2.json")
     );
     return null;
   }
@@ -83,7 +83,7 @@ describe("useStorage remote sync", () => {
   beforeEach(() => {
     jest.useFakeTimers();
     jest.clearAllMocks();
-    globalThis.__KISS_CONTEXT__ = "options";
+    globalThis.__EH_CONTEXT__ = "options";
     storage.getObj.mockResolvedValue({ local: true });
     storage.setObj.mockResolvedValue(undefined);
     storage.del.mockResolvedValue(undefined);
@@ -92,7 +92,7 @@ describe("useStorage remote sync", () => {
   });
 
   afterEach(() => {
-    delete globalThis.__KISS_CONTEXT__;
+    delete globalThis.__EH_CONTEXT__;
     jest.useRealTimers();
   });
 
@@ -120,7 +120,7 @@ describe("useStorage remote sync", () => {
     });
     await flushEffects();
 
-    expect(syncData).toHaveBeenCalledWith("kiss-setting_v2.json", {
+    expect(syncData).toHaveBeenCalledWith("eh-setting_v2.json", {
       changed: true,
     });
 
@@ -147,7 +147,7 @@ describe("useStorage remote sync", () => {
     });
     await flushEffects();
 
-    expect(syncData).not.toHaveBeenCalledWith("kiss-setting_v2.json", {
+    expect(syncData).not.toHaveBeenCalledWith("eh-setting_v2.json", {
       reloaded: true,
     });
 

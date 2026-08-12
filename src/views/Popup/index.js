@@ -162,23 +162,12 @@ export default function Popup() {
               variant="text"
               onClick={() => {
                 window.open(
-                  "https://chromewebstore.google.com/detail/kiss-translator/bdiifdefkgmcblbcghdlonllpjhhjgof/reviews",
+                  "https://github.com/ervinhez/EH-Translator/issues",
                   "_blank"
                 );
               }}
             >
               {i18n("comment_support")}
-            </Button>
-            <Button
-              variant="text"
-              onClick={() => {
-                window.open(
-                  "https://github.com/fishjar/kiss-translator#%E8%B5%9E%E8%B5%8F",
-                  "_blank"
-                );
-              }}
-            >
-              {i18n("appreciate_support")}
             </Button>
             <Button variant="text" onClick={handleOpenSetting}>
               {i18n("setting")}

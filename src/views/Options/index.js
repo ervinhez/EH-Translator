@@ -107,7 +107,7 @@ export default function Options() {
           // 循环轮询 8 次 (共 8 秒) 后判定为连接油猴后台超时
           if (++i > 8) {
             setError(
-              "Time out. Please confirm whether to install or enable KISS Translator GreaseMonkey script? 连接超时，请检查是否安装或启用简约翻译油猴脚本。"
+              "Time out. Please confirm whether to install or enable EH Translator GreaseMonkey script? 连接超时，请检查是否安装或启用EH 翻译油猴脚本。"
             );
             return;
           }
@@ -136,7 +136,7 @@ export default function Options() {
         <Divider>
           <Link
             href={process.env.REACT_APP_HOMEPAGE}
-          >{`KISS Translator v${process.env.REACT_APP_VERSION}`}</Link>
+          >{`EH Translator v${process.env.REACT_APP_VERSION}`}</Link>
         </Divider>
         <Alert severity="error">{error}</Alert>
         <Stack spacing={2}>

@@ -7,7 +7,7 @@ import DOMPurify from "dompurify";
 
 // JSDoc 类型的 Trusted Types 辅助工具类
 export const trustedTypesHelper = (() => {
-  const POLICY_NAME = "kiss-translator-policy";
+  const POLICY_NAME = "eh-translator-policy";
   let policy = null;
   let policyUnavailable = false;
 

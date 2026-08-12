@@ -1,6 +1,6 @@
 import { YouTubeSubtitleList } from "./YouTubeSubtitleList";
 import { apiMicrosoftDict } from "../apis/index.js";
-import { EVENT_FAVORITE_WORD_CHANGE } from "../config";
+import { EVENT_EH_FAVORITE_WORD_CHANGE } from "../config";
 
 jest.mock("../libs/storage.js", () => ({
   getSettingWithDefault: jest.fn(() => Promise.resolve({ darkMode: "light" })),
@@ -174,7 +174,7 @@ describe("YouTubeSubtitleList", () => {
       enableHoverLookup: true,
     });
     const addWordHandler = jest.fn();
-    document.addEventListener("kiss-add-word", addWordHandler);
+    document.addEventListener("eh-add-word", addWordHandler);
 
     manager.initialize(
       [{ ...subtitle, start: 33000, text: "ready to go" }],
@@ -217,7 +217,7 @@ describe("YouTubeSubtitleList", () => {
     });
     expect(storage.setWords.mock.calls[0][0].ready.timestamp).toBeUndefined();
 
-    document.removeEventListener("kiss-add-word", addWordHandler);
+    document.removeEventListener("eh-add-word", addWordHandler);
     manager.destroy();
     jest.useRealTimers();
   });
@@ -265,7 +265,7 @@ describe("YouTubeSubtitleList", () => {
   test("toggles a vocabulary item's global favorite state", async () => {
     const storage = require("../libs/storage.js");
     const handleFavoriteChange = jest.fn();
-    document.addEventListener(EVENT_FAVORITE_WORD_CHANGE, handleFavoriteChange);
+    document.addEventListener(EVENT_EH_FAVORITE_WORD_CHANGE, handleFavoriteChange);
     const videoEl = createVideoElement();
     const manager = new YouTubeSubtitleList(videoEl);
     const item = {
@@ -311,7 +311,7 @@ describe("YouTubeSubtitleList", () => {
 
     manager.destroy();
     document.removeEventListener(
-      EVENT_FAVORITE_WORD_CHANGE,
+      EVENT_EH_FAVORITE_WORD_CHANGE,
       handleFavoriteChange
     );
   });

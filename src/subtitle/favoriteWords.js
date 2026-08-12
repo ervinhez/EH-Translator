@@ -1,4 +1,4 @@
-import { EVENT_FAVORITE_WORD_CHANGE, KV_WORDS_KEY } from "../config";
+import { EVENT_EH_FAVORITE_WORD_CHANGE, KV_WORDS_KEY } from "../config";
 import {
   debounceSyncMeta,
   getWordsWithDefault,
@@ -34,7 +34,7 @@ async function saveWords(words) {
 
 function notifyFavoriteWordChange(word, isFavorite) {
   document.dispatchEvent(
-    new CustomEvent(EVENT_FAVORITE_WORD_CHANGE, {
+    new CustomEvent(EVENT_EH_FAVORITE_WORD_CHANGE, {
       detail: { word, isFavorite },
     })
   );

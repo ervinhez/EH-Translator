@@ -13,7 +13,7 @@ export const CMD_TOGGLE_TRANBOX = "toggleTranbox"; // 显隐划词翻译面板
 export const CMD_OPEN_SEPARATE_WINDOW = "openSeparateWindow"; // 打开独立的翻译悬浮窗口
 
 // --- 扩展运行中的内部通信 Message Action 常量 ---
-export const MSG_FETCH = "kiss_fetch"; // 代理请求 (避免内容脚本跨域限制)
+export const MSG_FETCH = "eh_fetch"; // 代理请求 (避免内容脚本跨域限制)
 export const MSG_GET_HTTPCACHE = "get_httpcache"; // 获取网页翻译请求的本地缓存
 export const MSG_PUT_HTTPCACHE = "put_httpcache"; // 写入翻译请求的缓存数据
 export const MSG_OPEN_OPTIONS = "open_options"; // 打开扩展设置页面消息
@@ -41,17 +41,17 @@ export const MSG_BUILTINAI_TRANSLATE = "builtinai_translte"; // 调用内置 AI 
 export const MSG_SET_LOGLEVEL = "set_loglevel"; // 设置当前会话的日志等级
 export const MSG_CLEAR_CACHES = "clear_caches"; // 请求后台脚本清理本地翻译 HTTP 缓存
 export const MSG_OPEN_SEPARATE_WINDOW = "open_separate_window"; // 请求后台脚本开启独立窗口
-export const PORT_STREAM_FETCH = "kiss_stream_fetch"; // 双向长连接端口名称：用于大模型翻译时的流式输出通道
+export const PORT_STREAM_FETCH = "eh_stream_fetch"; // 双向长连接端口名称：用于大模型翻译时的流式输出通道
 export const MSG_UPDATE_ICON = "update_icon"; // 通知后台脚本更新扩展的工具栏图标状态 (激活/灰色状态)
 export const MSG_SHA256 = "sha256"; // 请求后台脚本代算 SHA-256 签名
 
 // --- 用于 Window.postMessage 与自定义事件通信的事件名称 ---
-export const EVENT_KISS_INNER = "kiss_translator_inner"; // 插件沙箱/内容脚本内部事件
-export const EVENT_KISS_TRANSLATOR = "kiss_translator"; // 暴露给网页环境的外部交互事件
-export const EVENT_FAVORITE_WORD_CHANGE = "kiss_favorite_word_change"; // 当前页面收藏词状态变化
+export const EVENT_EH_INNER = "eh_translator_inner"; // 插件沙箱/内容脚本内部事件
+export const EVENT_EH_TRANSLATOR = "eh_translator"; // 暴露给网页环境的外部交互事件
+export const EVENT_EH_FAVORITE_WORD_CHANGE = "eh_favorite_word_change"; // 当前页面收藏词状态变化
 
 // --- 视频与字幕翻译特定消息类型 ---
-export const MSG_XHR_DATA_YOUTUBE = "KISS_XHR_DATA_YOUTUBE"; // 传递 YouTube 拦截到的字幕 XHR 数据
+export const MSG_EH_XHR_DATA_YOUTUBE = "EH_XHR_DATA_YOUTUBE"; // 传递 YouTube 拦截到的字幕 XHR 数据
 
 // --- 字幕菜单控制状态类型 ---
 export const MSG_MENUS_PROGRESSED = "progressed"; // 进度事件

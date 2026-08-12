@@ -8,8 +8,8 @@ const mockFabInstances = [];
 const activeManagers = [];
 
 jest.mock("../config", () => ({
-  EVENT_KISS_INNER: "kiss-inner",
-  EVENT_KISS_TRANSLATOR: "kiss-translator",
+  EVENT_EH_INNER: "eh-inner",
+  EVENT_EH_TRANSLATOR: "eh-translator",
   MSG_HOVERNODE_TOGGLE: "hovernode-toggle",
   MSG_INPUT_TRANSLATE: "input-translate",
   MSG_TRANS_TOGGLE: "trans-toggle",
@@ -356,7 +356,7 @@ describe("TranslatorManager SPA lifecycle", () => {
     const manager = createManager({ transboxOnly: true });
     const eventHandler = jest.fn();
     manager.start();
-    document.addEventListener("kiss-inner", eventHandler);
+    document.addEventListener("eh-inner", eventHandler);
 
     const runtimeHandler =
       browser.runtime.onMessage.addListener.mock.calls[0][0];
@@ -373,7 +373,7 @@ describe("TranslatorManager SPA lifecycle", () => {
       args: { text: "hello" },
     });
 
-    document.removeEventListener("kiss-inner", eventHandler);
+    document.removeEventListener("eh-inner", eventHandler);
   });
 
   test("cleans up transbox-only runtime on stop", () => {

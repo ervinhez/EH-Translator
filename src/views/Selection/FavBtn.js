@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useFavWords } from "../../hooks/FavWords";
 import { kissLog } from "../../libs/log";
 import { useSetting } from "../../hooks/Setting";
-import { EVENT_FAVORITE_WORD_CHANGE } from "../../config";
+import { EVENT_EH_FAVORITE_WORD_CHANGE } from "../../config";
 
 /**
  * 收藏生词按钮组件 (红心图标)
@@ -30,7 +30,7 @@ export default function FavBtn({ word, title }) {
       const isFavorite = !favWords[word];
       toggleFav(word);
       document.dispatchEvent(
-        new CustomEvent(EVENT_FAVORITE_WORD_CHANGE, {
+        new CustomEvent(EVENT_EH_FAVORITE_WORD_CHANGE, {
           detail: { word, isFavorite },
         })
       );

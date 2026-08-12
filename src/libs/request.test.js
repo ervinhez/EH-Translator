@@ -8,7 +8,7 @@ jest.mock("../config", () => ({
   CLIENT_USERSCRIPT: "userscript",
   CLIENT_WEB: "web",
   DEFAULT_HTTP_TIMEOUT: 30,
-  MSG_FETCH: "kiss_fetch",
+  MSG_FETCH: "eh_fetch",
 }));
 
 jest.mock("./log", () => ({
@@ -31,7 +31,7 @@ const loadRequestWithClient = (clientMock) => {
     CLIENT_USERSCRIPT: "userscript",
     CLIENT_WEB: "web",
     DEFAULT_HTTP_TIMEOUT: 30,
-    MSG_FETCH: "kiss_fetch",
+    MSG_FETCH: "eh_fetch",
   }));
   jest.doMock("./log", () => ({
     kissLog: jest.fn(),
@@ -64,7 +64,7 @@ describe("normalizeHttpTimeout", () => {
 
 describe("fetchPatcher", () => {
   afterEach(() => {
-    delete window.KISS_GM;
+    delete window.EH_GM;
     jest.restoreAllMocks();
   });
 
@@ -98,14 +98,14 @@ describe("fetchPatcher", () => {
     expect(capturedSignal.aborted).toBe(true);
   });
 
-  test("uses KISS_GM xmlHttpRequest bridge without passing signal", async () => {
+  test("uses EH_GM xmlHttpRequest bridge without passing signal", async () => {
     const { fetchPatcher: gmFetchPatcher } = loadRequestWithClient({
       isExt: false,
       isGm: true,
     });
     const abort = jest.fn();
     let requestDetails;
-    window.KISS_GM = {
+    window.EH_GM = {
       fetch: jest.fn(),
       xmlHttpRequest: jest.fn((details) => {
         requestDetails = details;
@@ -123,10 +123,10 @@ describe("fetchPatcher", () => {
       },
       { signal: controller.signal }
     );
-    await waitFor(() => window.KISS_GM.xmlHttpRequest.mock.calls.length === 1);
+    await waitFor(() => window.EH_GM.xmlHttpRequest.mock.calls.length === 1);
 
-    expect(window.KISS_GM.fetch).not.toHaveBeenCalled();
-    expect(window.KISS_GM.xmlHttpRequest).toHaveBeenCalledTimes(1);
+    expect(window.EH_GM.fetch).not.toHaveBeenCalled();
+    expect(window.EH_GM.xmlHttpRequest).toHaveBeenCalledTimes(1);
     expect(requestDetails).toMatchObject({
       method: "POST",
       url: "https://example.test/data",
@@ -151,13 +151,13 @@ describe("fetchPatcher", () => {
     expect(response.headers.get("x-test")).toBe("yes");
   });
 
-  test("aborts KISS_GM xmlHttpRequest when external signal aborts", async () => {
+  test("aborts EH_GM xmlHttpRequest when external signal aborts", async () => {
     const { fetchPatcher: gmFetchPatcher } = loadRequestWithClient({
       isExt: false,
       isGm: true,
     });
     const abort = jest.fn();
-    window.KISS_GM = {
+    window.EH_GM = {
       fetch: jest.fn(),
       xmlHttpRequest: jest.fn(() => ({ abort })),
     };
@@ -168,12 +168,12 @@ describe("fetchPatcher", () => {
       {},
       { signal: controller.signal }
     );
-    await waitFor(() => window.KISS_GM.xmlHttpRequest.mock.calls.length === 1);
+    await waitFor(() => window.EH_GM.xmlHttpRequest.mock.calls.length === 1);
     controller.abort();
 
     await expect(request).rejects.toThrow("The operation was aborted.");
     expect(abort).toHaveBeenCalledTimes(1);
-    expect(window.KISS_GM.fetch).not.toHaveBeenCalled();
+    expect(window.EH_GM.fetch).not.toHaveBeenCalled();
   });
 });
 

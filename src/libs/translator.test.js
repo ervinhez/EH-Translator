@@ -16,7 +16,7 @@ const { apiMicrosoftDict, apiTranslate, apiYoudaoDict } = require("../apis");
 const { tryDetectLang } = require("./detect");
 const {
   DEFAULT_API_SETTING,
-  EVENT_FAVORITE_WORD_CHANGE,
+  EVENT_EH_FAVORITE_WORD_CHANGE,
   OPT_DICT_BING,
   OPT_DICT_YOUDAO,
 } = require("../config");
@@ -242,11 +242,11 @@ describe("Translator rule styles", () => {
     createTranslator({ selectStyle: "color: red;" });
     await flushAsync();
 
-    const inner = document.querySelector(`.${Translator.KISS_CLASS.inner}`);
+    const inner = document.querySelector(`.${Translator.EH_CLASS.inner}`);
     expect(apiTranslate).toHaveBeenCalled();
     expect(inner).not.toBeNull();
     expect(inner.textContent).toBe("Translated");
-    expect(inner.querySelector(`.${Translator.KISS_CLASS.retry}`)).toBeNull();
+    expect(inner.querySelector(`.${Translator.EH_CLASS.retry}`)).toBeNull();
   });
 
   test("still appends selectStyle for normal host elements", async () => {
@@ -291,13 +291,13 @@ describe("Translator rule styles", () => {
     await flushAsync();
 
     const wrappers = document.querySelectorAll(
-      `.${Translator.KISS_CLASS.warpper}`
+      `.${Translator.EH_CLASS.warpper}`
     );
     const directListItemWrappers = Array.from(
       document.querySelectorAll("li")
     ).flatMap((li) =>
       Array.from(li.children).filter((child) =>
-        child.classList.contains(Translator.KISS_CLASS.warpper)
+        child.classList.contains(Translator.EH_CLASS.warpper)
       )
     );
     const requestedTexts = apiTranslate.mock.calls.map(([args]) => args.text);
@@ -343,7 +343,7 @@ describe("Translator rule styles", () => {
     await flushAsync();
 
     const requestedText = apiTranslate.mock.calls[0][0].text;
-    const inner = document.querySelector(`.${Translator.KISS_CLASS.inner}`);
+    const inner = document.querySelector(`.${Translator.EH_CLASS.inner}`);
 
     expect(requestedText).toBe("First{1}column{2}Second line");
     expect(requestedText).not.toContain("\t");
@@ -370,7 +370,7 @@ describe("Translator rule styles", () => {
     await flushAsync();
 
     const requestedText = apiTranslate.mock.calls[0][0].text;
-    const inner = document.querySelector(`.${Translator.KISS_CLASS.inner}`);
+    const inner = document.querySelector(`.${Translator.EH_CLASS.inner}`);
 
     expect(requestedText).toBe(sourceText);
     expect(inner.textContent).toBe(sourceText);
@@ -393,7 +393,7 @@ describe("Translator rule styles", () => {
     );
     await flushAsync();
 
-    const wrapper = document.querySelector(`.${Translator.KISS_CLASS.warpper}`);
+    const wrapper = document.querySelector(`.${Translator.EH_CLASS.warpper}`);
     const requestedTexts = apiTranslate.mock.calls.map(([args]) => args.text);
     const combinedRequestedText = requestedTexts.join(" ");
 
@@ -427,7 +427,7 @@ describe("Translator rule styles", () => {
     await flushAsync();
 
     const highlight = document.querySelector(
-      `#target > .${Translator.KISS_CLASS.highlight}`
+      `#target > .${Translator.EH_CLASS.highlight}`
     );
 
     expect(highlight).not.toBeNull();
@@ -457,7 +457,7 @@ describe("Translator rule styles", () => {
 
     const requestedText = apiTranslate.mock.calls[0][0].text;
     const highlight = document.querySelector(
-      `#target strong > .${Translator.KISS_CLASS.highlight}`
+      `#target strong > .${Translator.EH_CLASS.highlight}`
     );
 
     expect(highlight).not.toBeNull();
@@ -481,44 +481,44 @@ describe("Translator rule styles", () => {
       { minLength: 0 }
     );
     await flushAsync();
-    const wrapper = document.querySelector(`.${Translator.KISS_CLASS.warpper}`);
+    const wrapper = document.querySelector(`.${Translator.EH_CLASS.warpper}`);
     const translateCalls = apiTranslate.mock.calls.length;
 
     document.dispatchEvent(
-      new CustomEvent(EVENT_FAVORITE_WORD_CHANGE, {
+      new CustomEvent(EVENT_EH_FAVORITE_WORD_CHANGE, {
         detail: { word: "library", isFavorite: true },
       })
     );
 
     const highlights = document.querySelectorAll(
-      `#target > .${Translator.KISS_CLASS.highlight}`
+      `#target > .${Translator.EH_CLASS.highlight}`
     );
     expect(highlights).toHaveLength(2);
     expect(highlights[0].textContent).toBe("Library");
-    expect(highlights[0].dataset.kissFavoriteWord).toBe("library");
+    expect(highlights[0].dataset.ehFavoriteWord).toBe("library");
     expect(
-      document.querySelector(`#outside .${Translator.KISS_CLASS.highlight}`)
+      document.querySelector(`#outside .${Translator.EH_CLASS.highlight}`)
     ).toBeNull();
     expect(apiTranslate).toHaveBeenCalledTimes(translateCalls);
-    expect(document.querySelector(`.${Translator.KISS_CLASS.warpper}`)).toBe(
+    expect(document.querySelector(`.${Translator.EH_CLASS.warpper}`)).toBe(
       wrapper
     );
 
     document.dispatchEvent(
-      new CustomEvent(EVENT_FAVORITE_WORD_CHANGE, {
+      new CustomEvent(EVENT_EH_FAVORITE_WORD_CHANGE, {
         detail: { word: "LIBRARY", isFavorite: false },
       })
     );
 
     expect(
-      document.querySelector(`#target .${Translator.KISS_CLASS.highlight}`)
+      document.querySelector(`#target .${Translator.EH_CLASS.highlight}`)
     ).toBeNull();
     expect(document.getElementById("target").textContent).toContain(
       "Library tools improve library research"
     );
     await flushAsync();
     expect(apiTranslate).toHaveBeenCalledTimes(translateCalls);
-    expect(document.querySelector(`.${Translator.KISS_CLASS.warpper}`)).toBe(
+    expect(document.querySelector(`.${Translator.EH_CLASS.warpper}`)).toBe(
       wrapper
     );
   });
@@ -541,12 +541,12 @@ describe("Translator rule styles", () => {
     await flushAsync();
 
     document.dispatchEvent(
-      new CustomEvent(EVENT_FAVORITE_WORD_CHANGE, {
+      new CustomEvent(EVENT_EH_FAVORITE_WORD_CHANGE, {
         detail: { word: "library", isFavorite: true },
       })
     );
     expect(
-      document.querySelector(`.target .${Translator.KISS_CLASS.highlight}`)
+      document.querySelector(`.target .${Translator.EH_CLASS.highlight}`)
     ).not.toBeNull();
 
     const dynamic = document.createElement("p");
@@ -560,7 +560,7 @@ describe("Translator rule styles", () => {
     await flushAsync();
 
     expect(
-      dynamic.querySelector(`.${Translator.KISS_CLASS.highlight}`)
+      dynamic.querySelector(`.${Translator.EH_CLASS.highlight}`)
     ).not.toBeNull();
   });
 
@@ -579,13 +579,13 @@ describe("Translator rule styles", () => {
 
     translator.stop();
     document.dispatchEvent(
-      new CustomEvent(EVENT_FAVORITE_WORD_CHANGE, {
+      new CustomEvent(EVENT_EH_FAVORITE_WORD_CHANGE, {
         detail: { word: "library", isFavorite: true },
       })
     );
 
     expect(
-      document.querySelector(`#target .${Translator.KISS_CLASS.highlight}`)
+      document.querySelector(`#target .${Translator.EH_CLASS.highlight}`)
     ).toBeNull();
   });
 
@@ -617,7 +617,7 @@ describe("Translator rule styles", () => {
     );
     await flushAsync();
     const highlight = document.querySelector(
-      `.${Translator.KISS_CLASS.highlight}`
+      `.${Translator.EH_CLASS.highlight}`
     );
 
     highlight.dispatchEvent(
@@ -629,7 +629,7 @@ describe("Translator rule styles", () => {
     await Promise.resolve();
 
     const bubble = document.querySelector(
-      `.${Translator.KISS_CLASS.hoverBubble}`
+      `.${Translator.EH_CLASS.hoverBubble}`
     );
     expect(apiMicrosoftDict).toHaveBeenCalledWith("library");
     expect(apiYoudaoDict).not.toHaveBeenCalled();
@@ -667,7 +667,7 @@ describe("Translator rule styles", () => {
     await flushAsync();
 
     document
-      .querySelector(`.${Translator.KISS_CLASS.highlight}`)
+      .querySelector(`.${Translator.EH_CLASS.highlight}`)
       .dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
     jest.advanceTimersByTime(300);
     await apiYoudaoDict.mock.results[0].value;
@@ -675,7 +675,7 @@ describe("Translator rule styles", () => {
     await Promise.resolve();
 
     const bubble = document.querySelector(
-      `.${Translator.KISS_CLASS.hoverBubble}`
+      `.${Translator.EH_CLASS.hoverBubble}`
     );
     expect(apiYoudaoDict).toHaveBeenCalledWith("library");
     expect(apiMicrosoftDict).not.toHaveBeenCalled();
@@ -702,12 +702,12 @@ describe("Translator rule styles", () => {
     await flushAsync();
 
     document
-      .querySelector(`.${Translator.KISS_CLASS.highlight}`)
+      .querySelector(`.${Translator.EH_CLASS.highlight}`)
       .dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
     jest.advanceTimersByTime(300);
 
     const bubble = document.querySelector(
-      `.${Translator.KISS_CLASS.hoverBubble}`
+      `.${Translator.EH_CLASS.hoverBubble}`
     );
     expect(apiMicrosoftDict).not.toHaveBeenCalled();
     expect(apiYoudaoDict).not.toHaveBeenCalled();
@@ -738,7 +738,7 @@ describe("Translator rule styles", () => {
     );
     await flushAsync();
     const highlight = document.querySelector(
-      `.${Translator.KISS_CLASS.highlight}`
+      `.${Translator.EH_CLASS.highlight}`
     );
 
     highlight.dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
@@ -752,7 +752,7 @@ describe("Translator rule styles", () => {
     await Promise.resolve();
 
     expect(
-      document.querySelector(`.${Translator.KISS_CLASS.hoverBubble}`)
+      document.querySelector(`.${Translator.EH_CLASS.hoverBubble}`)
     ).toBeNull();
   });
 
@@ -788,9 +788,9 @@ describe("Translator rule styles", () => {
       <main id="root">
         <h3>
           <a href="/discussion/1">How to fix playback buttons?</a>
-          <kiss-translator class="kiss-translator-wrapper notranslate">
-            <font lang="zh-CN" class="kiss-translator-inner">Existing translation</font>
-          </kiss-translator>
+          <eh-translator class="eh-translator-wrapper notranslate">
+            <font lang="zh-CN" class="eh-translator-inner">Existing translation</font>
+          </eh-translator>
         </h3>
       </main>
     `;
@@ -805,15 +805,15 @@ describe("Translator rule styles", () => {
     await flushAsync();
 
     const wrappers = document.querySelectorAll(
-      `.${Translator.KISS_CLASS.warpper}`
+      `.${Translator.EH_CLASS.warpper}`
     );
     const requestedTexts = apiTranslate.mock.calls.map(([args]) => args.text);
-    const inner = wrappers[0].querySelector(`.${Translator.KISS_CLASS.inner}`);
+    const inner = wrappers[0].querySelector(`.${Translator.EH_CLASS.inner}`);
 
     expect(wrappers).toHaveLength(1);
     expect(inner.textContent).toContain("Existing translation");
     expect(
-      document.querySelector(`h3 a .${Translator.KISS_CLASS.warpper}`)
+      document.querySelector(`h3 a .${Translator.EH_CLASS.warpper}`)
     ).toBeNull();
     expect(requestedTexts).toEqual([]);
   });
@@ -823,10 +823,10 @@ describe("Translator rule styles", () => {
       <main id="root">
         <h3>
           <a href="/discussion/1">How to fix playback buttons?</a>
-          <kiss-translator class="kiss-translator-wrapper notranslate">
+          <eh-translator class="eh-translator-wrapper notranslate">
             <br>
-            <font lang="zh-CN" class="kiss-translator-inner">Existing translation</font>
-          </kiss-translator>
+            <font lang="zh-CN" class="eh-translator-inner">Existing translation</font>
+          </eh-translator>
         </h3>
       </main>
     `;
@@ -861,13 +861,13 @@ describe("Translator rule styles", () => {
     document.body.innerHTML = `
       <main id="root">
         <h3>
-          <kiss-translator class="kiss-translator-wrapper notranslate">
+          <eh-translator class="eh-translator-wrapper notranslate">
             <br hidden>
-            <font lang="zh-CN" class="kiss-translator-inner">Existing translation</font>
-            <template class="kiss-translator-backup">
+            <font lang="zh-CN" class="eh-translator-inner">Existing translation</font>
+            <template class="eh-translator-backup">
               <a href="/discussion/1">How to fix playback buttons?</a>
             </template>
-          </kiss-translator>
+          </eh-translator>
         </h3>
       </main>
     `;
@@ -898,7 +898,7 @@ describe("Translator rule styles", () => {
     document.body.innerHTML = `
       <main id="root">
         <div id="page-host">Page content</div>
-        <div id="kiss-translator-fab">
+        <div id="eh-translator-fab">
           <div id="plugin-child">Plugin content</div>
         </div>
       </main>
@@ -1179,12 +1179,12 @@ describe("Translator rule styles", () => {
     await hoverNode(target);
     await flushAsync();
 
-    const wrapper = document.querySelector(`.${Translator.KISS_CLASS.warpper}`);
+    const wrapper = document.querySelector(`.${Translator.EH_CLASS.warpper}`);
     expect(wrapper).not.toBeNull();
-    const inner = wrapper.querySelector(`.${Translator.KISS_CLASS.inner}`);
+    const inner = wrapper.querySelector(`.${Translator.EH_CLASS.inner}`);
     expect(inner.textContent).toBe("Translated");
     expect(
-      document.querySelector(`.${Translator.KISS_CLASS.hoverBubble}`)
+      document.querySelector(`.${Translator.EH_CLASS.hoverBubble}`)
     ).toBeNull();
   });
 
@@ -1221,11 +1221,11 @@ describe("Translator rule styles", () => {
     await Promise.resolve();
     await Promise.resolve();
 
-    const wrapper = document.querySelector(`.${Translator.KISS_CLASS.warpper}`);
+    const wrapper = document.querySelector(`.${Translator.EH_CLASS.warpper}`);
     expect(wrapper).not.toBeNull();
     expect(wrapper.isConnected).toBe(true);
     expect(
-      wrapper.querySelector(`.${Translator.KISS_CLASS.inner}`).textContent
+      wrapper.querySelector(`.${Translator.EH_CLASS.inner}`).textContent
     ).toBe("Delayed translation");
     expect(target.contains(wrapper)).toBe(true);
   });
@@ -1254,13 +1254,13 @@ describe("Translator rule styles", () => {
     await flushAsync();
 
     const bubble = document.querySelector(
-      `.${Translator.KISS_CLASS.hoverBubble}`
+      `.${Translator.EH_CLASS.hoverBubble}`
     );
     expect(apiTranslate).toHaveBeenCalledWith(
       expect.objectContaining({ text: "Hello hover" })
     );
     expect(
-      document.querySelector(`.${Translator.KISS_CLASS.warpper}`)
+      document.querySelector(`.${Translator.EH_CLASS.warpper}`)
     ).toBeNull();
     expect(bubble).not.toBeNull();
     expect(bubble.textContent).toBe("Translated");
@@ -1395,7 +1395,7 @@ describe("Translator rule styles", () => {
       })
     );
     expect(
-      document.querySelector(`.${Translator.KISS_CLASS.warpper}`)
+      document.querySelector(`.${Translator.EH_CLASS.warpper}`)
     ).not.toBeNull();
   });
 
@@ -1420,19 +1420,19 @@ describe("Translator rule styles", () => {
     );
     await flushAsync();
 
-    const wrapper = document.querySelector(`.${Translator.KISS_CLASS.warpper}`);
-    const inner = wrapper.querySelector(`.${Translator.KISS_CLASS.inner}`);
+    const wrapper = document.querySelector(`.${Translator.EH_CLASS.warpper}`);
+    const inner = wrapper.querySelector(`.${Translator.EH_CLASS.inner}`);
     const translateCallCount = apiTranslate.mock.calls.length;
 
     await hoverNode(inner);
     jest.advanceTimersByTime(299);
     expect(
-      document.querySelector(`.${Translator.KISS_CLASS.hoverBubble}`)
+      document.querySelector(`.${Translator.EH_CLASS.hoverBubble}`)
     ).toBeNull();
 
     jest.advanceTimersByTime(1);
     const bubble = document.querySelector(
-      `.${Translator.KISS_CLASS.hoverBubble}`
+      `.${Translator.EH_CLASS.hoverBubble}`
     );
     expect(bubble.textContent).toBe("Hello hidden original");
     expect(apiTranslate).toHaveBeenCalledTimes(translateCallCount);
@@ -1442,7 +1442,7 @@ describe("Translator rule styles", () => {
 
     translator.updateRule({ transOnly: "false" });
     expect(
-      document.querySelector(`.${Translator.KISS_CLASS.hoverBubble}`)
+      document.querySelector(`.${Translator.EH_CLASS.hoverBubble}`)
     ).toBeNull();
   });
 
@@ -1467,12 +1467,12 @@ describe("Translator rule styles", () => {
     );
     await flushAsync();
 
-    const inner = document.querySelector(`.${Translator.KISS_CLASS.inner}`);
+    const inner = document.querySelector(`.${Translator.EH_CLASS.inner}`);
     const translateCallCount = apiTranslate.mock.calls.length;
     await hoverNode(inner);
 
     expect(
-      document.querySelector(`.${Translator.KISS_CLASS.hoverBubble}`)
+      document.querySelector(`.${Translator.EH_CLASS.hoverBubble}`)
     ).toBeNull();
 
     window.dispatchEvent(
@@ -1483,7 +1483,7 @@ describe("Translator rule styles", () => {
     );
 
     const bubble = document.querySelector(
-      `.${Translator.KISS_CLASS.hoverBubble}`
+      `.${Translator.EH_CLASS.hoverBubble}`
     );
     expect(bubble.textContent).toBe("Hello shortcut original");
     expect(apiTranslate).toHaveBeenCalledTimes(translateCallCount);
@@ -1513,13 +1513,13 @@ describe("Translator rule styles", () => {
     translator.updateRule({ transOnly: "true" });
     await flushAsync();
 
-    const inner = document.querySelector(`.${Translator.KISS_CLASS.inner}`);
+    const inner = document.querySelector(`.${Translator.EH_CLASS.inner}`);
     const translateCallCount = apiTranslate.mock.calls.length;
     await hoverNode(inner);
     jest.advanceTimersByTime(1);
 
     expect(
-      document.querySelector(`.${Translator.KISS_CLASS.hoverBubble}`)
+      document.querySelector(`.${Translator.EH_CLASS.hoverBubble}`)
         .textContent
     ).toBe("Original hidden after control panel toggle");
     expect(apiTranslate).toHaveBeenCalledTimes(translateCallCount);
@@ -1546,13 +1546,13 @@ describe("Translator rule styles", () => {
     );
     await flushAsync();
 
-    const inner = document.querySelector(`.${Translator.KISS_CLASS.inner}`);
+    const inner = document.querySelector(`.${Translator.EH_CLASS.inner}`);
     await hoverNode(inner);
     await hoverNode(document.body);
     jest.advanceTimersByTime(1000);
 
     expect(
-      document.querySelector(`.${Translator.KISS_CLASS.hoverBubble}`)
+      document.querySelector(`.${Translator.EH_CLASS.hoverBubble}`)
     ).toBeNull();
   });
 
@@ -1581,7 +1581,7 @@ describe("Translator rule styles", () => {
     );
     await flushAsync();
 
-    const inners = document.querySelectorAll(`.${Translator.KISS_CLASS.inner}`);
+    const inners = document.querySelectorAll(`.${Translator.EH_CLASS.inner}`);
     expect(inners).toHaveLength(2);
 
     await hoverNode(inners[0]);
@@ -1589,12 +1589,12 @@ describe("Translator rule styles", () => {
     await hoverNode(inners[1]);
     jest.advanceTimersByTime(499);
     expect(
-      document.querySelector(`.${Translator.KISS_CLASS.hoverBubble}`)
+      document.querySelector(`.${Translator.EH_CLASS.hoverBubble}`)
     ).toBeNull();
 
     jest.advanceTimersByTime(1);
     expect(
-      document.querySelector(`.${Translator.KISS_CLASS.hoverBubble}`)
+      document.querySelector(`.${Translator.EH_CLASS.hoverBubble}`)
         .textContent
     ).toBe("Second latest original");
   });
@@ -1622,7 +1622,7 @@ describe("Translator rule styles", () => {
     await flushAsync();
 
     const bubble = document.querySelector(
-      `.${Translator.KISS_CLASS.hoverBubble}`
+      `.${Translator.EH_CLASS.hoverBubble}`
     );
     expect(bubble.style.background).toBe("red");
     expect(bubble.style.position).toBe("fixed");
@@ -1652,7 +1652,7 @@ describe("Translator rule styles", () => {
     await flushAsync();
 
     const bubble = document.querySelector(
-      `.${Translator.KISS_CLASS.hoverBubble}`
+      `.${Translator.EH_CLASS.hoverBubble}`
     );
     const initialLeft = bubble.style.left;
     const initialTop = bubble.style.top;
@@ -1691,7 +1691,7 @@ describe("Translator rule styles", () => {
     await hoverNode(document.getElementById("target"));
 
     const bubble = document.querySelector(
-      `.${Translator.KISS_CLASS.hoverBubble}`
+      `.${Translator.EH_CLASS.hoverBubble}`
     );
     expect(bubble.dataset.state).toBe("loading");
     expect(bubble.querySelector("svg")).not.toBeNull();
@@ -1740,7 +1740,7 @@ describe("Translator rule styles", () => {
     await Promise.resolve();
 
     const bubble = document.querySelector(
-      `.${Translator.KISS_CLASS.hoverBubble}`
+      `.${Translator.EH_CLASS.hoverBubble}`
     );
     expect(bubble.textContent).toBe("Second translation");
   });
@@ -1768,7 +1768,7 @@ describe("Translator rule styles", () => {
 
     const style = shadowRoot.querySelector("style");
     expect(style).not.toBeNull();
-    expect(style.id).toBe("kiss-translator-fallback-style");
+    expect(style.id).toBe("eh-translator-fallback-style");
     expect(style.textContent.length).toBeGreaterThan(0);
     expect(shadowRoot.querySelectorAll("style")).toHaveLength(1);
   });
@@ -1792,7 +1792,7 @@ describe("Translator rule styles", () => {
 
     const style = shadowRoot.querySelector("style");
     expect(style).not.toBeNull();
-    expect(style.id).toBe("kiss-translator-fallback-style");
+    expect(style.id).toBe("eh-translator-fallback-style");
     expect(style.textContent.length).toBeGreaterThan(0);
     expect(shadowRoot.querySelectorAll("style")).toHaveLength(1);
   });
@@ -1819,13 +1819,13 @@ describe("Translator rule styles", () => {
     await hoverNode(target);
     await flushAsync();
     expect(
-      document.querySelector(`.${Translator.KISS_CLASS.hoverBubble}`)
+      document.querySelector(`.${Translator.EH_CLASS.hoverBubble}`)
     ).not.toBeNull();
 
     translator.toggleMouseHover();
 
     expect(
-      document.querySelector(`.${Translator.KISS_CLASS.hoverBubble}`)
+      document.querySelector(`.${Translator.EH_CLASS.hoverBubble}`)
     ).toBeNull();
   });
 
@@ -1858,24 +1858,24 @@ describe("Translator rule styles", () => {
     await flushAsync();
 
     const original = target.querySelector(
-      `:scope > .${Translator.KISS_CLASS.original}`
+      `:scope > .${Translator.EH_CLASS.original}`
     );
     expect(original).not.toBeNull();
     expect(original.classList.length).toBeGreaterThan(1);
     expect(original.querySelector("#link")).toBe(link);
     expect(
-      target.querySelectorAll(`.${Translator.KISS_CLASS.original}`)
+      target.querySelectorAll(`.${Translator.EH_CLASS.original}`)
     ).toHaveLength(1);
 
     translator.disable();
 
     expect(
-      target.querySelector(`.${Translator.KISS_CLASS.original}`)
+      target.querySelector(`.${Translator.EH_CLASS.original}`)
     ).toBeNull();
     expect(target.querySelector("#link")).toBe(link);
     expect(target.textContent).toContain("Text link tail");
     expect(
-      target.querySelector(`.${Translator.KISS_CLASS.warpper}`)
+      target.querySelector(`.${Translator.EH_CLASS.warpper}`)
     ).toBeNull();
   });
 
@@ -1911,11 +1911,11 @@ describe("Translator rule styles", () => {
     await flushAsync();
 
     let original = target.querySelector(
-      `:scope > .${Translator.KISS_CLASS.original}`
+      `:scope > .${Translator.EH_CLASS.original}`
     );
     expect(original).not.toBeNull();
     const firstStyleClass = Array.from(original.classList).find(
-      (className) => className !== Translator.KISS_CLASS.original
+      (className) => className !== Translator.EH_CLASS.original
     );
     expect(apiTranslate).toHaveBeenCalledTimes(requestCount);
 
@@ -1923,7 +1923,7 @@ describe("Translator rule styles", () => {
     await flushAsync();
 
     original = target.querySelector(
-      `:scope > .${Translator.KISS_CLASS.original}`
+      `:scope > .${Translator.EH_CLASS.original}`
     );
     expect(original.classList.contains(firstStyleClass)).toBe(false);
     expect(apiTranslate).toHaveBeenCalledTimes(requestCount);
@@ -1931,14 +1931,14 @@ describe("Translator rule styles", () => {
     translator.updateRule({ transOrder: "translation-first" });
     await flushAsync();
     expect(target.firstElementChild.classList).toContain(
-      Translator.KISS_CLASS.warpper
+      Translator.EH_CLASS.warpper
     );
     expect(target.lastElementChild).toBe(original);
 
     translator.updateRule({ wrapOriginal: "false" });
     await flushAsync();
     expect(
-      target.querySelector(`.${Translator.KISS_CLASS.original}`)
+      target.querySelector(`.${Translator.EH_CLASS.original}`)
     ).toBeNull();
     expect(apiTranslate).toHaveBeenCalledTimes(requestCount);
   });
@@ -1956,23 +1956,23 @@ describe("Translator rule styles", () => {
     await flushAsync();
 
     const translation = target.querySelector(
-      `.${Translator.KISS_CLASS.warpper}`
+      `.${Translator.EH_CLASS.warpper}`
     );
     const backup = translation.querySelector(
-      `template.${Translator.KISS_CLASS.backup}`
+      `template.${Translator.EH_CLASS.backup}`
     );
     expect(
-      backup.content.querySelector(`.${Translator.KISS_CLASS.original}`)
+      backup.content.querySelector(`.${Translator.EH_CLASS.original}`)
     ).not.toBeNull();
     expect(
-      target.querySelector(`.${Translator.KISS_CLASS.original}`)
+      target.querySelector(`.${Translator.EH_CLASS.original}`)
     ).toBeNull();
 
     const requestCount = apiTranslate.mock.calls.length;
     translator.updateRule({ wrapOriginal: "false" });
     await flushAsync();
     expect(
-      backup.content.querySelector(`.${Translator.KISS_CLASS.original}`)
+      backup.content.querySelector(`.${Translator.EH_CLASS.original}`)
     ).toBeNull();
     expect(apiTranslate).toHaveBeenCalledTimes(requestCount);
 
@@ -1982,26 +1982,26 @@ describe("Translator rule styles", () => {
     });
     await flushAsync();
     expect(
-      backup.content.querySelector(`.${Translator.KISS_CLASS.original}`)
+      backup.content.querySelector(`.${Translator.EH_CLASS.original}`)
     ).not.toBeNull();
     expect(apiTranslate).toHaveBeenCalledTimes(requestCount);
 
     translator.updateRule({ transOnly: "false" });
     await flushAsync();
     expect(target.lastElementChild.classList).toContain(
-      Translator.KISS_CLASS.original
+      Translator.EH_CLASS.original
     );
 
     translator.updateRule({ transOnly: "true" });
     await flushAsync();
     expect(
-      backup.content.querySelector(`.${Translator.KISS_CLASS.original}`)
+      backup.content.querySelector(`.${Translator.EH_CLASS.original}`)
     ).not.toBeNull();
 
     translator.disable();
     expect(target.textContent).toBe("Hidden original");
     expect(
-      target.querySelector(`.${Translator.KISS_CLASS.original}`)
+      target.querySelector(`.${Translator.EH_CLASS.original}`)
     ).toBeNull();
   });
 
@@ -2015,10 +2015,10 @@ describe("Translator rule styles", () => {
 
     const target = document.getElementById("target");
     expect(
-      target.querySelector(`.${Translator.KISS_CLASS.original}`)
+      target.querySelector(`.${Translator.EH_CLASS.original}`)
     ).toBeNull();
     expect(
-      target.querySelector(`.${Translator.KISS_CLASS.warpper}`)
+      target.querySelector(`.${Translator.EH_CLASS.warpper}`)
     ).toBeNull();
     expect(target.textContent).toBe("Untranslated original");
   });
@@ -2033,7 +2033,7 @@ describe("Translator rule styles", () => {
     await flushAsync();
 
     const target = document.getElementById("target");
-    const original = target.querySelector(`.${Translator.KISS_CLASS.original}`);
+    const original = target.querySelector(`.${Translator.EH_CLASS.original}`);
     const requestCount = apiTranslate.mock.calls.length;
     original.firstChild.nodeValue = "Changed original";
 
@@ -2042,10 +2042,10 @@ describe("Translator rule styles", () => {
 
     expect(apiTranslate.mock.calls.length).toBeGreaterThan(requestCount);
     expect(
-      target.querySelectorAll(`.${Translator.KISS_CLASS.original}`)
+      target.querySelectorAll(`.${Translator.EH_CLASS.original}`)
     ).toHaveLength(1);
     expect(
-      target.querySelector(`.${Translator.KISS_CLASS.original}`).textContent
+      target.querySelector(`.${Translator.EH_CLASS.original}`).textContent
     ).toBe("Changed original");
   });
 });

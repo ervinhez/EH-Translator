@@ -5,8 +5,8 @@ import { TransboxManager } from "./tranbox";
 import { shortcutRegister } from "./shortcut";
 import { sendIframeMsg } from "./iframe";
 import {
-  EVENT_KISS_INNER,
-  EVENT_KISS_TRANSLATOR,
+  EVENT_EH_INNER,
+  EVENT_EH_TRANSLATOR,
   MSG_HOVERNODE_TOGGLE,
   MSG_INPUT_TRANSLATE,
   newI18n,
@@ -186,7 +186,7 @@ export default class TranslatorManager {
     this.#teardownSpaListeners();
 
     window.removeEventListener(
-      EVENT_KISS_TRANSLATOR,
+      EVENT_EH_TRANSLATOR,
       this.#windowMessageHandler
     );
     if (this.#isUserscript) {
@@ -506,7 +506,7 @@ export default class TranslatorManager {
       }
     }
 
-    window.addEventListener(EVENT_KISS_TRANSLATOR, this.#windowMessageHandler);
+    window.addEventListener(EVENT_EH_TRANSLATOR, this.#windowMessageHandler);
   }
 
   /**
@@ -678,7 +678,7 @@ export default class TranslatorManager {
         break;
       case MSG_OPEN_TRANBOX:
         document.dispatchEvent(
-          new CustomEvent(EVENT_KISS_INNER, {
+          new CustomEvent(EVENT_EH_INNER, {
             detail: { action: MSG_OPEN_TRANBOX, args },
           })
         );

@@ -83,8 +83,8 @@ export class YouTubeSubtitleList {
     this.handleVideoPause = this.handleVideoPause.bind(this);
     this.handleVideoPlay = this.handleVideoPlay.bind(this);
     this.handleWindowResize = this.handleWindowResize.bind(this);
-    // 监听在视频字幕上 hover 或划词翻译触发后，弹窗模块向外广播的自定义 "kiss-add-word" 事件
-    document.addEventListener("kiss-add-word", this.handleWordAdded);
+    // 监听在视频字幕上 hover 或划词翻译触发后，弹窗模块向外广播的自定义 "eh-add-word" 事件
+    document.addEventListener("eh-add-word", this.handleWordAdded);
 
     // 监听来自扩展配置选项页面等第三方发送的消息，用以点击生词时同步跳转视频进度
     window.addEventListener("message", this.handleJumpMessage);
@@ -105,7 +105,7 @@ export class YouTubeSubtitleList {
    * 使用具名 handler 是为了 destroy 时可以准确 removeEventListener，避免匿名函数残留。
    */
   handleJumpMessage(event) {
-    if (event.data && event.data.type === "KISS_TRANSLATOR_JUMP_TO_TIME") {
+    if (event.data && event.data.type === "EH_TRANSLATOR_JUMP_TO_TIME") {
       this.jumpToTime(event.data.time);
     }
   }
@@ -239,7 +239,7 @@ export class YouTubeSubtitleList {
     this._playerSizeListenerAttached = false;
     this._wordTooltipController?.destroy();
     this._wordTooltipController = null;
-    document.removeEventListener("kiss-add-word", this.handleWordAdded);
+    document.removeEventListener("eh-add-word", this.handleWordAdded);
     window.removeEventListener("message", this.handleJumpMessage);
     if (this.container) {
       this.container.remove();

@@ -33,7 +33,7 @@ import { kissLog } from "./log";
 import { encryptSyncValue, decryptSyncValue } from "./syncCrypto";
 
 let webdavRequestPatched = false;
-const GIST_SYNC_DESCRIPTION = "kiss translator sync files";
+const GIST_SYNC_DESCRIPTION = "eh translator sync files";
 
 /**
  * 确保 WebDAV 库的 request 通道只被补丁一次。
@@ -140,7 +140,7 @@ const findGistByDescription = async (syncKey) => {
 };
 
 const getGistFilename = (key) => {
-  if (key.startsWith("kiss-rules_")) return `sync-rules_${key}`;
+  if (key.startsWith("eh-rules_")) return `sync-rules_${key}`;
   if (key === KV_WORDS_KEY) return `sync-words_${key}`;
   return key;
 };

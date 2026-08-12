@@ -41,7 +41,7 @@ export function getNativeGm() {
 /**
  * 通用方法：安全地获取并绑定对应的 GM API 接口。
  * 执行查找策略：
- * 1. 优先在传入的 fallbackObjects (例如沙盒桥接的 window.KISS_GM) 中查找。
+ * 1. 优先在传入的 fallbackObjects (例如沙盒桥接的 window.EH_GM) 中查找。
  * 2. 其次在原生 GM Promise API (如 GM.setValue) 中查找。
  * 3. 最后回退查找旧版同步 API (如 GM_setValue)。
  * @param {string} method 新版 Promise 风格的 GM API 键名 (例如 "setValue")
@@ -91,7 +91,7 @@ export const injectScript = (ping) => {
 
 /**
  * 运行在普通页面沙盒中的适配器。
- * 创建一个 `window.KISS_GM` 垫片对象，将对 GM 存储和跨域请求的调用，
+ * 创建一个 `window.EH_GM` 垫片对象，将对 GM 存储和跨域请求的调用，
  * 通过 CustomEvent 跨沙盒消息机制代理到拥有特权 API 权限的油猴脚本环境（Content Script）中执行。
  * @param {string} ping 接受页面请求的 CustomEvent 监听事件名称
  */
@@ -191,7 +191,7 @@ export const adaptScript = (ping) => {
   };
 
   // 挂载垫片到宿主页面 window，使运行在普通页面沙盒中的 React / Web 业务代码可以像调用原生 GM 般顺畅
-  window.KISS_GM = {
+  window.EH_GM = {
     fetch: (input, init) => promiseGM(MSG_GM_xmlHttpRequest, { input, init }),
     xmlHttpRequest,
     setValue: (key, val) => promiseGM(MSG_GM_setValue, { key, val }),

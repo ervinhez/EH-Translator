@@ -8,7 +8,7 @@ import { prepareTimedTextEvents } from "./youtubeSubtitleProcessing.js";
 const mockIsSameLang = jest.fn(() => false);
 
 jest.mock("../config", () => ({
-  MSG_XHR_DATA_YOUTUBE: "xhr-youtube",
+  MSG_EH_XHR_DATA_YOUTUBE: "xhr-youtube",
   API_SPE_TYPES: { ai: new Set(["openai"]) },
   OPT_ENHANCE_ON: "on",
   OPT_ENHANCE_OFF: "off",

@@ -1,5 +1,5 @@
-export const LANG_STORAGE_KEY = "kiss-homepage-lang";
-export const THEME_STORAGE_KEY = "kiss-homepage-theme";
+export const LANG_STORAGE_KEY = "eh-homepage-lang";
+export const THEME_STORAGE_KEY = "eh-homepage-theme";
 
 export const languageOptions = [
   { value: "en", label: "English" },
@@ -23,7 +23,7 @@ const baseContent = {
     title:
       "Minimalist. Open-source. An all-scenario geek-style translation tool.",
     subtitle:
-      "KISS Translator brings page translation, selection lookup, input-box translation, and YouTube subtitles into one lightweight browser extension and userscript.",
+      "EH Translator brings page translation, selection lookup, input-box translation, and YouTube subtitles into one lightweight browser extension and userscript.",
     installExtension: "Install Extension",
     installUserscript: "Install Userscript",
     openOptions: "Open Options",
@@ -41,22 +41,22 @@ const baseContent = {
       {
         name: "Chrome",
         meta: "Browser extension",
-        href: "https://chrome.google.com/webstore/detail/kiss-translator/bdiifdefkgmcblbcghdlonllpjhhjgof?hl=en",
+        href: "https://github.com/ervinhez/EH-Translator/releases",
       },
       {
         name: "Edge",
         meta: "Browser extension",
-        href: "https://microsoftedge.microsoft.com/addons/detail/%E7%AE%80%E7%BA%A6%E7%BF%BB%E8%AF%91/jemckldkclkinpjighnoilpbldbdmmlh?hl=en",
+        href: "https://github.com/ervinhez/EH-Translator/releases",
       },
       {
         name: "Firefox",
         meta: "Browser extension",
-        href: "https://addons.mozilla.org/en-US/firefox/addon/kiss-translator/",
+        href: "https://github.com/ervinhez/EH-Translator/releases",
       },
       {
         name: "Thunderbird",
         meta: "Release package",
-        href: "https://github.com/fishjar/kiss-translator/releases",
+        href: "https://github.com/ervinhez/EH-Translator/releases",
       },
       {
         name: "Userscript",
@@ -104,7 +104,7 @@ const baseContent = {
       },
       {
         title: "Private sync",
-        body: "Synchronize settings through WebDAV or self-hosted KISS-Worker while keeping data under your control.",
+        body: "Synchronize settings through WebDAV or self-hosted EH-Worker while keeping data under your control.",
       },
     ],
     providers: [
@@ -134,7 +134,7 @@ const translations = {
     eyebrow: "开源翻译工具箱",
     title: "简约。开源。全场景极客式翻译工具。",
     subtitle:
-      "KISS Translator 将网页翻译、划词查询、输入框翻译和 YouTube 字幕整合到一个轻量的浏览器扩展与油猴脚本中。",
+      "EH Translator 将网页翻译、划词查询、输入框翻译和 YouTube 字幕整合到一个轻量的浏览器扩展与油猴脚本中。",
     installExtension: "安装扩展",
     installUserscript: "安装脚本",
     openOptions: "打开设置",
@@ -183,7 +183,7 @@ const translations = {
       },
       {
         title: "私有同步",
-        body: "通过 WebDAV 或自部署 KISS-Worker 同步配置，数据自己掌控。",
+        body: "通过 WebDAV 或自部署 EH-Worker 同步配置，数据自己掌控。",
       },
     ],
   },
@@ -196,7 +196,7 @@ const translations = {
     eyebrow: "開源翻譯工具箱",
     title: "簡約。開源。全場景極客式翻譯工具。",
     subtitle:
-      "KISS Translator 將網頁翻譯、劃詞查詢、輸入框翻譯和 YouTube 字幕整合到輕量的瀏覽器擴充套件與使用者腳本中。",
+      "EH Translator 將網頁翻譯、劃詞查詢、輸入框翻譯和 YouTube 字幕整合到輕量的瀏覽器擴充套件與使用者腳本中。",
     installExtension: "安裝擴充套件",
     installUserscript: "安裝腳本",
     openOptions: "開啟設定",
@@ -244,7 +244,7 @@ const translations = {
       },
       {
         title: "私有同步",
-        body: "透過 WebDAV 或自部署 KISS-Worker 同步設定，資料自己掌控。",
+        body: "透過 WebDAV 或自部署 EH-Worker 同步設定，資料自己掌控。",
       },
     ],
   },
@@ -257,7 +257,7 @@ const translations = {
     eyebrow: "オープンソース翻訳ツールキット",
     title: "ミニマル。オープンソース。全シーン対応のギークスタイル翻訳ツール。",
     subtitle:
-      "KISS Translator はページ翻訳、選択テキスト翻訳、入力欄翻訳、YouTube 字幕翻訳を軽量な拡張機能とユーザースクリプトにまとめます。",
+      "EH Translator はページ翻訳、選択テキスト翻訳、入力欄翻訳、YouTube 字幕翻訳を軽量な拡張機能とユーザースクリプトにまとめます。",
     installExtension: "拡張機能を入手",
     installUserscript: "スクリプトを入手",
     openOptions: "設定を開く",
@@ -306,7 +306,7 @@ const translations = {
       },
       {
         title: "プライベート同期",
-        body: "WebDAV または自前の KISS-Worker で設定を同期し、データを管理できます。",
+        body: "WebDAV または自前の EH-Worker で設定を同期し、データを管理できます。",
       },
     ],
   },
@@ -319,7 +319,7 @@ const translations = {
     eyebrow: "오픈 소스 번역 도구",
     title: "미니멀. 오픈 소스. 모든 상황을 위한 긱(Geek) 스타일 번역 도구.",
     subtitle:
-      "KISS Translator는 웹페이지 번역, 선택 번역, 입력창 번역, YouTube 자막 번역을 가벼운 브라우저 확장과 유저스크립트로 제공합니다.",
+      "EH Translator는 웹페이지 번역, 선택 번역, 입력창 번역, YouTube 자막 번역을 가벼운 브라우저 확장과 유저스크립트로 제공합니다.",
     installExtension: "확장 설치",
     installUserscript: "스크립트 설치",
     openOptions: "설정 열기",
@@ -368,7 +368,7 @@ const translations = {
       },
       {
         title: "개인 동기화",
-        body: "WebDAV 또는 자체 KISS-Worker로 설정을 동기화하고 데이터를 직접 관리합니다.",
+        body: "WebDAV 또는 자체 EH-Worker로 설정을 동기화하고 데이터를 직접 관리합니다.",
       },
     ],
   },
@@ -382,7 +382,7 @@ const translations = {
     title:
       "Minimaliste. Open source. Un outil de traduction style geek tout-terrain.",
     subtitle:
-      "KISS Translator regroupe traduction de pages, selection de texte, champs de saisie et sous-titres YouTube dans une extension et un userscript legers.",
+      "EH Translator regroupe traduction de pages, selection de texte, champs de saisie et sous-titres YouTube dans une extension et un userscript legers.",
     installExtension: "Installer l'extension",
     installUserscript: "Installer le script",
     openOptions: "Ouvrir les options",
@@ -432,7 +432,7 @@ const translations = {
       },
       {
         title: "Synchronisation privee",
-        body: "Synchronisez via WebDAV ou KISS-Worker auto-heberge en gardant vos donnees sous controle.",
+        body: "Synchronisez via WebDAV ou EH-Worker auto-heberge en gardant vos donnees sous controle.",
       },
     ],
   },
@@ -446,7 +446,7 @@ const translations = {
     title:
       "Minimalistisch. Open-Source. Ein Allround-Geek-Style-Ubersetzungstool.",
     subtitle:
-      "KISS Translator bundelt Seitenubersetzung, Auswahlubersetzung, Eingabefeld-Ubersetzung und YouTube-Untertitel in einer schlanken Erweiterung und einem Userscript.",
+      "EH Translator bundelt Seitenubersetzung, Auswahlubersetzung, Eingabefeld-Ubersetzung und YouTube-Untertitel in einer schlanken Erweiterung und einem Userscript.",
     installExtension: "Erweiterung installieren",
     installUserscript: "Script installieren",
     openOptions: "Optionen offnen",
@@ -496,7 +496,7 @@ const translations = {
       },
       {
         title: "Private Synchronisierung",
-        body: "Synchronisieren Sie uber WebDAV oder selbst gehosteten KISS-Worker und behalten Sie die Datenkontrolle.",
+        body: "Synchronisieren Sie uber WebDAV oder selbst gehosteten EH-Worker und behalten Sie die Datenkontrolle.",
       },
     ],
   },
@@ -510,7 +510,7 @@ const translations = {
     title:
       "Minimalista. Codigo abierto. Una herramienta de traduccion estilo geek para cualquier situacion.",
     subtitle:
-      "KISS Translator une traduccion de paginas, seleccion de texto, campos de entrada y subtitulos de YouTube en una extension y un userscript ligeros.",
+      "EH Translator une traduccion de paginas, seleccion de texto, campos de entrada y subtitulos de YouTube en una extension y un userscript ligeros.",
     installExtension: "Instalar extension",
     installUserscript: "Instalar script",
     openOptions: "Abrir opciones",
@@ -560,7 +560,7 @@ const translations = {
       },
       {
         title: "Sincronizacion privada",
-        body: "Sincroniza con WebDAV o KISS-Worker autoalojado manteniendo tus datos bajo control.",
+        body: "Sincroniza con WebDAV o EH-Worker autoalojado manteniendo tus datos bajo control.",
       },
     ],
   },

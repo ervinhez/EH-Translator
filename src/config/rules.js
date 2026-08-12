@@ -130,7 +130,7 @@ export const GLOBLA_RULE = {
   textStyle: OPT_STYLE_NONE, // 默认译文不加额外线条/高亮背景
   wrapOriginal: "false", // 默认不改变原文 DOM 层级
   originalTextStyle: OPT_STYLE_NONE, // 默认原文不加额外样式
-  transOpen: "false", // 默认不自动开始翻译网页 (需要手动点击或快捷键)
+  transOpen: "true", // 默认自动开始翻译网页 (打开外文网页即自动翻译)
   // bgColor: DEFAULT_COLOR, // 译文颜色 (作废)
   // textDiyStyle: DEFAULT_DIY_STYLE, // 自定义译文样式 (作废)
   textExtStyle: "",
@@ -146,7 +146,7 @@ export const GLOBLA_RULE = {
   transOnlyRevertDelay: "0.5",
   // transTiming: OPT_TIMING_PAGESCROLL, // 翻译时机/鼠标悬停翻译 (暂时作废)
   transTag: DEFAULT_TRANS_TAG,
-  transTitle: "false", // 默认不自动翻译网页 Tab 标题
+  transTitle: "true", // 默认自动翻译网页 Tab 标题
   // transSelected: "true", // 是否启用划词翻译 (移回setting)
   // detectRemote: "true", // 是否使用远程语言检测 (移回setting)
   // skipLangs: [], // 不翻译的语言 (移回setting)

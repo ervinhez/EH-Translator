@@ -216,7 +216,7 @@ export default function Settings() {
           <DownloadButton
             handleData={() => JSON.stringify(setting, null, 2)}
             text={i18n("export")}
-            fileName={`kiss-setting_v2_${Date.now()}.json`}
+            fileName={`eh-setting_v2_${Date.now()}.json`}
           />
         </Stack>
 

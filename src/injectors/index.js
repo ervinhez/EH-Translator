@@ -23,7 +23,7 @@ const injectorMap = {
  * @param {string} name - 脚本名称
  * @param {string} [id] - 插入标签的 DOM ID 标识
  */
-export function injectJs(name, id = "kiss-translator-inject-js") {
+export function injectJs(name, id = "eh-translator-inject-js") {
   const injector = injectorMap[name];
   if (!injector) return;
 

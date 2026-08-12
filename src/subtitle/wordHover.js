@@ -158,13 +158,13 @@ export class WordTooltipController {
 
     const spans = root.querySelectorAll(".kiss-subtitle-word");
     spans.forEach((span) => {
-      if (span.dataset.kissListenerAttached) return;
+      if (span.dataset.ehListenerAttached) return;
       const enterHandler = (event) =>
         this.#handleWordHover(event, getTimestamp);
       const leaveHandler = (event) => this.#handleWordHoverOut(event);
       span.addEventListener("pointerenter", enterHandler);
       span.addEventListener("pointerleave", leaveHandler);
-      span.dataset.kissListenerAttached = "1";
+      span.dataset.ehListenerAttached = "1";
     });
   }
 
@@ -330,7 +330,7 @@ export class WordTooltipController {
   }
 
   #dispatchAddWord(detail) {
-    document.dispatchEvent(new CustomEvent("kiss-add-word", { detail }));
+    document.dispatchEvent(new CustomEvent("eh-add-word", { detail }));
   }
 
   #addFavoriteButton(word, data) {

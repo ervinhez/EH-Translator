@@ -50,7 +50,7 @@ import { kissLog, logger } from "./libs/log";
 import { chromeDetect, chromeTranslate } from "./libs/builtinAI";
 import { sha256 } from "./libs/utils";
 
-globalThis.__KISS_CONTEXT__ = "background";
+globalThis.__EH_CONTEXT__ = "background";
 
 let openingOptionsPage = false;
 

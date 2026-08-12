@@ -92,7 +92,7 @@ export default function TranForm({
   // 监听划词/输入文本，如果是合法的英文单词，则分发自定义事件，便于其他监听器(如生词本系统)感知新单词
   useEffect(() => {
     if (isValidWord(text)) {
-      const event = new CustomEvent("kiss-add-word", {
+      const event = new CustomEvent("eh-add-word", {
         detail: { word: text },
       });
       document.dispatchEvent(event);

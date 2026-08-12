@@ -18,7 +18,7 @@ import {
   API_SPE_TYPES,
   MSG_INJECT_CSS,
   MSG_UPDATE_ICON,
-  EVENT_FAVORITE_WORD_CHANGE,
+  EVENT_EH_FAVORITE_WORD_CHANGE,
   OPT_DICT_BING,
   OPT_DICT_MAP,
   newI18n,
@@ -176,7 +176,7 @@ export class Translator {
   };
 
   // 译文相关 CSS 类名配置
-  static KISS_CLASS = {
+  static EH_CLASS = {
     warpper: `${APP_LCNAME}-wrapper`,
     inner: `${APP_LCNAME}-inner`,
     term: `${APP_LCNAME}-term`,
@@ -308,7 +308,7 @@ export class Translator {
   }
 
   // 内置忽略元素
-  static KISS_IGNORE_SELECTOR = `.${Translator.KISS_CLASS.warpper}, .${Translator.KISS_CLASS.hoverBubble}, .kiss-caption-container, .kiss-subtitle-controls, #kiss-youtube-subtitle-list-container,
+  static EH_IGNORE_SELECTOR = `.${Translator.EH_CLASS.warpper}, .${Translator.EH_CLASS.hoverBubble}, .kiss-caption-container, .kiss-subtitle-controls, #kiss-youtube-subtitle-list-container,
   #${APP_CONSTS.fabID}, .${APP_CONSTS.fabID}_warpper,
   #${APP_CONSTS.boxID}, .${APP_CONSTS.boxID}_warpper,
   #${APP_CONSTS.popupID}, .${APP_CONSTS.popupID}_warpper`;
@@ -420,7 +420,7 @@ export class Translator {
   #normalizeViewportAnchor(element) {
     if (!element) return null;
 
-    const wrapper = element.closest?.(`.${Translator.KISS_CLASS.warpper}`);
+    const wrapper = element.closest?.(`.${Translator.EH_CLASS.warpper}`);
     if (!wrapper) return element;
 
     const { nodes } = this.#translationNodes.get(wrapper) || {};
@@ -468,10 +468,10 @@ export class Translator {
   // 忽略元素
   get #ignoreSelector() {
     if (this.#rule.scanAll === "true" || this.#rule.isPlainText) {
-      return Translator.KISS_IGNORE_SELECTOR;
+      return Translator.EH_IGNORE_SELECTOR;
     }
 
-    const selectors = [Translator.KISS_IGNORE_SELECTOR];
+    const selectors = [Translator.EH_IGNORE_SELECTOR];
     if (this.#rule.autoScan !== "false") {
       selectors.push(Translator.BUILTIN_IGNORE_SELECTOR);
     }
@@ -732,7 +732,7 @@ export class Translator {
   }
 
   #initPlainTextPre(pre) {
-    if (pre.dataset.kissPreprocessed === "true") {
+    if (pre.dataset.ehPreprocessed === "true") {
       return;
     }
 
@@ -744,7 +744,7 @@ export class Translator {
       pendingBreaks: 0,
     };
 
-    pre.dataset.kissPreprocessed = "true";
+    pre.dataset.ehPreprocessed = "true";
     this.#plainTextPreprocessingNodes.add(pre);
     pre.replaceChildren();
     this.#appendPlainTextPreBatch(pre, state, true);
@@ -884,7 +884,7 @@ export class Translator {
     this.#boundFavoriteMouseOver = this.#handleFavoriteMouseOver.bind(this);
     this.#boundFavoriteMouseOut = this.#handleFavoriteMouseOut.bind(this);
     document.addEventListener(
-      EVENT_FAVORITE_WORD_CHANGE,
+      EVENT_EH_FAVORITE_WORD_CHANGE,
       this.#boundFavoriteWordChange
     );
     document.addEventListener("mouseover", this.#boundFavoriteMouseOver);
@@ -951,14 +951,14 @@ export class Translator {
   }
 
   #handleWindowMessage(event) {
-    if (event.data?.type === "KISS_SHADOW_ROOT_CREATED") {
+    if (event.data?.type === "EH_SHADOW_ROOT_CREATED") {
       this.#debouncedFindShadowRoot();
     }
   }
 
   #attachShadowRootListener() {
     if (!this.#isShadowRootJsInjected) {
-      const id = "kiss-translator-inject-shadowroot-js";
+      const id = "eh-translator-inject-shadowroot-js";
       injectJs(INJECTOR.shadowroot, id);
 
       this.#isShadowRootJsInjected = true;
@@ -1192,7 +1192,7 @@ export class Translator {
     return debounce((targetNode) => {
       const startNode = targetNode;
       const favoriteWord = startNode.closest?.(
-        `.${Translator.KISS_CLASS.highlight}`
+        `.${Translator.EH_CLASS.highlight}`
       );
       if (favoriteWord && this.#isFavoriteHighlightInScope(favoriteWord)) {
         this.#hoveredNode = null;
@@ -1202,7 +1202,7 @@ export class Translator {
 
       // 仅译文模式下，真实鼠标目标是扩展生成的译文容器；必须先于普通页面节点识别。
       const translationWrapper = startNode.closest?.(
-        `.${Translator.KISS_CLASS.warpper}`
+        `.${Translator.EH_CLASS.warpper}`
       );
       const { mouseHoverKey = [], mouseHoverKey2 = [] } =
         this.#setting.mouseHoverSetting;
@@ -1230,7 +1230,7 @@ export class Translator {
       if (
         this.#hoverOriginalTimerTarget ||
         this.#hoverBubbleTarget?.classList?.contains(
-          Translator.KISS_CLASS.warpper
+          Translator.EH_CLASS.warpper
         )
       ) {
         // 鼠标已离开译文，取消待显示任务并清除现有原文气泡。
@@ -1332,7 +1332,7 @@ export class Translator {
   #canShowOriginalInHoverBubble(wrapper) {
     if (
       !this.#shouldUseOriginalHoverBubble() ||
-      !wrapper?.classList?.contains(Translator.KISS_CLASS.warpper)
+      !wrapper?.classList?.contains(Translator.EH_CLASS.warpper)
     ) {
       return false;
     }
@@ -1421,8 +1421,8 @@ export class Translator {
   #isKissIgnoredNode(node) {
     return (
       node?.nodeType === Node.ELEMENT_NODE &&
-      (node.matches?.(Translator.KISS_IGNORE_SELECTOR) ||
-        node.closest?.(Translator.KISS_IGNORE_SELECTOR))
+      (node.matches?.(Translator.EH_IGNORE_SELECTOR) ||
+        node.closest?.(Translator.EH_IGNORE_SELECTOR))
     );
   }
 
@@ -1463,7 +1463,7 @@ export class Translator {
 
     let current = startNode;
     while (current && current !== document.body) {
-      if (current.classList?.contains(Translator.KISS_CLASS.original)) {
+      if (current.classList?.contains(Translator.EH_CLASS.original)) {
         current = current.parentElement;
         continue;
       }
@@ -1619,7 +1619,7 @@ export class Translator {
     // 如果当前节点没有直接文本，但只有一个子节点，继续向下钻取，避免在过高层级包裹
     if (!hasText && rootNode.children.length === 1) {
       const child = rootNode.children[0];
-      if (!child.classList?.contains(Translator.KISS_CLASS.warpper)) {
+      if (!child.classList?.contains(Translator.EH_CLASS.warpper)) {
         this.#scanNode(child);
         return;
       }
@@ -1712,7 +1712,7 @@ export class Translator {
   #highlightTextNode(textNode, wordRegex) {
     if (
       textNode.parentElement?.closest(
-        `.${Translator.KISS_CLASS.highlight}, ${Translator.KISS_IGNORE_SELECTOR}`
+        `.${Translator.EH_CLASS.highlight}, ${Translator.EH_IGNORE_SELECTOR}`
       )
     ) {
       return;
@@ -1732,8 +1732,8 @@ export class Translator {
       if (i % 2 === 1) {
         // 奇数索引是匹配到的关键词
         const bTag = document.createElement("b");
-        bTag.className = Translator.KISS_CLASS.highlight;
-        bTag.dataset.kissFavoriteWord = this.#normalizeFavoriteWord(fragment);
+        bTag.className = Translator.EH_CLASS.highlight;
+        bTag.dataset.ehFavoriteWord = this.#normalizeFavoriteWord(fragment);
         bTag.style.cssText = this.#rule.highlightStyle || "";
         bTag.textContent = fragment;
         this.#skipMoNodes.add(bTag);
@@ -1768,7 +1768,7 @@ export class Translator {
         {
           acceptNode: (node) =>
             node.parentElement?.closest(
-              `.${Translator.KISS_CLASS.highlight}, ${Translator.KISS_IGNORE_SELECTOR}`
+              `.${Translator.EH_CLASS.highlight}, ${Translator.EH_IGNORE_SELECTOR}`
             )
               ? NodeFilter.FILTER_REJECT
               : NodeFilter.FILTER_ACCEPT,
@@ -1843,15 +1843,15 @@ export class Translator {
     const highlights = new Set();
     this.#favoriteHighlightScopes.forEach((scope) => {
       if (
-        scope.matches?.(`.${Translator.KISS_CLASS.highlight}`) &&
-        scope.dataset.kissFavoriteWord === normalizedWord
+        scope.matches?.(`.${Translator.EH_CLASS.highlight}`) &&
+        scope.dataset.ehFavoriteWord === normalizedWord
       ) {
         highlights.add(scope);
       }
       scope
-        .querySelectorAll?.(`.${Translator.KISS_CLASS.highlight}`)
+        .querySelectorAll?.(`.${Translator.EH_CLASS.highlight}`)
         .forEach((node) => {
-          if (node.dataset.kissFavoriteWord === normalizedWord) {
+          if (node.dataset.ehFavoriteWord === normalizedWord) {
             highlights.add(node);
           }
         });
@@ -1953,7 +1953,7 @@ export class Translator {
         textLength = 0;
 
         const br = document.createElement("br");
-        br.className = Translator.KISS_CLASS.br;
+        br.className = Translator.EH_CLASS.br;
         this.#skipMoNodes.add(br);
 
         node.after(br);
@@ -1966,7 +1966,7 @@ export class Translator {
     if (!parentNode) return;
 
     const highlightedElements = parentNode.querySelectorAll(
-      `.${Translator.KISS_CLASS.highlight}`
+      `.${Translator.EH_CLASS.highlight}`
     );
 
     highlightedElements.forEach((element) => {
@@ -1982,7 +1982,7 @@ export class Translator {
     if (!parentNode) return;
 
     parentNode
-      .querySelectorAll(`.${Translator.KISS_CLASS.br}`)
+      .querySelectorAll(`.${Translator.EH_CLASS.br}`)
       .forEach((br) => br.remove());
 
     parentNode.normalize();
@@ -2139,7 +2139,7 @@ export class Translator {
       "position: relative; display: inline-flex; align-items: center; vertical-align: middle;";
 
     const retryIcon = createRetrySVG();
-    retryIcon.classList.add(Translator.KISS_CLASS.retry);
+    retryIcon.classList.add(Translator.EH_CLASS.retry);
     retryIcon.setAttribute("role", "button");
     retryIcon.setAttribute("tabindex", "0");
 
@@ -2366,11 +2366,11 @@ export class Translator {
       if (this.#isInvalidText(processedString)) return;
 
       const wrapper = document.createElement(this.#translationTagName);
-      wrapper.className = `${Translator.KISS_CLASS.warpper} notranslate`;
+      wrapper.className = `${Translator.EH_CLASS.warpper} notranslate`;
 
       const inner = document.createElement(transTag);
       inner.lang = toLang;
-      inner.className = `${Translator.KISS_CLASS.inner} ${this.#textClass[textStyle] || ""}`;
+      inner.className = `${Translator.EH_CLASS.inner} ${this.#textClass[textStyle] || ""}`;
       if (textExtStyle?.trim()) {
         inner.style.cssText = textExtStyle; // 附加内联样式
       }
@@ -2392,7 +2392,7 @@ export class Translator {
       } else {
         const space = document.createElement("span");
         space.textContent = " ";
-        space.className = Translator.KISS_CLASS.space;
+        space.className = Translator.EH_CLASS.space;
         space.hidden = hideOrigin;
         if (transOrder === "translation-first") {
           wrapper.appendChild(inner);
@@ -2577,11 +2577,11 @@ export class Translator {
       // 失败重试按钮
       try {
         const wrapper = hostNode.querySelector(
-          `:scope > .${Translator.KISS_CLASS.warpper}:last-of-type`
+          `:scope > .${Translator.EH_CLASS.warpper}:last-of-type`
         );
         if (wrapper) {
           const inner = wrapper.querySelector(
-            `.${Translator.KISS_CLASS.inner}`
+            `.${Translator.EH_CLASS.inner}`
           );
           if (inner) {
             inner.textContent = "";
@@ -2606,7 +2606,7 @@ export class Translator {
   #handleFavoriteMouseOver(event) {
     const eventTarget = event.composedPath?.()[0] || event.target;
     const highlight = eventTarget.closest?.(
-      `.${Translator.KISS_CLASS.highlight}`
+      `.${Translator.EH_CLASS.highlight}`
     );
     if (!highlight || !this.#isFavoriteHighlightInScope(highlight)) return;
     if (highlight.contains(event.relatedTarget)) return;
@@ -2625,7 +2625,7 @@ export class Translator {
   #handleFavoriteMouseOut(event) {
     const eventTarget = event.composedPath?.()[0] || event.target;
     const highlight = eventTarget.closest?.(
-      `.${Translator.KISS_CLASS.highlight}`
+      `.${Translator.EH_CLASS.highlight}`
     );
     if (!highlight || !this.#isFavoriteHighlightInScope(highlight)) return;
     if (highlight.contains(event.relatedTarget)) return;
@@ -2799,7 +2799,7 @@ overflow-wrap: anywhere !important;`;
     }
 
     const bubble = document.createElement("div");
-    bubble.className = `${Translator.KISS_CLASS.hoverBubble} notranslate`;
+    bubble.className = `${Translator.EH_CLASS.hoverBubble} notranslate`;
     bubble.setAttribute("role", "tooltip");
     document.body.appendChild(bubble);
     this.#hoverBubbleNode = bubble;
@@ -2963,7 +2963,7 @@ overflow-wrap: anywhere !important;`;
             const termValue = this.#termValues[matchedIndex];
 
             return pushReplace(
-              `<i class="${Translator.KISS_CLASS.term}" style="${termsStyle}">${termValue || fullMatch}</i>`
+              `<i class="${Translator.EH_CLASS.term}" style="${termsStyle}">${termValue || fullMatch}</i>`
             );
           });
         }
@@ -2974,7 +2974,7 @@ overflow-wrap: anywhere !important;`;
       // 元素节点
       if (node.nodeType === Node.ELEMENT_NODE) {
         // 收藏词高亮只影响原文显示，不应改变翻译请求的结构
-        if (node.classList.contains(Translator.KISS_CLASS.highlight)) {
+        if (node.classList.contains(Translator.EH_CLASS.highlight)) {
           return Array.from(node.childNodes, traverse).join("");
         }
 
@@ -3079,12 +3079,12 @@ overflow-wrap: anywhere !important;`;
     if (!translatedText) return "";
 
     const { safeTag, openRegex, closeRegex } = this.#placeholderConfig;
-    const restoreAttr = "data-kiss-restore";
+    const restoreAttr = "data-eh-restore";
     let textToParse = translatedText;
     let result = translatedText;
 
     try {
-      // 1. 规范化占位符：将不同翻译源返回的不同占位标签（如 <a1>... </a1> 或 <span i=1>...）统一替换为统一的临时标记格式 `<span data-kiss-restore="序号">`
+      // 1. 规范化占位符：将不同翻译源返回的不同占位标签（如 <a1>... </a1> 或 <span i=1>...）统一替换为统一的临时标记格式 `<span data-eh-restore="序号">`
       textToParse = textToParse.replace(
         openRegex,
         `<${safeTag} ${restoreAttr}="$1">`
@@ -3190,7 +3190,7 @@ overflow-wrap: anywhere !important;`;
   // 查找指定节点下所有译文节点
   #findTranslationWrappers(parentNode) {
     return parentNode.querySelectorAll(
-      `:scope > .${Translator.KISS_CLASS.warpper}`
+      `:scope > .${Translator.EH_CLASS.warpper}`
     );
   }
 
@@ -3219,7 +3219,7 @@ overflow-wrap: anywhere !important;`;
   // 清理节点下面所有译文dom
   #cleanupAllTranslations(root) {
     this.#cleanupTranslationElements(
-      root.querySelectorAll(`.${Translator.KISS_CLASS.warpper}`)
+      root.querySelectorAll(`.${Translator.EH_CLASS.warpper}`)
     );
   }
 
@@ -3236,7 +3236,7 @@ overflow-wrap: anywhere !important;`;
       ? wrapper.previousSibling
       : wrapper.nextSibling;
 
-    if (current?.classList?.contains(Translator.KISS_CLASS.original)) {
+    if (current?.classList?.contains(Translator.EH_CLASS.original)) {
       return [current];
     }
 
@@ -3269,7 +3269,7 @@ overflow-wrap: anywhere !important;`;
 
   #getTranslationBackup(wrapper) {
     return wrapper.querySelector(
-      `:scope > template.${Translator.KISS_CLASS.backup}`
+      `:scope > template.${Translator.EH_CLASS.backup}`
     );
   }
 
@@ -3277,7 +3277,7 @@ overflow-wrap: anywhere !important;`;
     let backup = this.#getTranslationBackup(wrapper);
     if (!backup) {
       backup = document.createElement("template");
-      backup.className = Translator.KISS_CLASS.backup;
+      backup.className = Translator.EH_CLASS.backup;
       wrapper.appendChild(backup);
     }
     return backup;
@@ -3297,7 +3297,7 @@ overflow-wrap: anywhere !important;`;
 
     const originalWrapper = document.createElement("span");
     originalWrapper.className = [
-      Translator.KISS_CLASS.original,
+      Translator.EH_CLASS.original,
       this.#getOriginalStyleClass(style),
     ]
       .filter(Boolean)
@@ -3337,7 +3337,7 @@ overflow-wrap: anywhere !important;`;
     if (!Translator.isElementOrFragment(hostNode)) return false;
 
     const wrappers = Array.from(hostNode.children || []).filter((child) =>
-      child.classList?.contains(Translator.KISS_CLASS.warpper)
+      child.classList?.contains(Translator.EH_CLASS.warpper)
     );
     if (!wrappers.length) return false;
 
@@ -3349,7 +3349,7 @@ overflow-wrap: anywhere !important;`;
         ? backupNodes
         : this.#collectExistingTranslationNodes(wrapper);
       const originalWrapper = collectedNodes.find((node) =>
-        node.classList?.contains(Translator.KISS_CLASS.original)
+        node.classList?.contains(Translator.EH_CLASS.original)
       );
       const nodes = originalWrapper
         ? Array.from(originalWrapper.childNodes)
@@ -3433,7 +3433,7 @@ overflow-wrap: anywhere !important;`;
     this.#findTranslationWrappers(node).forEach((el) => {
       const br = el.querySelector(":scope > br");
       const space = el.querySelector(
-        `:scope > span.${Translator.KISS_CLASS.space}`
+        `:scope > span.${Translator.EH_CLASS.space}`
       );
       const data = this.#translationNodes.get(el);
       if (!data) return;
@@ -3496,7 +3496,7 @@ overflow-wrap: anywhere !important;`;
   #updateStyle(node, oldStyle, newStyle) {
     this.#findTranslationWrappers(node).forEach((el) => {
       const inner = el.querySelector(
-        `:scope > .${Translator.KISS_CLASS.inner}`
+        `:scope > .${Translator.EH_CLASS.inner}`
       );
       inner.classList.remove(this.#textClass[oldStyle]);
       inner.classList.add(this.#textClass[newStyle]);
@@ -3702,7 +3702,7 @@ overflow-wrap: anywhere !important;`;
     this.#boundTransOnlyMouseOver = (e) => {
       if (this.#shouldUseOriginalHoverBubble()) return;
 
-      const wrapper = e.target.closest?.(`.${Translator.KISS_CLASS.warpper}`);
+      const wrapper = e.target.closest?.(`.${Translator.EH_CLASS.warpper}`);
       if (wrapper) {
         const data = this.#translationNodes.get(wrapper);
         if (!data || !data.isHide) return;
@@ -3731,7 +3731,7 @@ overflow-wrap: anywhere !important;`;
       if (this.#shouldUseOriginalHoverBubble()) return;
 
       if (!this.#transOnlyRevertTarget) {
-        const wrapper = e.target.closest?.(`.${Translator.KISS_CLASS.warpper}`);
+        const wrapper = e.target.closest?.(`.${Translator.EH_CLASS.warpper}`);
         if (wrapper) this.#clearTransOnlyRevertTimer();
         return;
       }
@@ -3783,7 +3783,7 @@ overflow-wrap: anywhere !important;`;
     this.#withViewportAnchor(() => {
       this.#restoreOriginal(wrapper, data);
       const inner = wrapper.querySelector(
-        `:scope > .${Translator.KISS_CLASS.inner}`
+        `:scope > .${Translator.EH_CLASS.inner}`
       );
       if (inner) inner.style.display = "none";
       const br = wrapper.querySelector(":scope > br");
@@ -3798,7 +3798,7 @@ overflow-wrap: anywhere !important;`;
     this.#withViewportAnchor(() => {
       this.#removeOriginal(data, wrapper);
       const inner = wrapper.querySelector(
-        `:scope > .${Translator.KISS_CLASS.inner}`
+        `:scope > .${Translator.EH_CLASS.inner}`
       );
       if (inner) inner.style.display = "";
     });
@@ -3856,7 +3856,7 @@ overflow-wrap: anywhere !important;`;
   // 移除JS/CSS
   #removeInjector() {
     document
-      .querySelectorAll(`[data-source^="kiss-inject"]`)
+      .querySelectorAll(`[data-source^="eh-inject"]`)
       ?.forEach((el) => el.remove());
   }
 
@@ -3977,7 +3977,7 @@ overflow-wrap: anywhere !important;`;
   // 停止运行
   stop() {
     document.removeEventListener(
-      EVENT_FAVORITE_WORD_CHANGE,
+      EVENT_EH_FAVORITE_WORD_CHANGE,
       this.#boundFavoriteWordChange
     );
     document.removeEventListener("mouseover", this.#boundFavoriteMouseOver);
@@ -4048,7 +4048,7 @@ overflow-wrap: anywhere !important;`;
       this.#clearHoverOriginalTimer();
       if (
         this.#hoverBubbleTarget?.classList?.contains(
-          Translator.KISS_CLASS.warpper
+          Translator.EH_CLASS.warpper
         )
       ) {
         this.#hideHoverBubble();

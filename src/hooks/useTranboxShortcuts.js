@@ -2,7 +2,7 @@ import { useEffect, useCallback } from "react";
 import { isGm } from "../libs/client";
 import { kissLog } from "../libs/log";
 import { useLangMap } from "./I18n";
-import { MSG_OPEN_TRANBOX, EVENT_KISS_INNER } from "../config";
+import { MSG_OPEN_TRANBOX, EVENT_EH_INNER } from "../config";
 
 export default function useTranboxShortcuts({
   showBox,
@@ -36,9 +36,9 @@ export default function useTranboxShortcuts({
       }
     };
 
-    document.addEventListener(EVENT_KISS_INNER, handleStatusUpdate);
+    document.addEventListener(EVENT_EH_INNER, handleStatusUpdate);
     return () => {
-      document.removeEventListener(EVENT_KISS_INNER, handleStatusUpdate);
+      document.removeEventListener(EVENT_EH_INNER, handleStatusUpdate);
     };
   }, [handleToggle, handleOpenTranbox]);
 

@@ -1,9 +1,9 @@
 jest.mock("../config", () => ({
-  APP_LCNAME: "kiss-translator",
-  KV_SETTING_KEY: "kiss-setting_v2.json",
-  KV_RULES_KEY: "kiss-rules_v2.json",
-  KV_WORDS_KEY: "kiss-words.json",
-  KV_RULES_SHARE_KEY: "kiss-rules-share_v2.json",
+  APP_LCNAME: "eh-translator",
+  KV_SETTING_KEY: "eh-setting_v2.json",
+  KV_RULES_KEY: "eh-rules_v2.json",
+  KV_WORDS_KEY: "eh-words.json",
+  KV_RULES_SHARE_KEY: "eh-rules-share_v2.json",
   KV_SALT_SHARE: "share-salt",
   OPT_SYNCTYPE_WEBDAV: "WebDAV",
   OPT_SYNCTYPE_GIST: "GitHub Gist",
@@ -71,14 +71,14 @@ import {
 } from "./storage";
 import { decryptSyncValue, encryptSyncValue } from "./syncCrypto";
 
-const SYNC_DESCRIPTION = "kiss translator sync files";
+const SYNC_DESCRIPTION = "eh translator sync files";
 const SYNC_KEY = "github-token";
 const SYNC_ENCRYPT_KEY = "sync-encrypt-passphrase";
 const RECOVERY_OLD_ENCRYPT_KEY = "recovery-old-passphrase";
 const NEW_SYNC_ENCRYPT_KEY = "new-sync-encrypt-passphrase";
-const SETTING_KEY = "kiss-setting_v2.json";
-const RULES_KEY = "kiss-rules_v2.json";
-const WORDS_KEY = "kiss-words.json";
+const SETTING_KEY = "eh-setting_v2.json";
+const RULES_KEY = "eh-rules_v2.json";
+const WORDS_KEY = "eh-words.json";
 
 const gistFileContent = (value, updateAt) =>
   JSON.stringify({

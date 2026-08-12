@@ -34,7 +34,7 @@ function runSettingPage() {
     window.addEventListener(ping, handlePing);
     injectInlineJs(
       `(${injectScript})("${ping}")`,
-      "kiss-translator-options-injector"
+      "eh-translator-options-injector"
     );
   }
 }
@@ -85,7 +85,7 @@ function ensureUserscriptGM() {
  * @param {string} message 错误内容信息
  */
 function showErr(message) {
-  const bannerId = "KISS-Translator-Message";
+  const bannerId = "EH-Translator-Message";
   const existingBanner = document.getElementById(bannerId);
   if (existingBanner) {
     existingBanner.remove();
@@ -123,7 +123,7 @@ function showErr(message) {
     fontWeight: "bold",
   });
 
-  const messageText = document.createTextNode(`KISS-Translator: ${message}`);
+  const messageText = document.createTextNode(`EH-Translator: ${message}`);
   banner.appendChild(messageText);
   banner.appendChild(closeButton);
 
@@ -328,7 +328,7 @@ export async function run(isUserscript = false) {
       trySyncAllSubRules(setting);
     }
   } catch (err) {
-    console.error("[KISS-Translator]", err);
+    console.error("[EH-Translator]", err);
     showErr(err.message); // 向前台页面绘制报错 Banner，便于用户感知与排查问题
   }
 }

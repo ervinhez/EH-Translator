@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import FavBtn from "./FavBtn";
 import { useFavWords } from "../../hooks/FavWords";
 import { useSetting } from "../../hooks/Setting";
-import { EVENT_FAVORITE_WORD_CHANGE } from "../../config";
+import { EVENT_EH_FAVORITE_WORD_CHANGE } from "../../config";
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -14,7 +14,7 @@ describe("FavBtn", () => {
   test("uses the existing toggle action when automatic collection is enabled", () => {
     const toggleFav = jest.fn();
     const handleChange = jest.fn();
-    document.addEventListener(EVENT_FAVORITE_WORD_CHANGE, handleChange);
+    document.addEventListener(EVENT_EH_FAVORITE_WORD_CHANGE, handleChange);
     useFavWords.mockReturnValue({ favWords: {}, toggleFav });
     useSetting.mockReturnValue({
       context: "tranbox",
@@ -35,7 +35,7 @@ describe("FavBtn", () => {
     );
 
     act(() => root.unmount());
-    document.removeEventListener(EVENT_FAVORITE_WORD_CHANGE, handleChange);
+    document.removeEventListener(EVENT_EH_FAVORITE_WORD_CHANGE, handleChange);
   });
 
   test("does not toggle an already collected word automatically", () => {
@@ -68,7 +68,7 @@ describe("FavBtn", () => {
     (wasFavorite, isFavorite) => {
       const toggleFav = jest.fn();
       const handleChange = jest.fn();
-      document.addEventListener(EVENT_FAVORITE_WORD_CHANGE, handleChange);
+      document.addEventListener(EVENT_EH_FAVORITE_WORD_CHANGE, handleChange);
       useFavWords.mockReturnValue({
         favWords: wasFavorite ? { library: { createdAt: 1 } } : {},
         toggleFav,
@@ -93,7 +93,7 @@ describe("FavBtn", () => {
       );
 
       act(() => root.unmount());
-      document.removeEventListener(EVENT_FAVORITE_WORD_CHANGE, handleChange);
+      document.removeEventListener(EVENT_EH_FAVORITE_WORD_CHANGE, handleChange);
     }
   );
 });

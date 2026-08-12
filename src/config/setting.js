@@ -39,7 +39,7 @@ export const TRANS_NEWLINE_LENGTH = 20; // 文本被认定为需要单独换行�
 
 // 默认不参与整页翻译的网站黑名单 (例如翻译工具本身、特定系统页，避免死循环翻译)
 export const DEFAULT_BLACKLIST = [
-  "https://fishjar.github.io/kiss-translator/options.html",
+  "https://ervinhez.github.io/EH-Translator/options.html",
   "https://translate.google.com",
   "https://www.deepl.com/translator",
 ];
@@ -47,10 +47,10 @@ export const DEFAULT_CSPLIST = []; // 默认禁用 CSP 安全策略的网址列�
 export const DEFAULT_ORILIST = ["https://dict.youdao.com"]; // 默认在跨域请求中需要重写 Origin 请求头的域名
 
 // --- 配置同步设置 ---
-export const OPT_SYNCTYPE_WORKER = "KISS-Worker"; // 自建 Cloudflare Worker 同步方案
+export const OPT_SYNCTYPE_WORKER = "EH-Worker"; // 自建 Cloudflare Worker 同步方案
 export const OPT_SYNCTYPE_WEBDAV = "WebDAV"; // 通用 WebDAV 网盘同步方案
 export const OPT_SYNCTYPE_GIST = "GitHub Gist"; // GitHub Gist 同步方案
-export const OPT_SYNCTOKEN_PERFIX = "kt_"; // 自建同步服务的 Token 前缀
+export const OPT_SYNCTOKEN_PERFIX = "eh_"; // 自建同步服务的 Token 前缀
 export const OPT_SYNCTYPE_ALL = [
   OPT_SYNCTYPE_WORKER,
   OPT_SYNCTYPE_WEBDAV,
@@ -80,7 +80,7 @@ export const DEFAULT_INPUT_RULE = {
   blacklist: "", // 禁用输入框翻译的域名列表
   apiSlug: OPT_TRANS_MICROSOFT, // 默认使用的翻译服务 API 标识
   fromLang: "auto", // 默认自动检测输入源语言
-  toLang: "en", // 默认翻译目标语言为英文
+  toLang: "zh-CN", // 默认翻译目标语言为简体中文
   triggerShortcut: DEFAULT_INPUT_SHORTCUT, // 快捷键组合
   triggerCount: 1, // 快捷键连续敲击次数
   triggerTime: 200, // 敲击时间间隔 (毫秒)
@@ -239,7 +239,7 @@ export const DEFAULT_MOUSE_HOVER_SETTING = {
 export const DEFAULT_SETTING = {
   version: CURRENT_SETTINGS_VERSION,
   darkMode: "auto", // 主题外观模式 ("light" 浅色, "dark" 深色, "auto" 跟随浏览器系统)
-  uiLang: "en", // 插件设置面板界面的显示语言
+  uiLang: "zh-CN", // 插件设置面板界面的显示语言
   // fetchLimit: DEFAULT_FETCH_LIMIT, // 最大任务数量(移至rule，作废)
   // fetchInterval: DEFAULT_FETCH_INTERVAL, // 任务间隔时间(移至rule，作废)
   minLength: TRANS_MIN_LENGTH, // 整页翻译的段落最小有效长度限制

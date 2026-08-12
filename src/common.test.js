@@ -381,7 +381,7 @@ describe("common iframe startup", () => {
 
       expect(injectInlineJs).toHaveBeenCalledTimes(1);
       expect(injectInlineJs.mock.calls[0][1]).toBe(
-        "kiss-translator-options-injector"
+        "eh-translator-options-injector"
       );
       expectNoNormalUserscriptStartup();
     } finally {
@@ -431,7 +431,7 @@ describe("common iframe startup", () => {
 
       expect(injectInlineJs).toHaveBeenCalledTimes(1);
       expect(injectInlineJs.mock.calls[0][1]).toBe(
-        "kiss-translator-options-injector"
+        "eh-translator-options-injector"
       );
       expectNoNormalUserscriptStartup();
     } finally {
@@ -451,7 +451,7 @@ describe("common iframe startup", () => {
 
       expect(injectInlineJs).toHaveBeenCalledTimes(1);
       expect(injectInlineJs.mock.calls[0][1]).toBe(
-        "kiss-translator-options-injector"
+        "eh-translator-options-injector"
       );
       expectNoNormalUserscriptStartup();
     } finally {
@@ -471,7 +471,7 @@ describe("common iframe startup", () => {
 
       expect(injectInlineJs).toHaveBeenCalledTimes(1);
       expect(injectInlineJs.mock.calls[0][1]).toBe(
-        "kiss-translator-options-injector"
+        "eh-translator-options-injector"
       );
       expectNoNormalUserscriptStartup();
     } finally {

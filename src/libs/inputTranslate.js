@@ -600,7 +600,7 @@ export class InputTranslator {
       this.#config.subtitleSetting
     );
 
-    const loadingId = "kiss-loading-" + genEventName();
+    const loadingId = "eh-loading-" + genEventName();
 
     try {
       addLoading(node, loadingId);

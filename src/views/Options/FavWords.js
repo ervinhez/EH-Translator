@@ -440,35 +440,35 @@ export default function FavWords() {
           <DownloadButton
             handleData={() => wordList.join("\n")}
             text={i18n("export")}
-            fileName={`kiss-words_${Date.now()}.txt`}
+            fileName={`eh-words_${Date.now()}.txt`}
           />
 
           {/* 格式化带释义与例句的 TXT 导出按钮 */}
           <DownloadButton
             handleData={handleExportTxt}
             text={i18n("export") + " (TXT)"}
-            fileName={`kiss-words_${Date.now()}.txt`}
+            fileName={`eh-words_${Date.now()}.txt`}
           />
 
           {/* 带释义与例句的 CSV 导出按钮 */}
           <DownloadButton
             handleData={handleExportCsv}
             text={i18n("export") + " (CSV)"}
-            fileName={`kiss-words_${Date.now()}.csv`}
+            fileName={`eh-words_${Date.now()}.csv`}
           />
 
           {/* 带释义与例句的 Markdown 导出按钮 */}
           <DownloadButton
             handleData={handleExportMd}
             text={i18n("export") + " (MD)"}
-            fileName={`kiss-words_${Date.now()}.md`}
+            fileName={`eh-words_${Date.now()}.md`}
           />
 
           {/* 第三方词典翻译释义 Markdown 导出按钮 */}
           <DownloadButton
             handleData={handleTranslation}
             text={i18n("export_translation")}
-            fileName={`kiss-words_${Date.now()}.md`}
+            fileName={`eh-words_${Date.now()}.md`}
           />
           {/* 一键清空所有生词 */}
           <Button

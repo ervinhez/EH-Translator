@@ -90,8 +90,8 @@ const userscriptWebpack = (config, env) => {
 // @name          ${process.env.REACT_APP_NAME}
 // @namespace     ${process.env.REACT_APP_HOMEPAGE}
 // @version       ${process.env.REACT_APP_VERSION}
-// @description   A simple bilingual translation extension & Greasemonkey script (一个简约的双语对照翻译扩展 & 油猴脚本)
-// @author        Gabe<yugang2002@gmail.com>
+// @description   A personalized bilingual translation extension & Greasemonkey script (个人定制的双语对照翻译扩展 & 油猴脚本)
+// @author        ervinhez
 // @homepageURL   ${process.env.REACT_APP_HOMEPAGE}
 // @license       GPL-3.0
 // @match         *://*/*
@@ -130,7 +130,7 @@ const userscriptWebpack = (config, env) => {
 // @connect       github.com
 // @connect       api.github.com
 // @connect       githubusercontent.com
-// @connect       kiss-translator.rayjar.com
+// @connect       ervinhez.github.io/EH-Translator
 // @connect       ghproxy.com
 // @connect       dav.jianguoyun.com
 // @connect       fanyi.baidu.com

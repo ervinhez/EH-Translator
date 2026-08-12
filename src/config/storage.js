@@ -6,12 +6,12 @@
 import { APP_NAME, APP_VERSION } from "./app";
 
 // --- 云端同步时的 JSON 数据文件名 (包含主版本号做兼容性隔离) ---
-export const KV_RULES_KEY = `kiss-rules_v${APP_VERSION[0]}.json`; // 同步的自定义规则文件名
-export const KV_WORDS_KEY = "kiss-words.json"; // 同步的生词本文件名
-export const KV_RULES_SHARE_KEY = `kiss-rules-share_v${APP_VERSION[0]}.json`; // 共享/订阅规则文件名
-export const KV_SETTING_KEY = `kiss-setting_v${APP_VERSION[0]}.json`; // 同步的全局设置文件名
-export const KV_SALT_SYNC = "KISS-Translator-SYNC"; // 导出同步配置加密时的 Salt
-export const KV_SALT_SHARE = "KISS-Translator-SHARE"; // 导出共享配置加密时的 Salt
+export const KV_RULES_KEY = `eh-rules_v${APP_VERSION[0]}.json`; // 同步的自定义规则文件名
+export const KV_WORDS_KEY = "eh-words.json"; // 同步的生词本文件名
+export const KV_RULES_SHARE_KEY = `eh-rules-share_v${APP_VERSION[0]}.json`; // 共享/订阅规则文件名
+export const KV_SETTING_KEY = `eh-setting_v${APP_VERSION[0]}.json`; // 同步的全局设置文件名
+export const KV_SALT_SYNC = "EH-Translator-SYNC"; // 导出同步配置加密时的 Salt
+export const KV_SALT_SHARE = "EH-Translator-SHARE"; // 导出共享配置加密时的 Salt
 
 // --- 浏览器本地存储 (chrome.storage 或 localStorage) 的键名 ---
 export const STOKEY_BDAUTH = `${APP_NAME}_bdauth`; // 百度翻译授权 Token 缓存键名

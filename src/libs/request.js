@@ -205,7 +205,7 @@ const fetchKissGM = async (
 
     signal?.addEventListener?.("abort", abortBySignal, { once: true });
 
-    requestHandle = window.KISS_GM.xmlHttpRequest({
+    requestHandle = window.EH_GM.xmlHttpRequest({
       method,
       url: input,
       headers,
@@ -246,7 +246,7 @@ export const fetchPatcher = async (input, init = {}, opts) => {
   if (isGm) {
     const gmInit = { ...requestInit, timeout };
 
-    const { body, headers, status, statusText } = window.KISS_GM
+    const { body, headers, status, statusText } = window.EH_GM
       ? await fetchKissGM(input, gmInit)
       : await fetchGM(input, gmInit);
 

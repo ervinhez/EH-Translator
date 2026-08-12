@@ -1,7 +1,7 @@
 import React, { act } from "react";
 import { createRoot } from "react-dom/client";
 import useTranboxShortcuts from "./useTranboxShortcuts";
-import { EVENT_KISS_INNER, MSG_OPEN_TRANBOX } from "../config";
+import { EVENT_EH_INNER, MSG_OPEN_TRANBOX } from "../config";
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -14,7 +14,7 @@ jest.mock("../libs/log", () => ({
 }));
 
 jest.mock("../config", () => ({
-  EVENT_KISS_INNER: "kiss-inner",
+  EVENT_EH_INNER: "eh-inner",
   MSG_OPEN_TRANBOX: "open-tranbox",
 }));
 
@@ -58,7 +58,7 @@ function renderShortcuts(props) {
 function dispatchOpenTranbox(args) {
   act(() => {
     document.dispatchEvent(
-      new CustomEvent(EVENT_KISS_INNER, {
+      new CustomEvent(EVENT_EH_INNER, {
         detail: { action: MSG_OPEN_TRANBOX, args },
       })
     );

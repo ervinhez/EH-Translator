@@ -1219,7 +1219,7 @@ function UserRules({ subRules, rules }) {
         <DownloadButton
           handleData={() => JSON.stringify([...rules.list], null, 2)}
           text={i18n("export")}
-          fileName={`kiss-rules_v2_${Date.now()}.json`}
+          fileName={`eh-rules_v2_${Date.now()}.json`}
         />
 
         <ShareButton

@@ -1,8 +1,8 @@
 {
-  "name": "kiss-translator",
-  "description": "A minimalist bilingual translation Extension & Greasemonkey Script",
+  "name": "eh-translator",
+  "description": "A personalized bilingual translation extension & Greasemonkey script, forked from KISS Translator",
   "version": "2.0.31",
-  "author": "Gabe<yugang2002@gmail.com>",
+  "author": "ervinhez",
   "private": true,
   "dependencies": {
     "@emotion/cache": "^11.11.0",
