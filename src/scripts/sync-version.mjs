@@ -28,16 +28,6 @@ const filesToSync = [
         type: "json",
         key: "version",
     },
-    {
-        path: path.join(rootDir, "public/manifest.firefox.json"),
-        type: "json",
-        key: "version",
-    },
-    {
-        path: path.join(rootDir, "public/manifest.thunderbird.json"),
-        type: "json",
-        key: "version",
-    },
 ];
 
 let syncCount = 0;

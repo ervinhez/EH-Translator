@@ -7,19 +7,9 @@ import { JSONParser } from "@streamparser/json";
 import {
   OPT_TRANS_OPENAI,
   OPT_TRANS_DEEPSEEK,
-  OPT_TRANS_OPENCODEGO,
-  OPT_TRANS_SILICONFLOW,
-  OPT_TRANS_XIAOMIMIMO,
-  OPT_TRANS_ALIYUNBAILIAN,
-  OPT_TRANS_CEREBRAS,
-  OPT_TRANS_ZAI,
   OPT_TRANS_GEMINI,
-  OPT_TRANS_GEMINI_2,
-  OPT_TRANS_OPENROUTER,
-  OPT_TRANS_ORCAROUTER,
   OPT_TRANS_OLLAMA,
   OPT_TRANS_CLAUDE,
-  OPT_TRANS_EPHONEAI,
 } from "../config";
 import {
   normalizeTranslationItem,
@@ -136,17 +126,7 @@ export function getStreamDelta(json, apiType) {
   switch (apiType) {
     case OPT_TRANS_OPENAI:
     case OPT_TRANS_DEEPSEEK:
-    case OPT_TRANS_OPENCODEGO:
-    case OPT_TRANS_SILICONFLOW:
-    case OPT_TRANS_XIAOMIMIMO:
-    case OPT_TRANS_ALIYUNBAILIAN:
-    case OPT_TRANS_CEREBRAS:
-    case OPT_TRANS_ZAI:
-    case OPT_TRANS_GEMINI_2:
-    case OPT_TRANS_OPENROUTER:
-    case OPT_TRANS_ORCAROUTER:
     case OPT_TRANS_OLLAMA:
-    case OPT_TRANS_EPHONEAI:
       // OpenAI 兼容协议的大模型 delta 提取逻辑
       return json.choices?.[0]?.delta?.content || "";
     case OPT_TRANS_GEMINI: {

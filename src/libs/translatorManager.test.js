@@ -211,7 +211,6 @@ function setupMockConstructors() {
 function createManager({
   rule = { transOpen: "true" },
   setting = {},
-  isUserscript = false,
   transboxOnly = false,
 } = {}) {
   const manager = new TranslatorManager({
@@ -227,7 +226,6 @@ function createManager({
     fabConfig: { isHide: false },
     favWords: [],
     isIframe: false,
-    isUserscript,
     transboxOnly,
   });
   activeManagers.push(manager);

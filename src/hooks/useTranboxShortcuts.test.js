@@ -6,7 +6,6 @@ import { EVENT_EH_INNER, MSG_OPEN_TRANBOX } from "../config";
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
 jest.mock("../libs/client", () => ({
-  isGm: false,
 }));
 
 jest.mock("../libs/log", () => ({

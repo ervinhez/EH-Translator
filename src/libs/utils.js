@@ -253,7 +253,7 @@ export const sha256 = async (text, salt) => {
 };
 
 /**
- * 随机生成不重复的随机交互事件名称 (用于插件在 unsafeWindow 下隔离通信防冲突)
+ * 随机生成不重复的随机交互事件名称 (用于插件内部隔离通信防冲突)
  * @returns {string}
  */
 export const genEventName = () => `kiss-${btoa(Math.random()).slice(3, 11)}`;

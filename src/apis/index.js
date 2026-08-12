@@ -13,7 +13,6 @@ import {
   MSG_BUILTINAI_DETECT,
   MSG_BUILTINAI_TRANSLATE,
   OPT_TRANS_BUILTINAI,
-  OPT_TRANS_QWENMT,
   URL_CACHE_SUBTITLE,
   URL_CACHE_CONTEXT,
   OPT_LANGS_TO_CODE,
@@ -49,7 +48,6 @@ const PROMPT_CACHE_SCOPE_BATCH = "batch";
 const PROMPT_CACHE_SCOPE_NOBATCH = "nobatch";
 const PROMPT_CACHE_SCOPE_DICT = "dict";
 const PROMPT_CACHE_SCOPE_PLAIN = "plain";
-const PROMPT_CACHE_SCOPE_QWEN_MT = "qwen-mt";
 
 const isGenericChineseLanguageCode = (code) =>
   typeof code === "string" && /^zh$/i.test(code.trim());
@@ -84,9 +82,6 @@ const getTranslationLanguageMatch = ({
 };
 
 function getTranslatePromptCacheScope(apiSetting = {}) {
-  if (apiSetting.apiType === OPT_TRANS_QWENMT) {
-    return PROMPT_CACHE_SCOPE_QWEN_MT;
-  }
   if (!API_SPE_TYPES.ai.has(apiSetting.apiType)) {
     return PROMPT_CACHE_SCOPE_PLAIN;
   }
@@ -111,8 +106,6 @@ function getPromptCacheFields(apiSetting = {}, promptScope, glossary = {}) {
       apiSetting.dictPrompt || "",
       apiSetting.dictUserPrompt ?? defaultDictUserPrompt,
     ];
-  } else if (promptScope === PROMPT_CACHE_SCOPE_QWEN_MT) {
-    fields = [];
   } else {
     return [];
   }

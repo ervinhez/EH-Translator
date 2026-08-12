@@ -7,28 +7,16 @@ import {
   GEMINI_GENERATE_CONTENT_URL,
   GEMINI_INTERACTIONS_URL,
   getGeminiThinkingEfforts,
-  getOpenRouterThinkingCapability,
   getThinkingCapability,
   isThinkingMinimumFallback,
   normalizeThinkingSettings,
   normalizeApiThinkingSettings,
   normalizeApiModelListUrls,
-  OPT_TRANS_CLOUDFLAREAI,
   OPT_TRANS_DEEPSEEK,
-  OPT_TRANS_EPHONEAI,
-  OPT_TRANS_CEREBRAS,
   OPT_TRANS_CLAUDE,
   OPT_TRANS_GEMINI,
-  OPT_TRANS_GEMINI_2,
-  OPT_TRANS_ALIYUNBAILIAN,
   OPT_TRANS_MICROSOFT,
-  OPT_TRANS_SILICONFLOW,
   OPT_TRANS_OPENAI,
-  OPT_TRANS_OPENCODEGO,
-  OPT_TRANS_OPENROUTER,
-  OPT_TRANS_QWENMT,
-  OPT_TRANS_XIAOMIMIMO,
-  OPT_TRANS_ZAI,
 } from "./api";
 
 test("uses Microsoft as the fallback default API", () => {
@@ -39,31 +27,6 @@ test("includes Microsoft in the built-in API list", () => {
   expect(
     DEFAULT_API_LIST.some((api) => api.apiType === OPT_TRANS_MICROSOFT)
   ).toBe(true);
-});
-
-test("configures QwenMT as a single-request machine translation API", () => {
-  const qwenMt = DEFAULT_API_LIST.find(
-    (api) => api.apiType === OPT_TRANS_QWENMT
-  );
-
-  expect(qwenMt).toMatchObject({
-    apiSlug: OPT_TRANS_QWENMT,
-    apiType: OPT_TRANS_QWENMT,
-    url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
-    model: "qwen-mt-flash",
-    useBatchFetch: false,
-    useStream: false,
-  });
-  expect(API_SPE_TYPES.machine.has(OPT_TRANS_QWENMT)).toBe(true);
-  expect(API_SPE_TYPES.mulkeys.has(OPT_TRANS_QWENMT)).toBe(true);
-  expect(API_SPE_TYPES.ai.has(OPT_TRANS_QWENMT)).toBe(false);
-  expect(API_SPE_TYPES.batch.has(OPT_TRANS_QWENMT)).toBe(false);
-  expect(API_SPE_TYPES.context.has(OPT_TRANS_QWENMT)).toBe(false);
-  expect(API_SPE_TYPES.stream.has(OPT_TRANS_QWENMT)).toBe(false);
-  expect(OPT_LANGS_FROM_SPEC[OPT_TRANS_QWENMT].get("auto")).toBe("auto");
-  expect(OPT_LANGS_TO_SPEC[OPT_TRANS_QWENMT].get("zh-TW")).toBe(
-    "Traditional Chinese"
-  );
 });
 
 test("all AI APIs define a thinking mode by default", () => {
@@ -125,20 +88,8 @@ describe("unified thinking capabilities", () => {
   test("does not guess thinking parameters for unknown models", () => {
     expect(
       getThinkingCapability({
-        apiType: OPT_TRANS_EPHONEAI,
-        model: "provider/unknown-model",
-      })
-    ).toBeNull();
-    expect(
-      getThinkingCapability({
         apiType: OPT_TRANS_OPENAI,
         model: "unknown-model",
-      })
-    ).toBeNull();
-    expect(
-      getThinkingCapability({
-        apiType: OPT_TRANS_OPENROUTER,
-        model: "provider/unknown-model",
       })
     ).toBeNull();
     expect(
@@ -158,10 +109,6 @@ describe("unified thinking capabilities", () => {
 
   test.each([
     [OPT_TRANS_DEEPSEEK, "deepseek"],
-    [OPT_TRANS_XIAOMIMIMO, "deepseek"],
-    [OPT_TRANS_ZAI, "deepseek"],
-    [OPT_TRANS_ALIYUNBAILIAN, "boolean"],
-    [OPT_TRANS_SILICONFLOW, "siliconflow"],
   ])("uses explicit thinking modes for %s", (apiType, adapter) => {
     const capability = getThinkingCapability({ apiType });
     expect(capability).toMatchObject({ adapter });
@@ -176,47 +123,6 @@ describe("unified thinking capabilities", () => {
     ).toEqual({ thinkingMode: "disabled", thinkingEffort: null });
   });
 
-  test("uses the lowest effort for mandatory reasoning models", () => {
-    const capability = getOpenRouterThinkingCapability(
-      "google/gemini-3.5-flash",
-      {
-        model: "google/gemini-3.5-flash",
-        supportedEfforts: ["high", "medium", "low", "minimal"],
-        mandatory: true,
-      }
-    );
-    expect(
-      normalizeThinkingSettings({
-        apiType: OPT_TRANS_OPENROUTER,
-        model: "google/gemini-3.5-flash",
-        openRouterMetadata: {
-          model: "google/gemini-3.5-flash",
-          supportedEfforts: ["high", "medium", "low", "minimal"],
-          defaultEffort: "medium",
-          defaultEnabled: true,
-          mandatory: true,
-        },
-        thinkingMode: "enabled",
-      })
-    ).toEqual({ thinkingMode: "enabled", thinkingEffort: "medium" });
-    expect(
-      normalizeThinkingSettings({
-        apiType: OPT_TRANS_OPENROUTER,
-        model: "google/gemini-3.5-flash",
-        openRouterMetadata: {
-          model: "google/gemini-3.5-flash",
-          supportedEfforts: ["high", "medium", "low", "minimal"],
-          defaultEffort: "medium",
-          defaultEnabled: true,
-          mandatory: true,
-        },
-        thinkingMode: "disabled",
-      })
-    ).toEqual({ thinkingMode: "disabled", thinkingEffort: "minimal" });
-    expect(
-      isThinkingMinimumFallback({ capability, thinkingMode: "disabled" })
-    ).toBe(true);
-  });
 
   test("keeps Claude native and hides unsupported legacy models", () => {
     expect(
@@ -234,42 +140,7 @@ describe("unified thinking capabilities", () => {
     ).toEqual({ thinkingMode: "disabled", thinkingEffort: "low" });
   });
 
-  test("keeps confirmed OpenRouter effort when the catalog is not in memory", () => {
-    expect(
-      normalizeThinkingSettings({
-        apiType: OPT_TRANS_OPENROUTER,
-        model: "provider/reasoning-model",
-        thinkingMode: "enabled",
-        thinkingEffort: "high",
-      })
-    ).toEqual({ thinkingMode: "enabled", thinkingEffort: "high" });
-  });
 
-  test("uses OpenRouter default effort and lowest effort for default-off models", () => {
-    const baseMetadata = {
-      model: "provider/reasoning-model",
-      supportedEfforts: ["high", "medium", "low"],
-      mandatory: false,
-    };
-    const normalize = (metadata) =>
-      normalizeThinkingSettings({
-        apiType: OPT_TRANS_OPENROUTER,
-        model: baseMetadata.model,
-        openRouterMetadata: { ...baseMetadata, ...metadata },
-        thinkingMode: "enabled",
-      });
-
-    expect(
-      normalize({ defaultEffort: "medium", defaultEnabled: true })
-    ).toEqual({ thinkingMode: "enabled", thinkingEffort: "medium" });
-    expect(normalize({ defaultEffort: "none", defaultEnabled: false })).toEqual(
-      { thinkingMode: "enabled", thinkingEffort: "low" }
-    );
-    expect(normalize({ defaultEnabled: true })).toEqual({
-      thinkingMode: "enabled",
-      thinkingEffort: null,
-    });
-  });
 
   test("normalizes loaded static settings once and preserves stable references", () => {
     const transApis = [
@@ -279,33 +150,16 @@ describe("unified thinking capabilities", () => {
         thinkingMode: "enabled",
         thinkingEffort: "_default",
       },
-      {
-        apiType: OPT_TRANS_OPENROUTER,
-        model: "provider/unknown-model",
-        thinkingMode: "enabled",
-        thinkingEffort: "_default",
-      },
     ];
 
     const normalized = normalizeApiThinkingSettings(transApis);
     expect(normalized).not.toBe(transApis);
     expect(normalized[0]).toMatchObject({ thinkingEffort: null });
-    expect(normalized[1]).toBe(transApis[1]);
     expect(normalizeApiThinkingSettings(normalized)).toBe(normalized);
   });
 });
 
-test("OpenRouter uses the shared disabled thinking default", () => {
-  const openrouter = DEFAULT_API_LIST.find(
-    (api) => api.apiType === OPT_TRANS_OPENROUTER
-  );
 
-  expect(openrouter).toMatchObject({
-    model: "openai/gpt-4o",
-    thinkingMode: "disabled",
-    thinkingEffort: "_default",
-  });
-});
 
 test("Gemini uses stable Interactions while the model list stays on v1beta", () => {
   const gemini = DEFAULT_API_LIST.find(
@@ -320,16 +174,7 @@ test("Gemini uses stable Interactions while the model list stays on v1beta", () 
   });
 });
 
-test("Gemini2 defaults to a model that can disable thinking", () => {
-  const gemini2 = DEFAULT_API_LIST.find(
-    (api) => api.apiType === OPT_TRANS_GEMINI_2
-  );
 
-  expect(gemini2).toMatchObject({
-    model: "gemini-3.6-flash",
-    thinkingMode: "disabled",
-  });
-});
 
 test("resolves Gemini modes with only thinkingMode and thinkingEffort", () => {
   expect(
@@ -393,12 +238,6 @@ test("resolves Gemini modes with only thinkingMode and thinkingEffort", () => {
     })
   ).toEqual({ thinkingMode: "auto", thinkingEffort: "_default" });
 
-  expect(
-    getThinkingCapability({
-      apiType: OPT_TRANS_GEMINI_2,
-      model: "custom-model",
-    })
-  ).toBeNull();
 });
 
 test("filters native Gemini thinking efforts by model capability", () => {
@@ -459,20 +298,6 @@ describe("normalizeApiModelListUrls", () => {
     const nextApis = normalizeApiModelListUrls(transApis);
 
     expect(nextApis).toBe(transApis);
-    expect(nextApis[0].modelListUrl).toBe("");
-  });
-
-  test("没有官方默认模型列表接口的旧数据补为空字符串", () => {
-    const transApis = [
-      {
-        apiSlug: "CloudflareAI",
-        apiType: OPT_TRANS_CLOUDFLAREAI,
-      },
-    ];
-
-    const nextApis = normalizeApiModelListUrls(transApis);
-
-    expect(nextApis).not.toBe(transApis);
     expect(nextApis[0].modelListUrl).toBe("");
   });
 

@@ -1,33 +1,17 @@
 import queryString from "query-string";
 import {
   OPT_TRANS_GOOGLE,
-  OPT_TRANS_GOOGLE_2,
-  OPT_TRANS_GOOGLE_CLOUD,
   OPT_TRANS_MICROSOFT,
-  OPT_TRANS_AZUREAI,
   OPT_TRANS_DEEPL,
   OPT_TRANS_DEEPLFREE,
   OPT_TRANS_DEEPLX,
   OPT_TRANS_DEEPSEEK,
-  OPT_TRANS_OPENCODEGO,
-  OPT_TRANS_SILICONFLOW,
-  OPT_TRANS_XIAOMIMIMO,
-  OPT_TRANS_ALIYUNBAILIAN,
-  OPT_TRANS_QWENMT,
-  OPT_TRANS_CEREBRAS,
-  OPT_TRANS_ZAI,
-  OPT_TRANS_EPHONEAI,
   OPT_TRANS_BAIDU,
   OPT_TRANS_TENCENT,
-  OPT_TRANS_VOLCENGINE,
   OPT_TRANS_OPENAI,
   OPT_TRANS_GEMINI,
-  OPT_TRANS_GEMINI_2,
   OPT_TRANS_CLAUDE,
-  OPT_TRANS_CLOUDFLAREAI,
   OPT_TRANS_OLLAMA,
-  OPT_TRANS_OPENROUTER,
-  OPT_TRANS_ORCAROUTER,
   OPT_TRANS_CUSTOMIZE,
   API_SPE_TYPES,
   INPUT_PLACE_FROM,
@@ -56,8 +40,7 @@ import {
   isGeminiInteractionsUrl,
   normalizeGeminiModelName,
   normalizeThinkingSettings,
-  BUILTIN_STONES,
-} from "../config";
+  } from "../config";
 import { genDeeplFree } from "./deepl";
 import { genBaidu } from "./baidu";
 import { interpreter } from "../libs/interpreter";
@@ -69,9 +52,7 @@ import {
 } from "../libs/utils";
 import {
   decodeHTMLEntities,
-  decodeHTMLTranslationText,
-  encodeHTMLTranslationText,
-} from "../libs/html";
+    } from "../libs/html";
 import { parseCompleteTranslationSegments } from "../libs/aiResponseParser";
 import {
   parseStreamingSegments,
@@ -428,14 +409,6 @@ const parseSTRes = (raw, events = null, fromLang = "auto") => {
   return [];
 };
 
-const siliconflowEffortMap = {
-  max: 32768,
-  high: 16384,
-  medium: 8192,
-  low: 4096,
-  minimal: 2048,
-};
-
 /**
  * 将统一思考设置写入 DeepSeek 风格请求体。
  * @param {Object} body 待修改的请求体。
@@ -470,13 +443,6 @@ const applyBooleanThinking = (body, { thinkingMode }) => {
  * @param {string|null} settings.thinkingEffort 最终思考强度。
  * @returns {void}
  */
-const applySiliconFlowThinking = (body, { thinkingMode, thinkingEffort }) => {
-  body.enable_thinking = thinkingMode === "enabled";
-  if (thinkingMode === "enabled" && thinkingEffort) {
-    body.thinking_budget = siliconflowEffortMap[thinkingEffort] || 8192;
-  }
-};
-
 /**
  * 将统一思考强度写入 OpenAI 兼容请求体。
  * @param {Object} body 待修改的请求体。
@@ -496,14 +462,6 @@ const applyOpenAIThinking = (body, { thinkingEffort }) => {
  * @param {string|null} settings.thinkingEffort 最终思考强度或关闭值。
  * @returns {void}
  */
-const applyOpenRouterThinking = (body, { thinkingMode, thinkingEffort }) => {
-  if (thinkingMode === "enabled" && thinkingEffort === null) {
-    body.reasoning = { enabled: true };
-    return;
-  }
-  if (thinkingEffort !== null) body.reasoning = { effort: thinkingEffort };
-};
-
 /**
  * 将统一思考设置写入 Claude 原生请求体。
  * @param {Object} body 待修改的请求体。
@@ -538,11 +496,6 @@ const applyGeminiThinking = (
   { apiType, url, model, thinkingMode, thinkingEffort }
 ) => {
   // Gemini 的三种兼容协议字段位置不同，但共用同一份模式与强度解析结果。
-  if (apiType === OPT_TRANS_GEMINI_2) {
-    if (thinkingEffort !== null) body.reasoning_effort = thinkingEffort;
-    return;
-  }
-
   // null 表示配置阶段已经确认当前关闭方式无需发送思考强度字段。
   if (thinkingEffort === null) return;
 
@@ -572,9 +525,7 @@ const applyGeminiThinking = (
 const THINKING_ADAPTERS = {
   deepseek: applyDeepSeekThinking,
   boolean: applyBooleanThinking,
-  siliconflow: applySiliconFlowThinking,
   openai: applyOpenAIThinking,
-  openrouter: applyOpenRouterThinking,
   claude: applyClaudeThinking,
   gemini: applyGeminiThinking,
 };
@@ -625,33 +576,6 @@ const genGoogle = ({ texts, from, to, url, key }) => {
   return { url, headers, method: "GET" };
 };
 
-const genGoogle2 = ({ texts, from, to, url, key, textFormat = "text" }) => {
-  const requestTexts =
-    textFormat === "html" ? texts : texts.map(encodeHTMLTranslationText);
-  const body = [[requestTexts, from, to], "wt_lib"];
-  const headers = {
-    "Content-Type": "application/json+protobuf",
-    "X-Goog-API-Key": key,
-  };
-
-  return { url, body, headers };
-};
-
-const genGoogleCloud = ({ texts, from, to, url, key, textFormat = "text" }) => {
-  const body = {
-    q: texts,
-    target: to,
-    format: textFormat,
-    ...(from !== "auto" && { source: from }),
-  };
-  const headers = {
-    "Content-type": "application/json",
-    "X-Goog-Api-Key": key,
-  };
-
-  return { url, body, headers };
-};
-
 const genMicrosoft = ({ texts, from, to }) => {
   // Edge 前端内部端点：无需鉴权，Body 为纯字符串数组；from 留空表示自动检测。
   const params = queryString.stringify({
@@ -665,22 +589,6 @@ const genMicrosoft = ({ texts, from, to }) => {
   };
 
   return { url, body: texts, headers };
-};
-
-const genAzureAI = ({ texts, from, to, url, key, region }) => {
-  const params = queryString.stringify({
-    from,
-    to,
-  });
-  url = url.endsWith("&") ? `${url}${params}` : `${url}&${params}`;
-  const headers = {
-    "Content-type": "application/json",
-    "Ocp-Apim-Subscription-Key": key,
-    "Ocp-Apim-Subscription-Region": region,
-  };
-  const body = texts.map((text) => ({ Text: text }));
-
-  return { url, body, headers };
 };
 
 const genDeepl = ({ texts, from, to, url, key }) => {
@@ -743,21 +651,6 @@ const genTencent = ({ texts, from, to }) => {
   return { url, body, headers };
 };
 
-const genVolcengine = ({ texts, from, to }) => {
-  const body = {
-    source_language: from,
-    target_language: to,
-    text: texts.join(" "),
-  };
-
-  const url = "https://translate.volcengine.com/crx/translate/v1";
-  const headers = {
-    "Content-type": "application/json",
-  };
-
-  return { url, body, headers };
-};
-
 const genOpenAI = ({
   url,
   key,
@@ -803,66 +696,6 @@ const genOpenAI = ({
     "Content-type": "application/json",
     Authorization: `Bearer ${key}`, // OpenAI
     // "api-key": key, // Azure OpenAI
-  };
-
-  return { url, body, headers, userMsg };
-};
-
-const getQwenMtDomains = (tone = "") => {
-  const normalizedTone = String(tone).trim();
-  if (!normalizedTone) return "";
-
-  return BUILTIN_STONES.includes(normalizedTone)
-    ? `Translate in a ${normalizedTone.toLowerCase()} style.`
-    : normalizedTone;
-};
-
-const getQwenMtTerms = (glossary = {}, aiTerms = "") => {
-  const mergedTerms = { ...glossary, ...parseAITerms(aiTerms) };
-  return Object.entries(mergedTerms)
-    .filter(([source]) => String(source).trim())
-    .map(([source, target]) => {
-      const normalizedTarget = String(target ?? "");
-      return {
-        source,
-        target: normalizedTarget.trim() ? normalizedTarget : source,
-      };
-    });
-};
-
-const genQwenMt = ({
-  url,
-  key,
-  model,
-  texts,
-  from,
-  to,
-  glossary,
-  aiTerms,
-  tone,
-}) => {
-  const translationOptions = {
-    source_lang: from,
-    target_lang: to,
-  };
-  const terms = getQwenMtTerms(glossary, aiTerms);
-  const domains = getQwenMtDomains(tone);
-
-  if (terms.length) translationOptions.terms = terms;
-  if (domains) translationOptions.domains = domains;
-
-  const userMsg = {
-    role: "user",
-    content: texts[0],
-  };
-  const body = {
-    model,
-    messages: [userMsg],
-    translation_options: translationOptions,
-  };
-  const headers = {
-    "Content-type": "application/json",
-    Authorization: `Bearer ${key}`,
   };
 
   return { url, body, headers, userMsg };
@@ -974,55 +807,6 @@ const genGemini = ({
   return { url, body, headers, userMsg };
 };
 
-const genGemini2 = ({
-  url,
-  key,
-  systemPrompt,
-  userPrompt,
-  model,
-  temperature,
-  maxTokens,
-  hisMsgs = [],
-  useStream = false,
-  apiType,
-  thinkingMode,
-  thinkingEffort,
-}) => {
-  const userMsg = {
-    role: "user",
-    content: userPrompt,
-  };
-  const body = {
-    model,
-    messages: [
-      {
-        role: "system",
-        content: systemPrompt,
-      },
-      ...hisMsgs,
-      userMsg,
-    ],
-    temperature,
-    max_tokens: maxTokens,
-    stream: useStream,
-  };
-
-  applyThinkingParameters(body, {
-    apiType,
-    url,
-    model,
-    thinkingMode,
-    thinkingEffort,
-  });
-
-  const headers = {
-    "Content-type": "application/json",
-    Authorization: `Bearer ${key}`,
-  };
-
-  return { url, body, headers, userMsg };
-};
-
 const genClaude = ({
   url,
   key,
@@ -1062,107 +846,6 @@ const genClaude = ({
     "anthropic-version": "2023-06-01",
     "anthropic-dangerous-direct-browser-access": "true",
     "x-api-key": key,
-  };
-
-  return { url, body, headers, userMsg };
-};
-
-const genOpenRouter = ({
-  url,
-  key,
-  systemPrompt,
-  userPrompt,
-  model,
-  temperature,
-  maxTokens,
-  hisMsgs = [],
-  useStream = false,
-  thinkingMode,
-  thinkingEffort,
-}) => {
-  const userMsg = {
-    role: "user",
-    content: userPrompt,
-  };
-  const body = {
-    model,
-    messages: [
-      {
-        role: "system",
-        content: systemPrompt,
-      },
-      ...hisMsgs,
-      userMsg,
-    ],
-    temperature,
-    max_tokens: maxTokens,
-    stream: useStream,
-  };
-
-  applyThinkingParameters(body, {
-    apiType: OPT_TRANS_OPENROUTER,
-    url,
-    model,
-    thinkingMode,
-    thinkingEffort,
-  });
-
-  const headers = {
-    "Content-type": "application/json",
-    Authorization: `Bearer ${key}`,
-    "HTTP-Referer": "https://ervinhez.github.io/EH-Translator/",
-    "X-OpenRouter-Title": "EH Translator",
-  };
-
-  return { url, body, headers, userMsg };
-};
-
-const genOrcaRouter = ({
-  url,
-  key,
-  systemPrompt,
-  userPrompt,
-  model,
-  temperature,
-  maxTokens,
-  hisMsgs = [],
-  useStream = false,
-  thinkingMode,
-  thinkingEffort,
-}) => {
-  const userMsg = {
-    role: "user",
-    content: userPrompt,
-  };
-  const body = {
-    model,
-    messages: [
-      {
-        role: "system",
-        content: systemPrompt,
-      },
-      ...hisMsgs,
-      userMsg,
-    ],
-    temperature,
-    max_completion_tokens: maxTokens,
-    stream: useStream,
-  };
-
-  applyThinkingParameters(body, {
-    apiType: OPT_TRANS_ORCAROUTER,
-    url,
-    model,
-    thinkingMode,
-    thinkingEffort,
-  });
-
-  const headers = {
-    "Content-type": "application/json",
-    Authorization: `Bearer ${key}`,
-    // 聚合网关的调用来源标识，便于在 OrcaRouter 控制台区分本扩展的用量
-    "HTTP-Referer": "https://ervinhez.github.io/EH-Translator/",
-    "X-Title": "EH Translator",
   };
 
   return { url, body, headers, userMsg };
@@ -1218,21 +901,6 @@ const genOllama = ({
   return { url, body, headers, userMsg };
 };
 
-const genCloudflareAI = ({ texts, from, to, url, key }) => {
-  const body = {
-    text: texts.join(" "),
-    source_lang: from,
-    target_lang: to,
-  };
-
-  const headers = {
-    "Content-type": "application/json",
-    Authorization: `Bearer ${key}`,
-  };
-
-  return { url, body, headers };
-};
-
 const genCustom = ({ texts, fromLang, toLang, url, key, useBatchFetch }) => {
   const body = useBatchFetch
     ? { texts, from: fromLang, to: toLang }
@@ -1247,33 +915,17 @@ const genCustom = ({ texts, fromLang, toLang, url, key, useBatchFetch }) => {
 
 const genReqFuncs = {
   [OPT_TRANS_GOOGLE]: genGoogle,
-  [OPT_TRANS_GOOGLE_2]: genGoogle2,
-  [OPT_TRANS_GOOGLE_CLOUD]: genGoogleCloud,
   [OPT_TRANS_MICROSOFT]: genMicrosoft,
-  [OPT_TRANS_AZUREAI]: genAzureAI,
   [OPT_TRANS_DEEPL]: genDeepl,
   [OPT_TRANS_DEEPLFREE]: genDeeplFree,
   [OPT_TRANS_DEEPSEEK]: genOpenAI,
-  [OPT_TRANS_OPENCODEGO]: genOpenAI,
-  [OPT_TRANS_SILICONFLOW]: genOpenAI,
-  [OPT_TRANS_XIAOMIMIMO]: genOpenAI,
-  [OPT_TRANS_ALIYUNBAILIAN]: genOpenAI,
-  [OPT_TRANS_QWENMT]: genQwenMt,
-  [OPT_TRANS_CEREBRAS]: genOpenAI,
-  [OPT_TRANS_ZAI]: genOpenAI,
   [OPT_TRANS_DEEPLX]: genDeeplX,
-  [OPT_TRANS_EPHONEAI]: genOpenAI,
   [OPT_TRANS_BAIDU]: genBaidu,
   [OPT_TRANS_TENCENT]: genTencent,
-  [OPT_TRANS_VOLCENGINE]: genVolcengine,
   [OPT_TRANS_OPENAI]: genOpenAI,
   [OPT_TRANS_GEMINI]: genGemini,
-  [OPT_TRANS_GEMINI_2]: genGemini2,
   [OPT_TRANS_CLAUDE]: genClaude,
-  [OPT_TRANS_CLOUDFLAREAI]: genCloudflareAI,
   [OPT_TRANS_OLLAMA]: genOllama,
-  [OPT_TRANS_OPENROUTER]: genOpenRouter,
-  [OPT_TRANS_ORCAROUTER]: genOrcaRouter,
   [OPT_TRANS_CUSTOMIZE]: genCustom,
 };
 
@@ -1528,22 +1180,7 @@ export const parseTransRes = async (
   switch (apiType) {
     case OPT_TRANS_GOOGLE:
       return [[res?.sentences?.map((item) => item.trans).join(" "), res?.src]];
-    case OPT_TRANS_GOOGLE_2:
-      return res?.[0]?.map((_, i) => [
-        textFormat === "text"
-          ? decodeHTMLTranslationText(res?.[0]?.[i])
-          : res?.[0]?.[i],
-        res?.[1]?.[i],
-      ]);
-    case OPT_TRANS_GOOGLE_CLOUD:
-      return res?.data?.translations?.map((item) => [
-        textFormat === "text"
-          ? decodeHTMLEntities(item.translatedText)
-          : item.translatedText,
-        item.detectedSourceLanguage,
-      ]);
     case OPT_TRANS_MICROSOFT:
-    case OPT_TRANS_AZUREAI:
       return res?.map((item) => [
         item.translations.map((item) => item.text).join(" "),
         item.detectedLanguage?.language,
@@ -1576,24 +1213,8 @@ export const parseTransRes = async (
       break;
     case OPT_TRANS_TENCENT:
       return res?.auto_translation?.map((text) => [text, res?.src_lang]);
-    case OPT_TRANS_VOLCENGINE:
-      return [[res?.translation, res?.detected_language]];
-    case OPT_TRANS_QWENMT: {
-      const content = res?.choices?.[0]?.message?.content;
-      return typeof content === "string" ? [[content]] : [];
-    }
-    case OPT_TRANS_EPHONEAI:
     case OPT_TRANS_OPENAI:
     case OPT_TRANS_DEEPSEEK:
-    case OPT_TRANS_OPENCODEGO:
-    case OPT_TRANS_SILICONFLOW:
-    case OPT_TRANS_XIAOMIMIMO:
-    case OPT_TRANS_ALIYUNBAILIAN:
-    case OPT_TRANS_CEREBRAS:
-    case OPT_TRANS_ZAI:
-    case OPT_TRANS_GEMINI_2:
-    case OPT_TRANS_OPENROUTER:
-    case OPT_TRANS_ORCAROUTER:
       modelMsg = res?.choices?.[0]?.message;
       if (history && userMsg && modelMsg) {
         history.add(userMsg, {
@@ -1622,8 +1243,6 @@ export const parseTransRes = async (
         });
       }
       return parseAIRes(res?.content?.[0]?.text ?? "", useBatchFetch);
-    case OPT_TRANS_CLOUDFLAREAI:
-      return [[res?.result?.translated_text]];
     case OPT_TRANS_OLLAMA:
       modelMsg = res?.choices?.[0]?.message;
 
@@ -1664,18 +1283,8 @@ export const parseTransRes = async (
  */
 function parseDictRes(res, apiType) {
   switch (apiType) {
-    case OPT_TRANS_EPHONEAI:
     case OPT_TRANS_OPENAI:
     case OPT_TRANS_DEEPSEEK:
-    case OPT_TRANS_OPENCODEGO:
-    case OPT_TRANS_SILICONFLOW:
-    case OPT_TRANS_XIAOMIMIMO:
-    case OPT_TRANS_ALIYUNBAILIAN:
-    case OPT_TRANS_CEREBRAS:
-    case OPT_TRANS_ZAI:
-    case OPT_TRANS_GEMINI_2:
-    case OPT_TRANS_OPENROUTER:
-    case OPT_TRANS_ORCAROUTER:
     case OPT_TRANS_OLLAMA:
       return res?.choices?.[0]?.message?.content || "";
     case OPT_TRANS_GEMINI:
@@ -2218,18 +1827,8 @@ export const handleSubtitle = async ({
   }
 
   switch (apiType) {
-    case OPT_TRANS_EPHONEAI:
     case OPT_TRANS_OPENAI:
     case OPT_TRANS_DEEPSEEK:
-    case OPT_TRANS_OPENCODEGO:
-    case OPT_TRANS_SILICONFLOW:
-    case OPT_TRANS_XIAOMIMIMO:
-    case OPT_TRANS_ALIYUNBAILIAN:
-    case OPT_TRANS_CEREBRAS:
-    case OPT_TRANS_ZAI:
-    case OPT_TRANS_GEMINI_2:
-    case OPT_TRANS_OPENROUTER:
-    case OPT_TRANS_ORCAROUTER:
     case OPT_TRANS_OLLAMA:
       return parseSTRes(
         res?.choices?.[0]?.message?.content ?? "",
@@ -2435,18 +2034,8 @@ export const handleSummarize = async ({
   if (!res) return "";
 
   switch (apiType) {
-    case OPT_TRANS_EPHONEAI:
     case OPT_TRANS_OPENAI:
     case OPT_TRANS_DEEPSEEK:
-    case OPT_TRANS_OPENCODEGO:
-    case OPT_TRANS_SILICONFLOW:
-    case OPT_TRANS_XIAOMIMIMO:
-    case OPT_TRANS_ALIYUNBAILIAN:
-    case OPT_TRANS_CEREBRAS:
-    case OPT_TRANS_ZAI:
-    case OPT_TRANS_GEMINI_2:
-    case OPT_TRANS_OPENROUTER:
-    case OPT_TRANS_ORCAROUTER:
     case OPT_TRANS_OLLAMA:
       return res?.choices?.[0]?.message?.content?.trim() || "";
     case OPT_TRANS_GEMINI:

@@ -2,24 +2,17 @@ import { browser } from "./browser";
 import { Translator } from "./translator";
 import { InputTranslator } from "./inputTranslate";
 import { TransboxManager } from "./tranbox";
-import { shortcutRegister } from "./shortcut";
 import { sendIframeMsg } from "./iframe";
 import {
   EVENT_EH_INNER,
   EVENT_EH_TRANSLATOR,
   MSG_HOVERNODE_TOGGLE,
   MSG_INPUT_TRANSLATE,
-  newI18n,
 } from "../config";
 import { touchTapListener } from "./touch";
 import { PopupManager } from "./popupManager";
 import { FabManager } from "./fabManager";
 import {
-  OPT_SHORTCUT_TRANSLATE,
-  OPT_SHORTCUT_TRANSONLY,
-  OPT_SHORTCUT_STYLE,
-  OPT_SHORTCUT_POPUP,
-  OPT_SHORTCUT_SETTING,
   MSG_TRANS_TOGGLE,
   MSG_TRANS_TOGGLE_ONLY,
   MSG_TRANS_TOGGLE_STYLE,
@@ -44,7 +37,6 @@ import { logger } from "./log";
 export default class TranslatorManager {
   // 全局注册项的清理句柄；这些只随 start/stop 注册，restart 时不重复注册。
   #clearShortcuts = [];
-  #menuCommandIds = [];
   #clearTouchListeners = [];
   #isActive = false;
 
@@ -53,7 +45,6 @@ export default class TranslatorManager {
   #rule;
   #fabConfig;
   #favWords;
-  #isUserscript;
   #isIframe;
   #transboxOnly;
 
@@ -95,7 +86,6 @@ export default class TranslatorManager {
     fabConfig,
     favWords,
     isIframe,
-    isUserscript,
     transboxOnly = false,
   }) {
     this.#setting = this.#cloneConfig(setting);
@@ -103,7 +93,6 @@ export default class TranslatorManager {
     this.#fabConfig = this.#cloneConfig(fabConfig);
     this.#favWords = this.#cloneConfig(favWords);
     this.#isIframe = isIframe;
-    this.#isUserscript = isUserscript;
     this.#transboxOnly = transboxOnly;
 
     this.#innerMessageHandler = this.#handleInnerMessage.bind(this);
@@ -129,11 +118,6 @@ export default class TranslatorManager {
     this.#setupMessageListeners();
     if (!this.#transboxOnly) {
       this.#setupTouchOperations();
-    }
-
-    if (!this.#transboxOnly && !this.#isIframe && this.#isUserscript) {
-      this.#registerShortcuts();
-      this.#registerMenus();
     }
 
     if (!this.#transboxOnly) {
@@ -189,13 +173,9 @@ export default class TranslatorManager {
       EVENT_EH_TRANSLATOR,
       this.#windowMessageHandler
     );
-    if (this.#isUserscript) {
+    browser.runtime.onMessage.removeListener(this.#browserMessageHandler);
+    if (this.#isIframe) {
       window.removeEventListener("message", this.#innerMessageHandler);
-    } else {
-      browser.runtime.onMessage.removeListener(this.#browserMessageHandler);
-      if (this.#isIframe) {
-        window.removeEventListener("message", this.#innerMessageHandler);
-      }
     }
 
     this.#clearShortcuts.forEach((clear) => clear());
@@ -203,11 +183,6 @@ export default class TranslatorManager {
 
     this.#clearTouchListeners.forEach((clear) => clear());
     this.#clearTouchListeners = [];
-
-    if (globalThis.GM && this.#menuCommandIds.length > 0) {
-      this.#menuCommandIds.forEach((id) => GM.unregisterMenuCommand?.(id));
-      this.#menuCommandIds = [];
-    }
 
     this.#destroyRuntimeModules();
     this.#isActive = false;
@@ -232,7 +207,6 @@ export default class TranslatorManager {
       rule: this.#cloneConfig(this.#rule),
       setting: this.#cloneConfig(this.#setting),
       favWords: this.#cloneConfig(this.#favWords),
-      isUserscript: this.#isUserscript,
       isIframe: this.#isIframe,
     });
 
@@ -497,13 +471,9 @@ export default class TranslatorManager {
    * 接收 background 指令，iframe 中还要监听父页面转发的 window message。
    */
   #setupMessageListeners() {
-    if (this.#isUserscript) {
+    browser.runtime.onMessage.addListener(this.#browserMessageHandler);
+    if (this.#isIframe) {
       window.addEventListener("message", this.#innerMessageHandler);
-    } else {
-      browser.runtime.onMessage.addListener(this.#browserMessageHandler);
-      if (this.#isIframe) {
-        window.addEventListener("message", this.#innerMessageHandler);
-      }
     }
 
     window.addEventListener(EVENT_EH_TRANSLATOR, this.#windowMessageHandler);
@@ -577,72 +547,6 @@ export default class TranslatorManager {
     };
     sendResponse(response);
     return true;
-  }
-
-  /**
-   * 注册页面级快捷键，并保存每个快捷键的清理函数。
-   */
-  #registerShortcuts() {
-    const { shortcuts, tranboxSetting } = this._translator.setting;
-    this.#clearShortcuts = [
-      shortcutRegister(shortcuts[OPT_SHORTCUT_TRANSLATE], () =>
-        this.#processActions({ action: MSG_TRANS_TOGGLE })
-      ),
-      shortcutRegister(shortcuts[OPT_SHORTCUT_TRANSONLY], () =>
-        this.#processActions({ action: MSG_TRANS_TOGGLE_ONLY })
-      ),
-      shortcutRegister(shortcuts[OPT_SHORTCUT_STYLE], () =>
-        this.#processActions({ action: MSG_TRANS_TOGGLE_STYLE })
-      ),
-      shortcutRegister(shortcuts[OPT_SHORTCUT_POPUP], () =>
-        this.#processActions({ action: MSG_POPUP_TOGGLE })
-      ),
-      shortcutRegister(shortcuts[OPT_SHORTCUT_SETTING], () =>
-        window.open(process.env.REACT_APP_OPTIONSPAGE, "_blank")
-      ),
-      shortcutRegister(tranboxSetting?.tranboxShortcut, () =>
-        this.#processActions({ action: MSG_TRANSBOX_TOGGLE })
-      ),
-    ];
-  }
-
-  /**
-   * 注册油猴菜单命令。
-   */
-  #registerMenus() {
-    if (!globalThis.GM) return;
-    const { contextMenuType, uiLang } = this._translator.setting;
-    if (contextMenuType === 0) return;
-
-    const i18n = newI18n(uiLang || "zh");
-
-    this.#menuCommandIds = [
-      GM.registerMenuCommand?.(
-        i18n("translate_switch"),
-        () => this.#processActions({ action: MSG_TRANS_TOGGLE }),
-        "Q"
-      ),
-      GM.registerMenuCommand?.(
-        i18n("transonly_alt"),
-        () => this.#processActions({ action: MSG_TRANS_TOGGLE_ONLY }),
-        "Q"
-      ),
-      GM.registerMenuCommand?.(
-        i18n("toggle_style"),
-        () => this.#processActions({ action: MSG_TRANS_TOGGLE_STYLE }),
-        "C"
-      ),
-      GM.registerMenuCommand?.(
-        i18n("open_menu"),
-        () => this.#processActions({ action: MSG_POPUP_TOGGLE }),
-        "K"
-      ),
-      GM.registerMenuCommand?.(
-        i18n("open_setting"),
-        () => window.open(process.env.REACT_APP_OPTIONSPAGE, "_blank"),
-        "O"
-      ),
-    ];
   }
 
   /**

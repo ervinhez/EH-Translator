@@ -1,8 +1,8 @@
 # EH Translator
 
-[English](README.en.md) | [中文](README.md) | [日本語](README.ja.md) | [한국어](README.ko.md)
+[English](README.en.md) | [中文](README.md)
 
-A personalized bilingual translation extension & Greasemonkey script, forked from the open-source [KISS Translator](https://github.com/fishjar/kiss-translator).
+A personalized Chrome bilingual translation extension, forked from the open-source [KISS Translator](https://github.com/fishjar/kiss-translator).
 
 ## Personal Customizations
 
@@ -15,19 +15,12 @@ A personalized bilingual translation extension & Greasemonkey script, forked fro
 
 - [x] Minimalist
 - [x] Open source
-- [x] Cross-browser
-  - [x] Chrome/Edge
-  - [x] Firefox
-  - [x] Kiwi (Android)
-  - [x] Orion (iOS)
-  - [x] Safari
-  - [x] Thunderbird
+- [x] Browser support
+  - [x] Chrome/Edge (trimmed to Chrome build target for personal use)
 - [x] Multiple translation providers
   - [x] Google/Microsoft
-  - [x] Tencent/Volcengine
-  - [x] OpenAI/Gemini/Claude/Ollama/DeepSeek/OpenRouter/OrcaRouter
-  - [x] DeepL/DeepLX
-  - [x] AzureAI/CloudflareAI
+  - [x] OpenAI/Gemini/Claude/Ollama/DeepSeek
+  - [x] DeepL/DeepLFree/DeepLX
   - [x] Chrome BuiltinAI
 - [x] Common translation scenarios
   - [x] Bilingual webpage translation
@@ -65,11 +58,6 @@ pnpm build:chrome
 ```
 
 Open [chrome://extensions](chrome://extensions) (or `edge://extensions`), enable "Developer mode", click "Load unpacked", and select the `build/chrome` directory.
-
-### Userscript
-
-- Chrome/Edge/Firefox (Tampermonkey/Violentmonkey): run `pnpm build:web` and drag `build/web/eh-translator.user.js` into the extension manager
-- iOS Safari (Userscripts Safari): install `build/web/eh-translator-ios-safari.user.js`
 
 ## Related Projects (upstream ecosystem)
 

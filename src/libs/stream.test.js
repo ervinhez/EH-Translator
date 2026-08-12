@@ -105,23 +105,7 @@ describe("createSSEParser", () => {
 });
 
 describe("getStreamDelta", () => {
-  test("extracts ePhoneAI as an OpenAI-compatible stream", () => {
-    const chunk = {
-      choices: [{ delta: { content: "hello" } }],
-    };
 
-    expect(getStreamDelta(chunk, OPT_TRANS_EPHONEAI)).toBe("hello");
-  });
-
-  test("extracts OrcaRouter as an OpenAI-compatible stream", () => {
-    const chunk = {
-      choices: [{ delta: { content: "敏" }, finish_reason: null, index: 0 }],
-      object: "chat.completion.chunk",
-    };
-
-    expect(getStreamDelta(chunk, OPT_TRANS_ORCAROUTER)).toBe("敏");
-    expect(getStreamDelta({ choices: [] }, OPT_TRANS_ORCAROUTER)).toBe("");
-  });
 
   test("extracts only text step deltas from Gemini interactions", () => {
     expect(

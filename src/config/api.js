@@ -49,66 +49,34 @@ export const OPT_SUG_MAP = new Set(OPT_SUG_ALL);
 // --- 翻译服务提供商标识常量 ---
 export const OPT_TRANS_BUILTINAI = "BuiltinAI"; // 浏览器内置 Gemini AI 翻译
 export const OPT_TRANS_GOOGLE = "Google"; // 谷歌翻译服务
-export const OPT_TRANS_GOOGLE_2 = "Google2"; // 谷歌翻译 pa 网页 API (支持大批量 HTML)
-export const OPT_TRANS_GOOGLE_CLOUD = "GoogleCloud"; // Google Cloud Translation Basic API
 export const OPT_TRANS_MICROSOFT = "Microsoft"; // 微软翻译服务
-export const OPT_TRANS_AZUREAI = "AzureAI"; // 微软 Azure 翻译
 export const OPT_TRANS_DEEPSEEK = "DeepSeek"; // DeepSeek 深度求索 AI 翻译
-export const OPT_TRANS_OPENCODEGO = "OpenCodeGo"; // OpenCode Go AI 翻译订阅服务
-export const OPT_TRANS_SILICONFLOW = "SiliconFlow"; // 硅基流动 AI 翻译 (云端部署大模型)
-export const OPT_TRANS_XIAOMIMIMO = "XiaomiMimo"; // 小米米莫 AI 翻译
-export const OPT_TRANS_ALIYUNBAILIAN = "AliyunBailian"; // 阿里云百炼大模型翻译
-export const OPT_TRANS_QWENMT = "QwenMT"; // 阿里云百炼 Qwen-MT 专用翻译
-export const OPT_TRANS_CEREBRAS = "Cerebras"; // Cerebras AI 翻译极速推理服务
-export const OPT_TRANS_ZAI = "Zai"; // 智谱 AI 翻译服务
 export const OPT_TRANS_DEEPL = "DeepL"; // DeepL 官方专业翻译 API
 export const OPT_TRANS_DEEPLX = "DeepLX"; // DeepLX 开源/自定义中转端
 export const OPT_TRANS_DEEPLFREE = "DeepLFree"; // DeepL 免费网页翻译接口
-export const OPT_TRANS_EPHONEAI = "ePhoneAI"; // ePhone AI 翻译服务
 export const OPT_TRANS_BAIDU = "Baidu"; // 百度翻译 API
 export const OPT_TRANS_TENCENT = "Tencent"; // 腾讯翻译君 API
-export const OPT_TRANS_VOLCENGINE = "Volcengine"; // 火山翻译 API
 export const OPT_TRANS_OPENAI = "OpenAI"; // OpenAI 官方大模型 API 翻译
 export const OPT_TRANS_GEMINI = "Gemini"; // 谷歌 Gemini API 翻译 (原版接口形式)
-export const OPT_TRANS_GEMINI_2 = "Gemini2"; // 谷歌 Gemini API 翻译 (OpenAI 兼容接口形式)
 export const OPT_TRANS_CLAUDE = "Claude"; // Anthropic Claude 翻译
-export const OPT_TRANS_CLOUDFLAREAI = "CloudflareAI"; // Cloudflare Workers AI 翻译
 export const OPT_TRANS_OLLAMA = "Ollama"; // 本地部署 Ollama 模型翻译
-export const OPT_TRANS_OPENROUTER = "OpenRouter"; // OpenRouter 多模型聚合 API 翻译
-export const OPT_TRANS_ORCAROUTER = "OrcaRouter"; // OrcaRouter 多模型聚合 API 翻译
 export const OPT_TRANS_CUSTOMIZE = "Custom"; // 自定义翻译 API
 
 // 内置支持的翻译引擎
 export const OPT_ALL_TRANS_TYPES = [
   OPT_TRANS_BUILTINAI,
   OPT_TRANS_GOOGLE,
-  OPT_TRANS_GOOGLE_2,
-  OPT_TRANS_GOOGLE_CLOUD,
   OPT_TRANS_MICROSOFT,
-  OPT_TRANS_AZUREAI,
   // OPT_TRANS_BAIDU,
   OPT_TRANS_DEEPSEEK,
-  OPT_TRANS_OPENCODEGO,
-  OPT_TRANS_SILICONFLOW,
-  OPT_TRANS_XIAOMIMIMO,
-  OPT_TRANS_ALIYUNBAILIAN,
-  OPT_TRANS_QWENMT,
-  OPT_TRANS_CEREBRAS,
-  OPT_TRANS_ZAI,
   OPT_TRANS_TENCENT,
-  OPT_TRANS_VOLCENGINE,
   OPT_TRANS_DEEPL,
   OPT_TRANS_DEEPLFREE,
   OPT_TRANS_DEEPLX,
-  OPT_TRANS_EPHONEAI,
   OPT_TRANS_OPENAI,
   OPT_TRANS_GEMINI,
-  OPT_TRANS_GEMINI_2,
   OPT_TRANS_CLAUDE,
-  OPT_TRANS_CLOUDFLAREAI,
   OPT_TRANS_OLLAMA,
-  OPT_TRANS_OPENROUTER,
-  OPT_TRANS_ORCAROUTER,
   OPT_TRANS_CUSTOMIZE,
 ];
 
@@ -131,128 +99,62 @@ export const API_SPE_TYPES = {
     OPT_TRANS_DEEPLFREE,
     OPT_TRANS_BAIDU,
     OPT_TRANS_TENCENT,
-    OPT_TRANS_VOLCENGINE,
-    OPT_TRANS_QWENMT,
   ]),
   // 大语言模型 AI 翻译引擎
   ai: new Set([
-    OPT_TRANS_EPHONEAI,
     OPT_TRANS_OPENAI,
     OPT_TRANS_DEEPSEEK,
-    OPT_TRANS_OPENCODEGO,
-    OPT_TRANS_SILICONFLOW,
-    OPT_TRANS_XIAOMIMIMO,
-    OPT_TRANS_ALIYUNBAILIAN,
-    OPT_TRANS_CEREBRAS,
-    OPT_TRANS_ZAI,
     OPT_TRANS_GEMINI,
-    OPT_TRANS_GEMINI_2,
     OPT_TRANS_CLAUDE,
     OPT_TRANS_OLLAMA,
-    OPT_TRANS_OPENROUTER,
-    OPT_TRANS_ORCAROUTER,
     OPT_TRANS_CUSTOMIZE,
   ]),
   // 支持多 API Key 轮询/备用的引擎
   mulkeys: new Set([
-    OPT_TRANS_AZUREAI,
-    OPT_TRANS_GOOGLE_CLOUD,
     OPT_TRANS_DEEPSEEK,
-    OPT_TRANS_OPENCODEGO,
-    OPT_TRANS_SILICONFLOW,
-    OPT_TRANS_XIAOMIMIMO,
-    OPT_TRANS_ALIYUNBAILIAN,
-    OPT_TRANS_QWENMT,
-    OPT_TRANS_CEREBRAS,
-    OPT_TRANS_ZAI,
     OPT_TRANS_DEEPL,
     OPT_TRANS_OPENAI,
     OPT_TRANS_GEMINI,
-    OPT_TRANS_GEMINI_2,
     OPT_TRANS_CLAUDE,
-    OPT_TRANS_CLOUDFLAREAI,
     OPT_TRANS_OLLAMA,
-    OPT_TRANS_OPENROUTER,
-    OPT_TRANS_ORCAROUTER,
-    OPT_TRANS_EPHONEAI,
     OPT_TRANS_CUSTOMIZE,
   ]),
   // 支持段落聚合（批处理合并）翻译的引擎
   batch: new Set([
-    OPT_TRANS_AZUREAI,
     OPT_TRANS_DEEPSEEK,
-    OPT_TRANS_OPENCODEGO,
-    OPT_TRANS_SILICONFLOW,
-    OPT_TRANS_XIAOMIMIMO,
-    OPT_TRANS_ALIYUNBAILIAN,
-    OPT_TRANS_CEREBRAS,
-    OPT_TRANS_ZAI,
-    OPT_TRANS_GOOGLE_2,
-    OPT_TRANS_GOOGLE_CLOUD,
     OPT_TRANS_MICROSOFT,
     OPT_TRANS_TENCENT,
     OPT_TRANS_DEEPL,
     OPT_TRANS_OPENAI,
     OPT_TRANS_GEMINI,
-    OPT_TRANS_GEMINI_2,
     OPT_TRANS_CLAUDE,
     OPT_TRANS_OLLAMA,
-    OPT_TRANS_OPENROUTER,
-    OPT_TRANS_ORCAROUTER,
-    OPT_TRANS_EPHONEAI,
     OPT_TRANS_CUSTOMIZE,
   ]),
   // 支持带历史会话（Context）关联的翻译引擎
   context: new Set([
     OPT_TRANS_DEEPSEEK,
-    OPT_TRANS_OPENCODEGO,
-    OPT_TRANS_SILICONFLOW,
-    OPT_TRANS_XIAOMIMIMO,
-    OPT_TRANS_ALIYUNBAILIAN,
-    OPT_TRANS_CEREBRAS,
-    OPT_TRANS_ZAI,
     OPT_TRANS_OPENAI,
     OPT_TRANS_GEMINI,
-    OPT_TRANS_GEMINI_2,
     OPT_TRANS_CLAUDE,
     OPT_TRANS_OLLAMA,
-    OPT_TRANS_OPENROUTER,
-    OPT_TRANS_ORCAROUTER,
-    OPT_TRANS_EPHONEAI,
     OPT_TRANS_CUSTOMIZE,
   ]),
   // 支持流式文本返回（Server-Sent Events / Stream）的翻译引擎
   stream: new Set([
     OPT_TRANS_DEEPSEEK,
-    OPT_TRANS_OPENCODEGO,
-    OPT_TRANS_SILICONFLOW,
-    OPT_TRANS_XIAOMIMIMO,
-    OPT_TRANS_ALIYUNBAILIAN,
-    OPT_TRANS_CEREBRAS,
-    OPT_TRANS_ZAI,
     OPT_TRANS_OPENAI,
     OPT_TRANS_GEMINI,
-    OPT_TRANS_GEMINI_2,
     OPT_TRANS_CLAUDE,
     OPT_TRANS_OLLAMA,
-    OPT_TRANS_OPENROUTER,
-    OPT_TRANS_ORCAROUTER,
-    OPT_TRANS_EPHONEAI,
   ]),
-  // 官方推荐/赞助商的翻译服务
-  sponsors: new Set([OPT_TRANS_EPHONEAI]),
   // 暗黑模式下图标反色
   darkIcon: new Set([
-    OPT_TRANS_SILICONFLOW,
-    OPT_TRANS_XIAOMIMIMO,
-    OPT_TRANS_EPHONEAI,
-    OPT_TRANS_ZAI,
     OPT_TRANS_DEEPL,
     OPT_TRANS_DEEPLFREE,
     OPT_TRANS_DEEPLX,
     OPT_TRANS_OPENAI,
     OPT_TRANS_OLLAMA,
-    OPT_TRANS_OPENROUTER,
   ]),
 };
 
@@ -424,9 +326,7 @@ const resolveGeminiCapability = ({ apiType, url = "", model = "" }) => {
   const normalizedModel = normalizeGeminiModelName(model);
   // disable 记录原生关闭方式；null 表示只能降到模型最低思考强度。
   let disable = null;
-  if (apiType === OPT_TRANS_GEMINI_2 && isGemini25NonPro(normalizedModel)) {
-    disable = "none";
-  } else if (
+  if (
     apiType === OPT_TRANS_GEMINI &&
     isGeminiInteractionsUrl(url) &&
     isGemini25FlashLite(normalizedModel)
@@ -496,52 +396,6 @@ export const THINKING_API_REGISTRY = {
       disable: "explicit",
     }),
   },
-  [OPT_TRANS_OPENCODEGO]: {
-    adapter: "deepseek",
-    resolveCapability: resolveFixedCapability(["max", "high"], {
-      enable: "explicit",
-      disable: "explicit",
-    }),
-  },
-  [OPT_TRANS_XIAOMIMIMO]: {
-    adapter: "deepseek",
-    resolveCapability: resolveFixedCapability(null, {
-      enable: "explicit",
-      disable: "explicit",
-    }),
-  },
-  [OPT_TRANS_ZAI]: {
-    adapter: "deepseek",
-    resolveCapability: resolveFixedCapability(null, {
-      enable: "explicit",
-      disable: "explicit",
-    }),
-  },
-  [OPT_TRANS_ALIYUNBAILIAN]: {
-    adapter: "boolean",
-    resolveCapability: resolveFixedCapability(null, {
-      enable: "explicit",
-      disable: "explicit",
-    }),
-  },
-  [OPT_TRANS_SILICONFLOW]: {
-    adapter: "siliconflow",
-    resolveCapability: resolveFixedCapability(
-      ["max", "high", "medium", "low", "minimal"],
-      { enable: "explicit", disable: "explicit" }
-    ),
-  },
-  [OPT_TRANS_CEREBRAS]: {
-    adapter: "openai",
-    resolveCapability: ({ model = "" }) =>
-      /^gpt-oss-120b(?:-|$)/i.test(model)
-        ? createOpenAIThinkingCapability(["high", "medium", "low"])
-        : null,
-  },
-  [OPT_TRANS_EPHONEAI]: {
-    adapter: "openai",
-    resolveCapability: ({ model }) => getOpenAIThinkingCapability(model),
-  },
   [OPT_TRANS_OPENAI]: {
     adapter: "openai",
     resolveCapability: ({ model }) => getOpenAIThinkingCapability(model),
@@ -550,21 +404,7 @@ export const THINKING_API_REGISTRY = {
     adapter: "openai",
     resolveCapability: ({ model }) => getOpenAIThinkingCapability(model),
   },
-  [OPT_TRANS_ORCAROUTER]: {
-    adapter: "openai",
-    resolveCapability: ({ model }) => getOpenAIThinkingCapability(model),
-  },
-  [OPT_TRANS_OPENROUTER]: {
-    adapter: "openrouter",
-    // OpenRouter 的动态能力仅来自设置页内存中的模型目录，不进入持久化配置和请求参数。
-    resolveCapability: ({ model, openRouterMetadata }) =>
-      getOpenRouterThinkingCapability(model, openRouterMetadata),
-  },
   [OPT_TRANS_GEMINI]: {
-    adapter: "gemini",
-    resolveCapability: resolveGeminiCapability,
-  },
-  [OPT_TRANS_GEMINI_2]: {
     adapter: "gemini",
     resolveCapability: resolveGeminiCapability,
   },
@@ -682,16 +522,9 @@ export const normalizeThinkingSettings = ({
     openRouterMetadata,
   });
   if (!capability) {
-    // OpenRouter 的具体强度只会由设置页目录确认；重新打开设置时允许直接沿用该最终值。
-    const hasConfirmedOpenRouterEffort =
-      apiType === OPT_TRANS_OPENROUTER &&
-      thinkingEffort !== undefined &&
-      thinkingEffort !== "_default";
     return {
       thinkingMode,
-      thinkingEffort: hasConfirmedOpenRouterEffort
-        ? thinkingEffort
-        : "_default",
+      thinkingEffort: "_default",
     };
   }
 
@@ -844,10 +677,6 @@ export const getGeminiThinkingEfforts = ({ apiType, model = "" }) => {
       normalizedModel.includes("flash"));
   if (!isKnownModel) return null;
 
-  if (apiType === OPT_TRANS_GEMINI_2) {
-    return toGeminiEffortOptions(["high", "medium", "low", "minimal"]);
-  }
-
   if (isGemini25(normalizedModel)) {
     return toGeminiEffortOptions(["high", "medium", "low"]);
   }
@@ -960,15 +789,7 @@ export const OPT_LANGS_TO_SPEC = {
     ["zh-TW", "zh-Hant"],
   ]),
   [OPT_TRANS_GOOGLE]: OPT_LANGS_SPEC_DEFAULT,
-  [OPT_TRANS_GOOGLE_2]: OPT_LANGS_SPEC_DEFAULT,
-  [OPT_TRANS_GOOGLE_CLOUD]: OPT_LANGS_SPEC_DEFAULT,
   [OPT_TRANS_MICROSOFT]: new Map([
-    ...OPT_LANGS_SPEC_DEFAULT,
-    ["auto", ""],
-    ["zh-CN", "zh-Hans"],
-    ["zh-TW", "zh-Hant"],
-  ]),
-  [OPT_TRANS_AZUREAI]: new Map([
     ...OPT_LANGS_SPEC_DEFAULT,
     ["auto", ""],
     ["zh-CN", "zh-Hans"],
@@ -993,22 +814,6 @@ export const OPT_LANGS_TO_SPEC = {
     ["zh-TW", "ZH-HANT"],
   ]),
   [OPT_TRANS_DEEPSEEK]: OPT_LANGS_SPEC_NAME,
-  [OPT_TRANS_OPENCODEGO]: OPT_LANGS_SPEC_NAME,
-  [OPT_TRANS_SILICONFLOW]: OPT_LANGS_SPEC_NAME,
-  [OPT_TRANS_XIAOMIMIMO]: OPT_LANGS_SPEC_NAME,
-  [OPT_TRANS_ALIYUNBAILIAN]: OPT_LANGS_SPEC_NAME,
-  [OPT_TRANS_QWENMT]: new Map([
-    ...OPT_LANGS_SPEC_NAME,
-    ["auto", "auto"],
-  ]),
-  [OPT_TRANS_CEREBRAS]: OPT_LANGS_SPEC_NAME,
-  [OPT_TRANS_ZAI]: OPT_LANGS_SPEC_NAME,
-  [OPT_TRANS_VOLCENGINE]: new Map([
-    ...OPT_LANGS_SPEC_DEFAULT,
-    ["auto", "auto"],
-    ["zh-CN", "zh"],
-    ["zh-TW", "zh-Hant"],
-  ]),
   [OPT_TRANS_BAIDU]: new Map([
     ...OPT_LANGS_SPEC_DEFAULT,
     ["zh-CN", "zh"],
@@ -1058,20 +863,10 @@ export const OPT_LANGS_TO_SPEC = {
     ["id", "id"],
     ["vi", "vi"],
   ]),
-  [OPT_TRANS_EPHONEAI]: OPT_LANGS_SPEC_NAME,
   [OPT_TRANS_OPENAI]: OPT_LANGS_SPEC_NAME,
   [OPT_TRANS_GEMINI]: OPT_LANGS_SPEC_NAME,
-  [OPT_TRANS_GEMINI_2]: OPT_LANGS_SPEC_NAME,
   [OPT_TRANS_CLAUDE]: OPT_LANGS_SPEC_NAME,
   [OPT_TRANS_OLLAMA]: OPT_LANGS_SPEC_NAME,
-  [OPT_TRANS_OPENROUTER]: OPT_LANGS_SPEC_NAME,
-  [OPT_TRANS_ORCAROUTER]: OPT_LANGS_SPEC_NAME,
-  [OPT_TRANS_CLOUDFLAREAI]: new Map([
-    ...OPT_LANGS_SPEC_DEFAULT,
-    ["auto", "en"],
-    ["zh-CN", "zh"],
-    ["zh-TW", "zh"],
-  ]),
   [OPT_TRANS_CUSTOMIZE]: OPT_LANGS_SPEC_NAME,
 };
 
@@ -1414,26 +1209,8 @@ const defaultApiOpts = {
     ...defaultApi,
     url: "https://translate.googleapis.com/translate_a/single",
   },
-  [OPT_TRANS_GOOGLE_2]: {
-    ...defaultApi,
-    url: "https://translate-pa.googleapis.com/v1/translateHtml",
-    key: "AIzaSyATBXajvzQLTDHEQbcpq0Ihe0vWDHmO520",
-    useBatchFetch: true,
-    placetag: "a",
-    placetagFormat: "attribute",
-  },
-  [OPT_TRANS_GOOGLE_CLOUD]: {
-    ...defaultApi,
-    url: "https://translation.googleapis.com/language/translate/v2",
-    useBatchFetch: true,
-  },
   [OPT_TRANS_MICROSOFT]: {
     ...defaultApi,
-    useBatchFetch: true,
-  },
-  [OPT_TRANS_AZUREAI]: {
-    ...defaultApi,
-    url: "https://api.cognitive.microsofttranslator.com/translate?api-version=3.0",
     useBatchFetch: true,
   },
   [OPT_TRANS_BAIDU]: {
@@ -1442,9 +1219,6 @@ const defaultApiOpts = {
   [OPT_TRANS_TENCENT]: {
     ...defaultApi,
     useBatchFetch: true,
-  },
-  [OPT_TRANS_VOLCENGINE]: {
-    ...defaultApi,
   },
   [OPT_TRANS_DEEPL]: {
     ...defaultApi,
@@ -1462,59 +1236,9 @@ const defaultApiOpts = {
     model: "deepseek-v4-flash",
     ...defaultAiApiOpts,
   },
-  [OPT_TRANS_OPENCODEGO]: {
-    ...defaultApi,
-    url: "https://opencode.ai/zen/go/v1/chat/completions",
-    model: "deepseek-v4-flash",
-    ...defaultAiApiOpts,
-  },
-  [OPT_TRANS_SILICONFLOW]: {
-    ...defaultApi,
-    url: "https://api.siliconflow.cn/v1/chat/completions",
-    modelListUrl: "https://api.siliconflow.cn/v1/models",
-    model: "Pro/zai-org/GLM-4.7",
-    ...defaultAiApiOpts,
-  },
-  [OPT_TRANS_XIAOMIMIMO]: {
-    ...defaultApi,
-    url: "https://api.xiaomimimo.com/v1/chat/completions",
-    modelListUrl: "https://api.xiaomimimo.com/v1/models",
-    model: "mimo-v2.5-pro",
-    ...defaultAiApiOpts,
-  },
-  [OPT_TRANS_ALIYUNBAILIAN]: {
-    ...defaultApi,
-    url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
-    modelListUrl: "https://dashscope.aliyuncs.com/compatible-mode/v1/models",
-    model: "qwen-plus",
-    ...defaultAiApiOpts,
-  },
-  [OPT_TRANS_QWENMT]: {
-    ...defaultApi,
-    url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
-    model: "qwen-mt-flash",
-  },
-  [OPT_TRANS_CEREBRAS]: {
-    ...defaultApi,
-    url: "https://api.cerebras.ai/v1/chat/completions",
-    modelListUrl: "https://api.cerebras.ai/v1/models",
-    model: "gpt-oss-120b",
-    ...defaultAiApiOpts,
-  },
-  [OPT_TRANS_ZAI]: {
-    ...defaultApi,
-    url: "https://open.bigmodel.cn/api/paas/v4/chat/completions",
-    modelListUrl: "https://open.bigmodel.cn/api/paas/v4/models",
-    model: "glm-5.1",
-    ...defaultAiApiOpts,
-  },
   [OPT_TRANS_DEEPLX]: {
     ...defaultApi,
     url: "http://localhost:1188/translate",
-  },
-  [OPT_TRANS_EPHONEAI]: {
-    ...defaultApi,
-    url: "https://api.ephone.ai/v1/chat/completions",
   },
   [OPT_TRANS_OPENAI]: {
     ...defaultApi,
@@ -1531,14 +1255,6 @@ const defaultApiOpts = {
     model: "gemini-3.6-flash",
     ...defaultAiApiOpts,
   },
-  [OPT_TRANS_GEMINI_2]: {
-    ...defaultApi,
-    url: `https://generativelanguage.googleapis.com/v1beta/openai/chat/completions`,
-    modelListUrl:
-      "https://generativelanguage.googleapis.com/v1beta/openai/models",
-    model: "gemini-3.6-flash",
-    ...defaultAiApiOpts,
-  },
   [OPT_TRANS_CLAUDE]: {
     ...defaultApi,
     url: "https://api.anthropic.com/v1/messages",
@@ -1546,29 +1262,11 @@ const defaultApiOpts = {
     model: "claude-3-haiku-20240307",
     ...defaultAiApiOpts,
   },
-  [OPT_TRANS_CLOUDFLAREAI]: {
-    ...defaultApi,
-    url: "https://api.cloudflare.com/client/v4/accounts/{{ACCOUNT_ID}}/ai/run/@cf/meta/m2m100-1.2b",
-  },
   [OPT_TRANS_OLLAMA]: {
     ...defaultApi,
     url: "http://localhost:11434/v1/chat/completions",
     modelListUrl: "http://localhost:11434/v1/models",
     model: "llama3.1",
-    ...defaultAiApiOpts,
-  },
-  [OPT_TRANS_OPENROUTER]: {
-    ...defaultApi,
-    url: "https://openrouter.ai/api/v1/chat/completions",
-    modelListUrl: "https://openrouter.ai/api/v1/models",
-    model: "openai/gpt-4o",
-    ...defaultAiApiOpts,
-  },
-  [OPT_TRANS_ORCAROUTER]: {
-    ...defaultApi,
-    url: "https://api.orcarouter.ai/v1/chat/completions",
-    modelListUrl: "https://api.orcarouter.ai/v1/models",
-    model: "openai/gpt-5.4-mini",
     ...defaultAiApiOpts,
   },
   [OPT_TRANS_CUSTOMIZE]: {

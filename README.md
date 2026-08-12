@@ -1,8 +1,8 @@
 # EH Translator
 
-[English](README.en.md) | [中文](README.md) | [日本語](README.ja.md) | [한국어](README.ko.md)
+[English](README.en.md) | [中文](README.md)
 
-基于开源 [KISS Translator](https://github.com/fishjar/kiss-translator) fork 的个人定制版双语对照翻译扩展 & 油猴脚本。
+基于开源 [KISS Translator](https://github.com/fishjar/kiss-translator) fork 的个人定制版 Chrome 双语对照翻译扩展。
 
 ## 个人定制说明
 
@@ -15,19 +15,12 @@
 
 - [x] 保持简约
 - [x] 开放源代码
-- [x] 适配常见浏览器
-  - [x] Chrome/Edge
-  - [x] Firefox
-  - [x] Kiwi (Android)
-  - [x] Orion (iOS)
-  - [x] Safari
-  - [x] Thunderbird
+- [x] 适配浏览器
+  - [x] Chrome/Edge（按个人使用修剪，仅保留 Chrome 构建目标）
 - [x] 支持多种翻译服务
   - [x] Google/Microsoft
-  - [x] Tencent/Volcengine
-  - [x] OpenAI/Gemini/Claude/Ollama/DeepSeek/OpenRouter/OrcaRouter
-  - [x] DeepL/DeepLX
-  - [x] AzureAI/CloudflareAI
+  - [x] OpenAI/Gemini/Claude/Ollama/DeepSeek
+  - [x] DeepL/DeepLFree/DeepLX
   - [x] Chrome浏览器内置AI翻译(BuiltinAI)
 - [x] 覆盖常见翻译场景
   - [x] 网页双语对照翻译
@@ -88,11 +81,6 @@ pnpm build:chrome
 >
 > - 浏览器扩展的功能更完整（本地语言识别、右键菜单等）
 > - 油猴脚本会遇到更多使用上的问题（跨域问题、脚本冲突等）
-
-### 油猴脚本
-
-- Chrome/Edge/Firefox ([Tampermonkey](https://www.tampermonkey.net/)/[Violentmonkey](https://violentmonkey.github.io/))：执行 `pnpm build:web` 后将 `build/web/eh-translator.user.js` 拖入扩展管理页安装
-- iOS Safari ([Userscripts Safari](https://github.com/quoid/userscripts))：安装 `build/web/eh-translator-ios-safari.user.js`
 
 ## 关联项目（上游生态）
 

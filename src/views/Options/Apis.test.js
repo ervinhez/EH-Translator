@@ -5,10 +5,7 @@ import Apis from "./Apis";
 import {
   GEMINI_INTERACTIONS_URL,
   OPT_TRANS_OPENAI,
-  OPT_TRANS_OPENROUTER,
   OPT_TRANS_GEMINI,
-  OPT_TRANS_GEMINI_2,
-  OPT_TRANS_QWENMT,
 } from "../../config";
 import { fetchModelCatalog } from "../../libs/modelList";
 import { apiTranslate } from "../../apis";
@@ -195,181 +192,8 @@ describe("Apis model list", () => {
     view.unmount();
   });
 
-  test("normalizes mandatory OpenRouter thinking without saving metadata", async () => {
-    fetchModelCatalog.mockResolvedValue({
-      models: ["provider/mandatory-model"],
-      thinkingCapabilities: {
-        "provider/mandatory-model": {
-          model: "provider/mandatory-model",
-          supportedEfforts: ["high", "low"],
-          mandatory: true,
-        },
-      },
-    });
-    const update = jest.fn();
-    const view = await renderApis(
-      createApi({
-        apiSlug: "OpenRouter",
-        apiName: "OpenRouter",
-        apiType: OPT_TRANS_OPENROUTER,
-        model: "provider/mandatory-model",
-        modelListUrl: "https://openrouter.ai/api/v1/models",
-        thinkingMode: "disabled",
-      }),
-      update
-    );
-    const modelInput = getInput(view.container, "model");
 
-    await act(async () => {
-      Simulate.focus(modelInput);
-      await Promise.resolve();
-      await Promise.resolve();
-    });
-    await flushEffects();
-    expect(view.container.textContent).toContain(
-      "gemini_thinking_minimum_helper"
-    );
 
-    await act(async () => {
-      Simulate.click(getSaveButton(view.container));
-    });
-    const savedApi = update.mock.calls[0][0];
-    expect(savedApi).toMatchObject({
-      thinkingMode: "disabled",
-      thinkingEffort: "low",
-    });
-    expect(savedApi).not.toHaveProperty("thinkingCapability");
-    expect(savedApi).not.toHaveProperty("thinkingCapabilities");
-
-    view.unmount();
-  });
-
-  test("loads OpenRouter capabilities on mode change and reuses the catalog", async () => {
-    fetchModelCatalog.mockResolvedValue({
-      models: ["provider/reasoning-model"],
-      thinkingCapabilities: {
-        "provider/reasoning-model": {
-          model: "provider/reasoning-model",
-          supportedEfforts: ["high", "medium", "low"],
-          defaultEffort: "medium",
-          defaultEnabled: true,
-          mandatory: false,
-        },
-      },
-    });
-    const update = jest.fn();
-    const view = await renderApis(
-      createApi({
-        apiSlug: OPT_TRANS_OPENROUTER,
-        apiType: OPT_TRANS_OPENROUTER,
-        model: "provider/reasoning-model",
-        modelListUrl: "https://openrouter.ai/api/v1/models",
-        thinkingMode: "auto",
-        thinkingEffort: "_default",
-      }),
-      update
-    );
-
-    const modeInput = getInput(view.container, "thinkingMode");
-    await act(async () => {
-      Simulate.change(modeInput, {
-        target: { name: "thinkingMode", value: "enabled" },
-      });
-      await Promise.resolve();
-      await Promise.resolve();
-    });
-    await flushEffects();
-
-    expect(fetchModelCatalog).toHaveBeenCalledTimes(1);
-    expect(getInput(view.container, "thinkingEffort").value).toBe("medium");
-
-    await act(async () => {
-      Simulate.change(getInput(view.container, "thinkingMode"), {
-        target: { name: "thinkingMode", value: "disabled" },
-      });
-      await Promise.resolve();
-    });
-    await flushEffects();
-    expect(fetchModelCatalog).toHaveBeenCalledTimes(1);
-
-    await act(async () => {
-      Simulate.click(getSaveButton(view.container));
-    });
-    expect(update).toHaveBeenCalledWith(
-      expect.objectContaining({
-        thinkingMode: "disabled",
-        thinkingEffort: "none",
-      })
-    );
-
-    view.unmount();
-  });
-
-  test("resets and resolves OpenRouter effort when the model changes", async () => {
-    fetchModelCatalog.mockResolvedValue({
-      models: ["provider/model-a", "provider/model-b"],
-      thinkingCapabilities: {
-        "provider/model-a": {
-          model: "provider/model-a",
-          supportedEfforts: ["high", "low"],
-          defaultEffort: "high",
-          defaultEnabled: true,
-          mandatory: false,
-        },
-        "provider/model-b": {
-          model: "provider/model-b",
-          supportedEfforts: ["low", "minimal"],
-          defaultEffort: "low",
-          defaultEnabled: true,
-          mandatory: false,
-        },
-      },
-    });
-    const view = await renderApis(
-      createApi({
-        apiSlug: OPT_TRANS_OPENROUTER,
-        apiType: OPT_TRANS_OPENROUTER,
-        model: "provider/model-a",
-        modelListUrl: "https://openrouter.ai/api/v1/models",
-        thinkingMode: "enabled",
-        thinkingEffort: "high",
-      })
-    );
-    const modelInput = getInput(view.container, "model");
-
-    await act(async () => {
-      Simulate.focus(modelInput);
-      await Promise.resolve();
-      await Promise.resolve();
-    });
-    await flushEffects();
-    await act(async () => {
-      Simulate.change(modelInput, {
-        target: { name: "model", value: "provider/model-b" },
-      });
-      await Promise.resolve();
-    });
-    await flushEffects();
-
-    expect(fetchModelCatalog).toHaveBeenCalledTimes(1);
-    expect(getInput(view.container, "thinkingEffort").value).toBe("low");
-
-    await act(async () => {
-      Simulate.change(modelInput, {
-        target: { name: "model", value: "provider/unknown-model" },
-      });
-      await Promise.resolve();
-    });
-    await flushEffects();
-    expect(
-      getInput(view.container, "thinkingMode").getAttribute("aria-invalid")
-    ).toBe("true");
-    expect(
-      view.container.querySelector('input[name="thinkingEffort"]')
-    ).toBeNull();
-
-    view.unmount();
-  });
 
   test("does not load model list without url or key", async () => {
     const view = await renderApis(createApi({ key: "" }));
@@ -452,59 +276,6 @@ describe("Apis model list", () => {
     view.unmount();
   });
 
-  test("retries OpenRouter catalog loading after another mode change", async () => {
-    fetchModelCatalog
-      .mockRejectedValueOnce(new Error("network failed"))
-      .mockResolvedValueOnce({
-        models: ["provider/reasoning-model"],
-        thinkingCapabilities: {
-          "provider/reasoning-model": {
-            model: "provider/reasoning-model",
-            supportedEfforts: ["high", "low"],
-            defaultEffort: "high",
-            defaultEnabled: true,
-            mandatory: false,
-          },
-        },
-      });
-    const view = await renderApis(
-      createApi({
-        apiSlug: OPT_TRANS_OPENROUTER,
-        apiType: OPT_TRANS_OPENROUTER,
-        model: "provider/reasoning-model",
-        modelListUrl: "https://openrouter.ai/api/v1/models",
-        thinkingMode: "auto",
-        thinkingEffort: "_default",
-      })
-    );
-
-    await act(async () => {
-      Simulate.change(getInput(view.container, "thinkingMode"), {
-        target: { name: "thinkingMode", value: "enabled" },
-      });
-      await Promise.resolve();
-      await Promise.resolve();
-    });
-    await flushEffects();
-    expect(fetchModelCatalog).toHaveBeenCalledTimes(1);
-
-    await act(async () => {
-      Simulate.change(getInput(view.container, "thinkingMode"), {
-        target: { name: "thinkingMode", value: "disabled" },
-      });
-      await Promise.resolve();
-      await Promise.resolve();
-    });
-    await flushEffects();
-
-    expect(fetchModelCatalog).toHaveBeenCalledTimes(2);
-    expect(view.container.textContent).not.toContain("model_list_fetch_failed");
-    expect(view.container.textContent).not.toContain(
-      "thinking_unknown_model_helper"
-    );
-
-    view.unmount();
-  });
 
   test("ignores a failed catalog request after the URL changes", async () => {
     let rejectRequest;
@@ -670,7 +441,7 @@ describe("Apis temperature input", () => {
     document.body.innerHTML = "";
   });
 
-  test("renders temperature input for OpenAI but hides it for Gemini and Gemini2", async () => {
+  test("renders temperature input for OpenAI but hides it for Gemini", async () => {
     const openaiView = await renderApis(
       createApi({ apiType: OPT_TRANS_OPENAI })
     );
@@ -687,53 +458,6 @@ describe("Apis temperature input", () => {
     ).toBeNull();
     geminiView.unmount();
 
-    const gemini2View = await renderApis(
-      createApi({ apiType: OPT_TRANS_GEMINI_2 })
-    );
-    expect(
-      gemini2View.container.querySelector('input[name="temperature"]')
-    ).toBeNull();
-    gemini2View.unmount();
-  });
-});
-
-describe("Apis QwenMT fields", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-    document.body.innerHTML = "";
-  });
-
-  test("shows fixed translation models without AI-only or batch controls", async () => {
-    const view = await renderApis(
-      createApi({
-        apiSlug: OPT_TRANS_QWENMT,
-        apiName: OPT_TRANS_QWENMT,
-        apiType: OPT_TRANS_QWENMT,
-        model: "qwen-mt-flash",
-        tone: "formal",
-        useBatchFetch: false,
-        useStream: false,
-      })
-    );
-
-    expect(getInput(view.container, "url")).not.toBeNull();
-    expect(view.container.querySelector('[name="key"]')).not.toBeNull();
-    expect(getInput(view.container, "model").dataset.options).toBe(
-      "qwen-mt-flash,qwen-mt-plus,qwen-mt-lite,qwen-mt-turbo"
-    );
-    expect(getInput(view.container, "tone")).not.toBeNull();
-    expect(
-      view.container.querySelector('input[name="modelListUrl"]')
-    ).toBeNull();
-    expect(view.container.querySelector('input[name="temperature"]')).toBeNull();
-    expect(view.container.querySelector('input[name="maxTokens"]')).toBeNull();
-    expect(
-      view.container.querySelector('input[name="useBatchFetch"]')
-    ).toBeNull();
-    expect(view.container.querySelector('input[name="useStream"]')).toBeNull();
-    expect(view.container.querySelector('input[name="useContext"]')).toBeNull();
-
-    view.unmount();
   });
 });
 
@@ -879,75 +603,6 @@ describe("Apis unknown model thinking warning", () => {
     }
   );
 
-  test.each([
-    ["enabled", "high"],
-    ["disabled", "none"],
-  ])(
-    "treats persisted OpenRouter %s/%s settings as resolved",
-    async (thinkingMode, thinkingEffort) => {
-      apiTranslate.mockResolvedValue({ trText: "你好" });
-      const view = await renderApis(
-        createApi({
-          apiSlug: OPT_TRANS_OPENROUTER,
-          apiType: OPT_TRANS_OPENROUTER,
-          model: "provider/reasoning-model",
-          modelListUrl: "https://openrouter.ai/api/v1/models",
-          thinkingMode,
-          thinkingEffort,
-        })
-      );
-
-      expect(
-        getInput(view.container, "thinkingMode").getAttribute("aria-invalid")
-      ).toBe("false");
-      expect(view.container.textContent).not.toContain(
-        "thinking_unknown_model_helper"
-      );
-      expect(
-        view.container.querySelector('input[name="thinkingEffort"]')
-      ).toBeNull();
-
-      const testButton = Array.from(
-        view.container.querySelectorAll("button")
-      ).find((button) => button.textContent === "click_test");
-      await act(async () => {
-        Simulate.click(testButton);
-        await Promise.resolve();
-      });
-      expect(apiTranslate).toHaveBeenCalledWith(
-        expect.objectContaining({
-          apiSetting: expect.objectContaining({
-            thinkingMode,
-            thinkingEffort,
-          }),
-        })
-      );
-
-      view.unmount();
-    }
-  );
-
-  test("keeps unresolved OpenRouter defaults in the unknown state", async () => {
-    const view = await renderApis(
-      createApi({
-        apiSlug: OPT_TRANS_OPENROUTER,
-        apiType: OPT_TRANS_OPENROUTER,
-        model: "provider/unknown-model",
-        modelListUrl: "https://openrouter.ai/api/v1/models",
-        thinkingMode: "enabled",
-        thinkingEffort: "_default",
-      })
-    );
-
-    expect(
-      getInput(view.container, "thinkingMode").getAttribute("aria-invalid")
-    ).toBe("true");
-    expect(view.container.textContent).toContain(
-      "thinking_unknown_model_helper"
-    );
-
-    view.unmount();
-  });
 
   test("keeps API default mode free of the unknown-model error", async () => {
     const view = await renderApis(

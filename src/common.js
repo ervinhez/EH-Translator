@@ -5,80 +5,11 @@ import {
   getWordsWithDefault,
 } from "./libs/storage";
 import { isIframe } from "./libs/iframe";
-import { genEventName } from "./libs/utils";
-import { handlePing, injectScript } from "./libs/gm";
 import { matchRule } from "./libs/rules";
-import { trySyncAllSubRules } from "./libs/subRules";
 import { isInBlacklist } from "./libs/blacklist";
 import { runSubtitle } from "./subtitle/subtitle";
 import { logger } from "./libs/log";
-import { injectInlineJs } from "./libs/injector";
 import TranslatorManager from "./libs/translatorManager";
-
-/**
- * 油猴脚本特权桥接设置。
- * 当用户在浏览器中打开插件设置页时（打包后的 options.html 或是 dev 调试页面），
- * 该函数负责把油猴特权 GM 接口暴露给页面环境，以便设置页面能直接读写油猴配置项。
- */
-function runSettingPage() {
-  // 若油猴实际提供了 unsafeWindow (直通宿主 window 权限)，则直接挂载
-  if (hasUnsafeWindowBridge()) {
-    unsafeWindow.GM = GM;
-    unsafeWindow.APP_INFO = {
-      name: process.env.REACT_APP_NAME,
-      version: process.env.REACT_APP_VERSION,
-    };
-  } else {
-    // 否则，回退到注册 CustomEvent 监听器进行间接通信代理
-    const ping = genEventName();
-    window.addEventListener(ping, handlePing);
-    injectInlineJs(
-      `(${injectScript})("${ping}")`,
-      "eh-translator-options-injector"
-    );
-  }
-}
-
-function hasUnsafeWindowBridge() {
-  return typeof unsafeWindow !== "undefined";
-}
-
-/**
- * 检查指定的 URL 是否属于扩展/脚本的设置页面。
- * 用于匹配本地开发、打包产物及外置挂载的不同设置页路由。
- * @param {string} href 需要检测的当前页面完整 URL
- * @returns {boolean} 若当前处于设置页面则返回 true
- */
-function isOptionsPageHref(href) {
-  return [
-    process.env.REACT_APP_OPTIONSPAGE,
-    process.env.REACT_APP_OPTIONSPAGE_GITHUB,
-    process.env.REACT_APP_OPTIONSPAGE_DEV,
-    process.env.REACT_APP_OPTIONSPAGE_LOCAL,
-  ]
-    .filter(Boolean)
-    .some((optionsPage) => href.startsWith(optionsPage));
-}
-
-/**
- * 建立旧式 GM_* API 到现代 GM 对象的兼容垫片。
- * 必须在任何 storage 访问前执行，避免旧油猴环境在数据迁移阶段缺少 GM。
- */
-function ensureUserscriptGM() {
-  globalThis.GM = globalThis.GM || {};
-
-  globalThis.GM.xmlHttpRequest =
-    globalThis.GM.xmlHttpRequest || globalThis.GM_xmlhttpRequest;
-  globalThis.GM.registerMenuCommand =
-    globalThis.GM.registerMenuCommand || globalThis.GM_registerMenuCommand;
-  globalThis.GM.unregisterMenuCommand =
-    globalThis.GM.unregisterMenuCommand || globalThis.GM_unregisterMenuCommand;
-  globalThis.GM.setValue = globalThis.GM.setValue || globalThis.GM_setValue;
-  globalThis.GM.getValue = globalThis.GM.getValue || globalThis.GM_getValue;
-  globalThis.GM.deleteValue =
-    globalThis.GM.deleteValue || globalThis.GM_deleteValue;
-  globalThis.GM.info = globalThis.GM.info || globalThis.GM_info;
-}
 
 /**
  * 在页面顶部弹出一个悬浮的红色错误提示 Banner 框，持续 10 秒后自动淡出。
@@ -228,26 +159,11 @@ async function waitForIframeTranslatableText() {
 }
 
 /**
- * 前端翻译器的核心运行总入口。
- * @param {boolean} isUserscript 是否作为油猴 Userscript 脚本模式运行 (false 代表作为浏览器 Extension 运行)
+ * 前端翻译器的核心运行总入口（浏览器扩展模式）。
  */
-export async function run(isUserscript = false) {
+export async function run() {
   try {
     const href = document?.location?.href || "";
-
-    if (isUserscript) {
-      ensureUserscriptGM();
-
-      // 如果当前是设置面板 URL，先建立设置页专用代理，避免 storage 读写抢跑 GM 桥接。
-      if (isOptionsPageHref(href)) {
-        runSettingPage();
-        return;
-      }
-
-      // 0. 执行核心数据迁移 (针对油猴等无后台更新事件的场景)
-      const { runDataMigration } = await import("./libs/storage");
-      await runDataMigration();
-    }
 
     // 1. 加载本地设置
     const setting = await getSettingWithDefault();
@@ -310,7 +226,6 @@ export async function run(isUserscript = false) {
       fabConfig,
       favWords,
       isIframe,
-      isUserscript,
       transboxOnly: isPdfDocument,
     });
     translatorManager.start();
@@ -321,12 +236,8 @@ export async function run(isUserscript = false) {
     }
 
     // 10. 启动视频字幕翻译子模块 (仅在顶级 frame 下运行)
-    runSubtitle({ href, setting, rule, isUserscript });
+    runSubtitle({ href, setting, rule });
 
-    // 11. 在油猴环境下，每次进入顶级页面时尝试触发一次订阅规则的自动同步检查 (每日一次)
-    if (isUserscript) {
-      trySyncAllSubRules(setting);
-    }
   } catch (err) {
     console.error("[EH-Translator]", err);
     showErr(err.message); // 向前台页面绘制报错 Banner，便于用户感知与排查问题

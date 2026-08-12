@@ -41,7 +41,8 @@ import {
 import { DEFAULT_PARAMS } from "../../subtitle/sentenceBreaker";
 import { buildBilingualVtt } from "../../subtitle/vtt";
 
-const SAMPLE_BASE_URL = `${process.env.REACT_APP_SITEURL}/subtitle-samples`;
+const SAMPLE_BASE_URL =
+  "https://raw.githubusercontent.com/ervinhez/EH-Translator/master/testdata/subtitle-samples";
 const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 const MAX_UPLOAD_EVENTS = 100000;
 // 原始数据和结果框默认显示五行，并允许用户从右下角按需拉高查看区域。

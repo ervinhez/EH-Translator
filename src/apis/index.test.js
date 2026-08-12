@@ -84,7 +84,6 @@ import {
   OPT_TRANS_DEEPL,
   OPT_TRANS_DEEPLX,
   OPT_TRANS_OPENAI,
-  OPT_TRANS_QWENMT,
 } from "../config";
 
 const getOpenAiApiSetting = (systemPrompt) => ({
@@ -585,57 +584,6 @@ describe("apiTranslate prompt queue isolation", () => {
       expect.stringMatching(/_1$/),
       handleTranslate,
       expect.objectContaining({ batchConcurrency: 1 })
-    );
-  });
-});
-
-describe("apiTranslate QwenMT cache identity", () => {
-  beforeEach(() => {
-    getHttpCachePolyfill.mockResolvedValue(null);
-    mockGetCacheDigest.mockImplementation(async (text, salt) =>
-      `${salt}:${text}`.padEnd(64, "a")
-    );
-    handleTranslate.mockImplementation(async function* () {
-      yield { id: 0, result: ["translated"] };
-    });
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  test("signs style, interface terms, and rule glossary", async () => {
-    const apiSetting = {
-      ...DEFAULT_API_LIST.find((api) => api.apiType === OPT_TRANS_QWENMT),
-      apiSlug: "qwen_mt_test",
-      key: "test-key",
-      tone: "technical",
-      aiTerms: "component,组件",
-    };
-    const glossary = { React: "React", component: "规则组件" };
-
-    await apiTranslate({
-      text: "hello",
-      fromLang: "auto",
-      toLang: "en",
-      glossary,
-      apiSetting,
-      useCache: false,
-    });
-
-    expect(mockGetCacheDigest).toHaveBeenCalledWith(
-      [
-        "qwen-mt",
-        "technical",
-        "component,组件",
-        JSON.stringify(Object.entries(glossary).sort()),
-      ].join("\n"),
-      "prompt-cache"
-    );
-    expect(getBatchQueue).not.toHaveBeenCalled();
-    expect(handleTranslate).toHaveBeenCalledWith(
-      ["hello"],
-      expect.objectContaining({ glossary, apiSetting })
     );
   });
 });

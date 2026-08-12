@@ -3,7 +3,6 @@
  * @description 浏览器环境桥接模块，用于引入 WebExtension Polyfill 垫片，并提供当前执行环境上下文 (Background, Options, Content Script) 的判定工具。
  */
 
-// import { CLIENT_EXTS, CLIENT_USERSCRIPT, CLIENT_WEB } from "../config";
 
 /**
  * 尝试安全加载 webextension-polyfill

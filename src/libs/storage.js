@@ -23,41 +23,20 @@ import {
   DEFAULT_TRANBOX_SETTING,
   normalizeApiThinkingSettings,
 } from "../config";
-import { isExt, isGm } from "./client";
+import { isExt } from "./client";
 import { browser } from "./browser";
 import { kissLog } from "./log";
 import { debounce } from "./utils";
-import { getGmMethod } from "./gm";
-
-/**
- * 获取适用于当前环境的 GM (Greasemonkey) 存储引擎方法集合。
- * 返回的对象包含跨环境安全调用的 setValue, getValue, deleteValue 方法。
- * 查找优先级：
- * 1. window.EH_GM：用于网页沙盒内通过 CustomEvent 与特权层通信的代理对象。
- * 2. 原生 GM Promise API (如 GM.setValue)。
- * 3. 旧版 GM_xxx 同步 API。
- * @returns {{setValue: Function, getValue: Function, deleteValue: Function}} 封装好的存储方法集合
- */
-function getGmStorage() {
-  return {
-    setValue: getGmMethod("setValue", "GM_setValue", [window.EH_GM]),
-    getValue: getGmMethod("getValue", "GM_getValue", [window.EH_GM]),
-    deleteValue: getGmMethod("deleteValue", "GM_deleteValue", [window.EH_GM]),
-  };
-}
 
 /**
  * 跨平台存储底层写入操作。
- * 会自动适配 Chrome Extension (browser.storage.local)、Userscript 油猴环境 (GM.setValue)
- * 以及普通网页环境 (localStorage)。
+ * 会自动适配 Chrome Extension (browser.storage.local) 以及普通网页环境 (localStorage)。
  * @param {string} key 键名
  * @param {*} val 待写入的字符串数据
  */
 async function set(key, val) {
   if (isExt) {
     await browser.storage.local.set({ [key]: val });
-  } else if (isGm) {
-    await getGmStorage().setValue(key, val);
   } else {
     window.localStorage.setItem(key, val);
   }
@@ -72,9 +51,6 @@ async function get(key) {
   if (isExt) {
     const val = await browser.storage.local.get([key]);
     return val[key];
-  } else if (isGm) {
-    const val = await getGmStorage().getValue(key);
-    return val;
   }
   return window.localStorage.getItem(key);
 }
@@ -86,8 +62,6 @@ async function get(key) {
 async function del(key) {
   if (isExt) {
     await browser.storage.local.remove([key]);
-  } else if (isGm) {
-    await getGmStorage().deleteValue(key);
   } else {
     window.localStorage.removeItem(key);
   }
