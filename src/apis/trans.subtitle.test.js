@@ -22,7 +22,7 @@ import {
   handleSubtitle,
 } from "./trans";
 import {
-  DEFAULT_API_LIST,
+  getDefaultApiSetting,
   OPT_TRANS_DEEPSEEK,
   OPT_TRANS_GEMINI,
   OPT_TRANS_OPENAI,
@@ -32,7 +32,7 @@ import { fetchData } from "../libs/fetch";
 import { fetchStream } from "../libs/fetch";
 
 const getApiSetting = (apiType) => ({
-  ...DEFAULT_API_LIST.find((api) => api.apiType === apiType),
+  ...getDefaultApiSetting(apiType),
   useStream: true,
   key: "test-key",
   model: "test-model",

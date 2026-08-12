@@ -8,7 +8,8 @@ A personalized Chrome bilingual translation extension, forked from the open-sour
 
 - Auto-translates webpages on open by default (including page titles)
 - UI defaults to Simplified Chinese; selection / subtitle translation target Simplified Chinese by default
-- Default translation provider: Microsoft (free, zero configuration)
+- Default translation provider: DeepSeek (OpenAI-compatible API; requires an API key)
+- New installs show only DeepSeek and Custom by default; other built-in providers remain available from Options.
 - Shortcuts follow the upstream: `Alt+Q` translate / `Alt+C` toggle style / `Alt+K` tranbox / `Alt+S` selection translation / `Alt+O` options
 
 ## Features

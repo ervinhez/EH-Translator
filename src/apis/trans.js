@@ -40,7 +40,7 @@ import {
   isGeminiInteractionsUrl,
   normalizeGeminiModelName,
   normalizeThinkingSettings,
-  } from "../config";
+} from "../config";
 import { genDeeplFree } from "./deepl";
 import { genBaidu } from "./baidu";
 import { interpreter } from "../libs/interpreter";
@@ -50,9 +50,7 @@ import {
   stripMarkdownCodeBlock,
   parseAITerms,
 } from "../libs/utils";
-import {
-  decodeHTMLEntities,
-    } from "../libs/html";
+import { decodeHTMLEntities } from "../libs/html";
 import { parseCompleteTranslationSegments } from "../libs/aiResponseParser";
 import {
   parseStreamingSegments,
@@ -651,6 +649,15 @@ const genTencent = ({ texts, from, to }) => {
   return { url, body, headers };
 };
 
+const resolveDeepSeekUrl = (url) => {
+  if (!url) {
+    return url;
+  }
+  const normalizedUrl = url.replace(/\/+$/, "");
+  return normalizedUrl.endsWith("/chat/completions")
+    ? normalizedUrl
+    : `${normalizedUrl}/chat/completions`;
+};
 const genOpenAI = ({
   url,
   key,
@@ -665,6 +672,9 @@ const genOpenAI = ({
   thinkingMode,
   thinkingEffort,
 }) => {
+  if (apiType === OPT_TRANS_DEEPSEEK) {
+    url = resolveDeepSeekUrl(url);
+  }
   const userMsg = {
     role: "user",
     content: userPrompt,

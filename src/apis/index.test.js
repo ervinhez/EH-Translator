@@ -79,7 +79,7 @@ import { getBatchQueue } from "../libs/batchQueue";
 import { getFetchPool } from "../libs/pool";
 import { getHttpCachePolyfill, putHttpCachePolyfill } from "../libs/cache";
 import {
-  DEFAULT_API_LIST,
+  getDefaultApiSetting,
   OPT_TRANS_BUILTINAI,
   OPT_TRANS_DEEPL,
   OPT_TRANS_DEEPLX,
@@ -87,7 +87,7 @@ import {
 } from "../config";
 
 const getOpenAiApiSetting = (systemPrompt) => ({
-  ...DEFAULT_API_LIST.find((api) => api.apiType === OPT_TRANS_OPENAI),
+  ...getDefaultApiSetting(OPT_TRANS_OPENAI),
   apiSlug: "openai_test",
   key: "test-key",
   model: "test-model",
@@ -97,7 +97,7 @@ const getOpenAiApiSetting = (systemPrompt) => ({
 });
 
 const getBuiltinAiApiSetting = (httpTimeout) => ({
-  ...DEFAULT_API_LIST.find((api) => api.apiType === OPT_TRANS_BUILTINAI),
+  ...getDefaultApiSetting(OPT_TRANS_BUILTINAI),
   apiSlug: `builtinai_${httpTimeout}`,
   fetchInterval: 100,
   fetchLimit: 1,
@@ -606,7 +606,7 @@ describe("apiTranslate DeepL language mappings", () => {
       fromLang: "zh-TW",
       toLang: "zh-TW",
       apiSetting: {
-        ...DEFAULT_API_LIST.find((api) => api.apiType === OPT_TRANS_DEEPL),
+        ...getDefaultApiSetting(OPT_TRANS_DEEPL),
         apiSlug: "deepl_test",
       },
       useCache: false,
@@ -623,7 +623,7 @@ describe("apiTranslate DeepL language mappings", () => {
     const addTask = jest.fn().mockResolvedValue(["繁體譯文", "ZH"]);
     getBatchQueue.mockReturnValue({ addTask });
     const apiSetting = {
-      ...DEFAULT_API_LIST.find((api) => api.apiType === OPT_TRANS_DEEPL),
+      ...getDefaultApiSetting(OPT_TRANS_DEEPL),
       apiSlug: "deepl_variant_test",
     };
 
@@ -656,7 +656,7 @@ describe("apiTranslate DeepL language mappings", () => {
       fromLang: "auto",
       toLang: "zh-CN",
       apiSetting: {
-        ...DEFAULT_API_LIST.find((api) => api.apiType === OPT_TRANS_DEEPL),
+        ...getDefaultApiSetting(OPT_TRANS_DEEPL),
         apiSlug: "deepl_generic_zh_test",
       },
       useCache: false,
@@ -679,7 +679,7 @@ describe("apiTranslate DeepL language mappings", () => {
       fromLang: "auto",
       toLang: "zh-CN",
       apiSetting: {
-        ...DEFAULT_API_LIST.find((api) => api.apiType === OPT_TRANS_DEEPL),
+        ...getDefaultApiSetting(OPT_TRANS_DEEPL),
         apiSlug: "deepl_cached_generic_zh_test",
       },
     });
@@ -699,7 +699,7 @@ describe("apiTranslate DeepL language mappings", () => {
       fromLang: "zh-TW",
       toLang: "zh-TW",
       apiSetting: {
-        ...DEFAULT_API_LIST.find((api) => api.apiType === OPT_TRANS_DEEPLX),
+        ...getDefaultApiSetting(OPT_TRANS_DEEPLX),
         apiSlug: "deeplx_test",
       },
       useCache: false,

@@ -62,7 +62,7 @@ export const OPT_TRANS_CLAUDE = "Claude"; // Anthropic Claude 翻译
 export const OPT_TRANS_OLLAMA = "Ollama"; // 本地部署 Ollama 模型翻译
 export const OPT_TRANS_CUSTOMIZE = "Custom"; // 自定义翻译 API
 
-// 内置支持的翻译引擎
+// 所有可从设置页新增的内置翻译引擎类型
 export const OPT_ALL_TRANS_TYPES = [
   OPT_TRANS_BUILTINAI,
   OPT_TRANS_GOOGLE,
@@ -80,6 +80,12 @@ export const OPT_ALL_TRANS_TYPES = [
   OPT_TRANS_CUSTOMIZE,
 ];
 
+// 新安装默认提供的翻译接口类型；其他接口仍可在设置页手动添加。
+export const OPT_DEFAULT_TRANS_TYPES = [
+  OPT_TRANS_DEEPSEEK,
+  OPT_TRANS_CUSTOMIZE,
+];
+
 export const OPT_LANGDETECTOR_ALL = [
   OPT_TRANS_BUILTINAI,
   OPT_TRANS_GOOGLE,
@@ -91,7 +97,7 @@ export const OPT_LANGDETECTOR_MAP = new Set(OPT_LANGDETECTOR_ALL);
 
 // 翻译引擎特殊集合：按能力将翻译引擎分类
 export const API_SPE_TYPES = {
-  // 内置翻译引擎
+  // 内置翻译引擎；OPT_ALL_TRANS_TYPES 仍包含所有可手动添加的服务。
   builtin: new Set(OPT_ALL_TRANS_TYPES),
   // 机器翻译引擎（传统查表/神经网络翻译，不需要大型语言模型）
   machine: new Set([
@@ -1203,6 +1209,7 @@ const defaultAiApiOpts = {
   streamRenderMode: "realtime", // 流式渲染模式：disabled/realtime/segment
 };
 
+// 保留完整的接口配置模板，用于兼容已保存的旧接口配置；新安装仅从 OPT_DEFAULT_TRANS_TYPES 生成默认列表。
 const defaultApiOpts = {
   [OPT_TRANS_BUILTINAI]: defaultApi,
   [OPT_TRANS_GOOGLE]: {
@@ -1231,7 +1238,7 @@ const defaultApiOpts = {
   },
   [OPT_TRANS_DEEPSEEK]: {
     ...defaultApi,
-    url: "https://api.deepseek.com/chat/completions",
+    url: "https://api.deepseek.com",
     modelListUrl: "https://api.deepseek.com/models",
     model: "deepseek-v4-flash",
     ...defaultAiApiOpts,
@@ -1276,15 +1283,23 @@ const defaultApiOpts = {
   },
 };
 
-// 内置翻译接口列表（带参数）
-export const DEFAULT_API_LIST = OPT_ALL_TRANS_TYPES.map((apiType) =>
-  normalizeApiThinkingSetting({
-    ...defaultApiOpts[apiType],
+// 返回指定类型的默认配置模板；新安装列表由 OPT_DEFAULT_TRANS_TYPES 决定。
+export function getDefaultApiSetting(apiType) {
+  const apiOpt = defaultApiOpts[apiType];
+  if (!apiOpt) {
+    return undefined;
+  }
+  return normalizeApiThinkingSetting({
+    ...apiOpt,
     apiSlug: apiType,
     apiName: apiType,
     apiType,
-  })
-);
+  });
+}
+
+// 新安装默认接口列表（仅包含 OPT_DEFAULT_TRANS_TYPES）
+export const DEFAULT_API_LIST =
+  OPT_DEFAULT_TRANS_TYPES.map(getDefaultApiSetting);
 
 /**
  * 为单个翻译接口补齐模型列表 URL。
@@ -1305,9 +1320,7 @@ export function fillDefaultApiModelListUrl(apiSetting) {
     return apiSetting;
   }
 
-  // 按接口类型查找内置默认配置，未查到官方模型列表接口时补为空字符串。
-  const defaultApiOpt =
-    DEFAULT_API_LIST.find((item) => item.apiType === apiSetting.apiType) || {};
+  const defaultApiOpt = getDefaultApiSetting(apiSetting.apiType) || {};
   return {
     ...apiSetting,
     modelListUrl: defaultApiOpt.modelListUrl || "",
@@ -1343,7 +1356,7 @@ export function normalizeApiModelListUrls(transApis = []) {
   return hasChanges ? nextApis : transApis;
 }
 
-export const DEFAULT_API_TYPE = OPT_TRANS_MICROSOFT;
+export const DEFAULT_API_TYPE = OPT_TRANS_DEEPSEEK;
 export const DEFAULT_API_SETTING = DEFAULT_API_LIST.find(
   (a) => a.apiType === DEFAULT_API_TYPE
 );

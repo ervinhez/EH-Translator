@@ -2,10 +2,13 @@ import {
   API_SPE_TYPES,
   DEFAULT_API_LIST,
   DEFAULT_API_TYPE,
+  OPT_ALL_TRANS_TYPES,
+  OPT_DEFAULT_TRANS_TYPES,
   OPT_LANGS_FROM_SPEC,
   OPT_LANGS_TO_SPEC,
   GEMINI_GENERATE_CONTENT_URL,
   GEMINI_INTERACTIONS_URL,
+  getDefaultApiSetting,
   getGeminiThinkingEfforts,
   getThinkingCapability,
   isThinkingMinimumFallback,
@@ -13,33 +16,44 @@ import {
   normalizeApiThinkingSettings,
   normalizeApiModelListUrls,
   OPT_TRANS_DEEPSEEK,
+  OPT_TRANS_CUSTOMIZE,
   OPT_TRANS_CLAUDE,
   OPT_TRANS_GEMINI,
   OPT_TRANS_MICROSOFT,
   OPT_TRANS_OPENAI,
 } from "./api";
 
-test("uses Microsoft as the fallback default API", () => {
-  expect(DEFAULT_API_TYPE).toBe(OPT_TRANS_MICROSOFT);
+test("uses DeepSeek as the fallback default API", () => {
+  expect(DEFAULT_API_TYPE).toBe(OPT_TRANS_DEEPSEEK);
 });
 
-test("includes Microsoft in the built-in API list", () => {
-  expect(
-    DEFAULT_API_LIST.some((api) => api.apiType === OPT_TRANS_MICROSOFT)
-  ).toBe(true);
+test("keeps a small new-install default without hiding optional APIs", () => {
+  expect(OPT_DEFAULT_TRANS_TYPES).toEqual([
+    OPT_TRANS_DEEPSEEK,
+    OPT_TRANS_CUSTOMIZE,
+  ]);
+  expect(DEFAULT_API_LIST.map((api) => api.apiType)).toEqual(
+    OPT_DEFAULT_TRANS_TYPES
+  );
+  expect(DEFAULT_API_LIST[0]).toMatchObject({
+    url: "https://api.deepseek.com",
+  });
+  expect(OPT_ALL_TRANS_TYPES).toContain(OPT_TRANS_MICROSOFT);
+  expect(API_SPE_TYPES.builtin.has(OPT_TRANS_MICROSOFT)).toBe(true);
 });
 
-test("all AI APIs define a thinking mode by default", () => {
-  for (const apiType of API_SPE_TYPES.ai) {
-    const api = DEFAULT_API_LIST.find((item) => item.apiType === apiType);
-    expect(api).toBeDefined();
+test("all default AI APIs define a thinking mode", () => {
+  for (const api of DEFAULT_API_LIST.filter((item) =>
+    API_SPE_TYPES.ai.has(item.apiType)
+  )) {
     expect(["auto", "enabled", "disabled"]).toContain(api.thinkingMode);
   }
 });
 
 test("keeps disabled as the initial thinking mode", () => {
-  for (const apiType of API_SPE_TYPES.ai) {
-    const api = DEFAULT_API_LIST.find((item) => item.apiType === apiType);
+  for (const api of DEFAULT_API_LIST.filter((item) =>
+    API_SPE_TYPES.ai.has(item.apiType)
+  )) {
     expect(api.thinkingMode).toBe("disabled");
   }
 });
@@ -107,22 +121,22 @@ describe("unified thinking capabilities", () => {
     ).toEqual({ thinkingMode: "enabled", thinkingEffort: "_default" });
   });
 
-  test.each([
-    [OPT_TRANS_DEEPSEEK, "deepseek"],
-  ])("uses explicit thinking modes for %s", (apiType, adapter) => {
-    const capability = getThinkingCapability({ apiType });
-    expect(capability).toMatchObject({ adapter });
-    expect(
-      normalizeThinkingSettings({ apiType, thinkingMode: "auto" })
-    ).toEqual({ thinkingMode: "auto", thinkingEffort: "_default" });
-    expect(
-      normalizeThinkingSettings({ apiType, thinkingMode: "enabled" })
-    ).toEqual({ thinkingMode: "enabled", thinkingEffort: null });
-    expect(
-      normalizeThinkingSettings({ apiType, thinkingMode: "disabled" })
-    ).toEqual({ thinkingMode: "disabled", thinkingEffort: null });
-  });
-
+  test.each([[OPT_TRANS_DEEPSEEK, "deepseek"]])(
+    "uses explicit thinking modes for %s",
+    (apiType, adapter) => {
+      const capability = getThinkingCapability({ apiType });
+      expect(capability).toMatchObject({ adapter });
+      expect(
+        normalizeThinkingSettings({ apiType, thinkingMode: "auto" })
+      ).toEqual({ thinkingMode: "auto", thinkingEffort: "_default" });
+      expect(
+        normalizeThinkingSettings({ apiType, thinkingMode: "enabled" })
+      ).toEqual({ thinkingMode: "enabled", thinkingEffort: null });
+      expect(
+        normalizeThinkingSettings({ apiType, thinkingMode: "disabled" })
+      ).toEqual({ thinkingMode: "disabled", thinkingEffort: null });
+    }
+  );
 
   test("keeps Claude native and hides unsupported legacy models", () => {
     expect(
@@ -139,8 +153,6 @@ describe("unified thinking capabilities", () => {
       })
     ).toEqual({ thinkingMode: "disabled", thinkingEffort: "low" });
   });
-
-
 
   test("normalizes loaded static settings once and preserves stable references", () => {
     const transApis = [
@@ -159,12 +171,8 @@ describe("unified thinking capabilities", () => {
   });
 });
 
-
-
 test("Gemini uses stable Interactions while the model list stays on v1beta", () => {
-  const gemini = DEFAULT_API_LIST.find(
-    (api) => api.apiType === OPT_TRANS_GEMINI
-  );
+  const gemini = getDefaultApiSetting(OPT_TRANS_GEMINI);
 
   expect(gemini).toMatchObject({
     url: GEMINI_INTERACTIONS_URL,
@@ -173,8 +181,6 @@ test("Gemini uses stable Interactions while the model list stays on v1beta", () 
     thinkingMode: "disabled",
   });
 });
-
-
 
 test("resolves Gemini modes with only thinkingMode and thinkingEffort", () => {
   expect(
@@ -237,7 +243,6 @@ test("resolves Gemini modes with only thinkingMode and thinkingEffort", () => {
       thinkingEffort: "high",
     })
   ).toEqual({ thinkingMode: "auto", thinkingEffort: "_default" });
-
 });
 
 test("filters native Gemini thinking efforts by model capability", () => {
@@ -284,6 +289,19 @@ describe("normalizeApiModelListUrls", () => {
       apiType: OPT_TRANS_DEEPSEEK,
       modelListUrl: "https://api.deepseek.com/models",
     });
+  });
+
+  test("仍能为未列入新默认列表的旧接口补充模型地址", () => {
+    const transApis = [
+      {
+        apiSlug: "OpenAI",
+        apiType: OPT_TRANS_OPENAI,
+      },
+    ];
+
+    const nextApis = normalizeApiModelListUrls(transApis);
+
+    expect(nextApis[0].modelListUrl).toBe("https://api.openai.com/v1/models");
   });
 
   test("用户已明确保存为空字符串时不覆盖 modelListUrl", () => {

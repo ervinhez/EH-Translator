@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo } from "react";
 import {
   DEFAULT_API_LIST,
+  getDefaultApiSetting,
   API_SPE_TYPES,
   normalizeApiModelListUrls,
   normalizeApiThinkingSettings,
@@ -122,9 +123,7 @@ export function useApiList() {
   // 添加一个新的自定义 API
   const addApi = useCallback(
     (apiType) => {
-      // 找到内置的该 API 类型的默认配置模版
-      const defaultApiOpt =
-        DEFAULT_API_LIST.find((da) => da.apiType === apiType) || {};
+      const defaultApiOpt = getDefaultApiSetting(apiType) || {};
       const uuid = crypto.randomUUID();
       // 使用类型名拼合 UUID 保证 apiSlug 唯一，代表具体 API 实例
       const apiSlug = `${apiType}_${crypto.randomUUID()}`;
@@ -399,8 +398,7 @@ export function useApiItem(apiSlug) {
       ...prev,
       transApis: (prev?.transApis || []).map((item) => {
         if (item.apiSlug === apiSlug) {
-          const defaultApiOpt =
-            DEFAULT_API_LIST.find((da) => da.apiType === item.apiType) || {};
+          const defaultApiOpt = getDefaultApiSetting(item.apiType) || {};
           return {
             ...defaultApiOpt,
             apiSlug: item.apiSlug,

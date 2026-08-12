@@ -21,7 +21,7 @@ jest.mock("../libs/docInfo", () => ({
 
 import { handleTranslate } from "./trans";
 import {
-  DEFAULT_API_LIST,
+  getDefaultApiSetting,
   GEMINI_GENERATE_CONTENT_URL,
   GEMINI_INTERACTIONS_URL,
   OPT_TRANS_DEEPSEEK,
@@ -38,7 +38,7 @@ import { trustedTypesHelper } from "../libs/trustedTypes";
 import { clearMsgHistory } from "./history";
 
 const getApiSetting = (apiType) => ({
-  ...DEFAULT_API_LIST.find((api) => api.apiType === apiType),
+  ...getDefaultApiSetting(apiType),
   useStream: true,
   useBatchFetch: true,
   key: "test-key",
@@ -72,9 +72,6 @@ describe("handleTranslate", () => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
   });
-
-
-
 
   test("uses the stable Gemini Interactions request and parses model output steps", async () => {
     fetchData.mockResolvedValueOnce({
@@ -134,8 +131,6 @@ describe("handleTranslate", () => {
     expect(result).toEqual([{ id: 0, result: ["你好", "en"] }]);
   });
 
-
-
   test("applies all three thinking modes to Gemini Interactions", async () => {
     fetchData.mockResolvedValue({
       status: "completed",
@@ -183,8 +178,6 @@ describe("handleTranslate", () => {
         .thinking_level
     ).toBe("low");
   });
-
-
 
   test("does not inject thinking parameters for unknown models", async () => {
     fetchData.mockResolvedValue({
@@ -285,9 +278,10 @@ describe("handleTranslate", () => {
       thinking: { type: "enabled" },
       reasoning_effort: "max",
     });
+    expect(fetchData.mock.calls[0][0]).toBe(
+      "https://api.deepseek.com/chat/completions"
+    );
   });
-
-
 
   test("uses dynamic thinkingBudget by default for Gemini 2.5 generateContent", async () => {
     fetchData.mockResolvedValueOnce({

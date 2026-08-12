@@ -4,7 +4,7 @@ import {
   DEFAULT_SUBTITLE_SETTING,
   DEFAULT_TRANBOX_SETTING,
 } from "./setting";
-import { OPT_TRANS_MICROSOFT } from "./api";
+import { OPT_TRANS_DEEPSEEK } from "./api";
 import { GLOBAL_KEY } from "./rules";
 
 describe("translation box defaults", () => {
@@ -12,9 +12,9 @@ describe("translation box defaults", () => {
     expect(DEFAULT_SETTING.translateVariants).toBe(true);
   });
 
-  test("uses Microsoft for default tranbox and subtitle entry points", () => {
-    expect(DEFAULT_TRANBOX_SETTING.apiSlugs).toEqual([OPT_TRANS_MICROSOFT]);
-    expect(DEFAULT_SUBTITLE_SETTING.apiSlug).toBe(OPT_TRANS_MICROSOFT);
+  test("uses DeepSeek for default tranbox and subtitle entry points", () => {
+    expect(DEFAULT_TRANBOX_SETTING.apiSlugs).toEqual([OPT_TRANS_DEEPSEEK]);
+    expect(DEFAULT_SUBTITLE_SETTING.apiSlug).toBe(OPT_TRANS_DEEPSEEK);
   });
 
   test("does not ignore any language by default", () => {

@@ -22,11 +22,11 @@ jest.mock("../libs/stream", () => ({
 
 import { fetchData, fetchStream } from "../libs/fetch";
 import { getStreamDelta } from "../libs/stream";
-import { DEFAULT_API_LIST, OPT_TRANS_OPENAI } from "../config";
+import { getDefaultApiSetting, OPT_TRANS_OPENAI } from "../config";
 import { handleDict } from "./trans";
 
 const openaiApi = {
-  ...DEFAULT_API_LIST.find((api) => api.apiType === OPT_TRANS_OPENAI),
+  ...getDefaultApiSetting(OPT_TRANS_OPENAI),
   apiSlug: "openai_dict",
   key: "test-key",
   model: "test-model",

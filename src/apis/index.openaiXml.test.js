@@ -23,10 +23,10 @@ jest.mock("../libs/docInfo", () => ({
 
 import { apiTranslate } from "./index";
 import { fetchData, fetchStream } from "../libs/fetch";
-import { DEFAULT_API_LIST, OPT_TRANS_OPENAI } from "../config";
+import { getDefaultApiSetting, OPT_TRANS_OPENAI } from "../config";
 
 const getOpenAiApiSetting = () => ({
-  ...DEFAULT_API_LIST.find((api) => api.apiType === OPT_TRANS_OPENAI),
+  ...getDefaultApiSetting(OPT_TRANS_OPENAI),
   apiSlug: "openai_xml_test",
   key: "test-key",
   model: "deepseek-v4-flash",

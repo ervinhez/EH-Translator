@@ -16,12 +16,16 @@ jest.mock("../libs/docInfo", () => ({
 }));
 
 import { handleTranslate } from "./trans";
-import { DEFAULT_API_LIST, OPT_TRANS_DEEPL, OPT_TRANS_DEEPLX } from "../config";
+import {
+  getDefaultApiSetting,
+  OPT_TRANS_DEEPL,
+  OPT_TRANS_DEEPLX,
+} from "../config";
 import { fetchData } from "../libs/fetch";
 
 const translate = async (apiType, response) => {
   const apiSetting = {
-    ...DEFAULT_API_LIST.find((api) => api.apiType === apiType),
+    ...getDefaultApiSetting(apiType),
     apiSlug: `${apiType}_test`,
     key: "test-key",
     fetchInterval: 0,
