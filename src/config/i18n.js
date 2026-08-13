@@ -318,6 +318,15 @@ export const I18N = {
     tr: `Basit Ayar`,
     vi: "Cài đặt cơ bản",
   },
+  advanced_settings: {
+    zh: `高级设置`,
+    en: `Advanced Settings`,
+    zh_TW: `進階設定`,
+    ja: `詳細設定`,
+    ko: `고급 설정`,
+    tr: `Gelişmiş Ayarlar`,
+    vi: "Cài đặt nâng cao",
+  },
   page_translation_defaults: {
     zh: `网页翻译默认设置`,
     en: `Webpage Translation Defaults`,

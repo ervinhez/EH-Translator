@@ -41,9 +41,10 @@ import { useShortcut } from "../../hooks/Shortcut";
 import ShortcutInput from "./ShortcutInput";
 import { useFab } from "../../hooks/Fab";
 import { sendBgMsg } from "../../libs/msg";
-import { kissLog, LogLevel } from "../../libs/log";
+import { kissLog } from "../../libs/log";
 import UploadButton from "./UploadButton";
 import DownloadButton from "./DownloadButton";
+import ShowMoreButton from "./ShowMoreButton";
 import ValidationInput from "../../hooks/ValidationInput";
 import { useRules } from "../../hooks/Rules";
 import { useApiList } from "../../hooks/Api";
@@ -176,6 +177,8 @@ export default function Settings() {
   const alert = useAlert();
   // 悬浮查词 FAB 浮球设置 Hook
   const { fab, updateFab } = useFab();
+  const [showMore, setShowMore] = useState(false);
+
 
   // 基础表单输入状态更改回调
   const handleChange = (e) => {
@@ -228,14 +231,13 @@ export default function Settings() {
     injectRules = true,
     newlineLength = TRANS_NEWLINE_LENGTH,
     httpTimeout = DEFAULT_HTTP_TIMEOUT,
+    transInterval = 100,
     contextMenuType = 1,
     touchModes = [2],
     blacklist = DEFAULT_BLACKLIST.join(",\n"),
     csplist = DEFAULT_CSPLIST.join(",\n"),
     orilist = DEFAULT_ORILIST.join(",\n"),
-    transInterval = 100,
     langDetector = "-",
-    logLevel = 1,
     preInit = true,
     skipLangs = [],
     translateVariants = true,
@@ -268,23 +270,8 @@ export default function Settings() {
   return (
     <Box>
       <Stack spacing={3}>
-        {/* 数据导入导出控制条 */}
-        <Stack
-          direction="row"
-          alignItems="center"
-          spacing={2}
-          useFlexGap
-          flexWrap="wrap"
-        >
-          <UploadButton text={i18n("import")} handleImport={handleImport} />
-          <DownloadButton
-            handleData={() => JSON.stringify(setting, null, 2)}
-            text={i18n("export")}
-            fileName={`eh-setting_v2_${Date.now()}.json`}
-          />
-        </Stack>
 
-        {/* 基础参数网格配置区 */}
+        {/* 基础参数网格配置区：保留日常使用会频繁调整的选项 */}
         <Box>
           <Grid container spacing={2} columns={12}>
             {/* 设置面板用户界面语言 */}
@@ -305,213 +292,9 @@ export default function Settings() {
                 ))}
               </TextField>
             </Grid>
-            {/* 页面打开时是否预先初始化运行环境 */}
-            <Grid item xs={12} sm={12} md={6} lg={3}>
-              <TextField
-                select
-                fullWidth
-                size="small"
-                name="preInit"
-                value={preInit}
-                label={i18n("if_pre_init")}
-                onChange={handleChange}
-              >
-                <MenuItem value={true}>{i18n("enable")}</MenuItem>
-                <MenuItem value={false}>{i18n("disable")}</MenuItem>
-              </TextField>
-            </Grid>
-            {/* 点击悬浮球时触发的行为 (直接展示菜单或立即启动全文双语翻译) */}
-            <Grid item xs={12} sm={12} md={6} lg={3}>
-              <TextField
-                select
-                fullWidth
-                size="small"
-                name="fabClickAction"
-                value={fabClickAction}
-                label={i18n("fab_click_action")}
-                onChange={(e) => updateFab({ fabClickAction: e.target.value })}
-              >
-                <MenuItem value={0}>{i18n("fab_click_menu")}</MenuItem>
-                <MenuItem value={1}>{i18n("fab_click_translate")}</MenuItem>
-              </TextField>
-            </Grid>
-            {/* 单个 DOM 文本块触发网页翻译的最小有效文本长度 */}
-            <Grid item xs={12} sm={12} md={6} lg={3}>
-              <ValidationInput
-                fullWidth
-                size="small"
-                label={i18n("min_translate_length")}
-                type="number"
-                name="minLength"
-                value={minLength}
-                onChange={handleChange}
-                min={1}
-                max={100}
-              />
-            </Grid>
-            {/* 允许发起单次网页段落翻译的最长文本限制 */}
-            <Grid item xs={12} sm={12} md={6} lg={3}>
-              <ValidationInput
-                fullWidth
-                size="small"
-                label={i18n("max_translate_length")}
-                type="number"
-                name="maxLength"
-                value={maxLength}
-                onChange={handleChange}
-                min={100}
-                max={100000}
-              />
-            </Grid>
-            {/* 网页中单个纯文本换行符被当作真换行截断句子的数量 */}
-            <Grid item xs={12} sm={12} md={6} lg={3}>
-              <ValidationInput
-                fullWidth
-                size="small"
-                label={i18n("num_of_newline_characters")}
-                type="number"
-                name="newlineLength"
-                value={newlineLength}
-                onChange={handleChange}
-                min={1}
-                max={1000}
-              />
-            </Grid>
-            {/* DOM 段落网页翻译扫描定时查询轮询间隔时间 (ms) */}
-            <Grid item xs={12} sm={12} md={6} lg={3}>
-              <ValidationInput
-                fullWidth
-                size="small"
-                label={i18n("translate_interval")}
-                type="number"
-                name="transInterval"
-                value={transInterval}
-                onChange={handleChange}
-                min={1}
-                max={2000}
-              />
-            </Grid>
-            {/* 全局接口 HTTP 网络请求超时阈值 (s) */}
-            <Grid item xs={12} sm={12} md={6} lg={3}>
-              <ValidationInput
-                fullWidth
-                size="small"
-                label={i18n("http_timeout")}
-                type="number"
-                name="httpTimeout"
-                value={httpTimeout}
-                onChange={handleChange}
-                min={1}
-                max={600}
-              />
-            </Grid>
-            {/* 移动端/触屏端特定的触摸手势快捷翻译触发方式 */}
-            <Grid item xs={12} sm={12} md={6} lg={3}>
-              <TextField
-                select
-                fullWidth
-                size="small"
-                name="touchModes"
-                value={touchModes}
-                label={i18n("touch_translate_shortcut")}
-                onChange={handleChange}
-                SelectProps={{
-                  multiple: true,
-                }}
-              >
-                {[0, 2, 3, 4, 5, 6, 7].map((item) => (
-                  <MenuItem key={item} value={item}>
-                    {i18n(`touch_tap_${item}`)}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            {/* 浏览器右键上下文菜单的展示层级 */}
-            <Grid item xs={12} sm={12} md={6} lg={3}>
-              <TextField
-                select
-                fullWidth
-                size="small"
-                name="contextMenuType"
-                value={contextMenuType}
-                label={i18n("context_menus")}
-                onChange={handleChange}
-              >
-                <MenuItem value={0}>{i18n("hide_context_menus")}</MenuItem>
-                <MenuItem value={1}>{i18n("simple_context_menus")}</MenuItem>
-                <MenuItem value={2}>{i18n("secondary_context_menus")}</MenuItem>
-              </TextField>
-            </Grid>
-            {/* 网页首选的语言自动检测服务组件 (如 Chrome Builtin, FastText 或 API) */}
-            <Grid item xs={12} sm={12} md={6} lg={3}>
-              <TextField
-                select
-                fullWidth
-                size="small"
-                name="langDetector"
-                value={langDetector}
-                label={i18n("detected_lang")}
-                onChange={handleChange}
-              >
-                <MenuItem value={"-"}>{i18n("disable")}</MenuItem>
-                {OPT_LANGDETECTOR_ALL.map((item) => (
-                  <MenuItem value={item} key={item}>
-                    {item}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            {/* 是否翻译同一语言的不同变体，例如简体中文与繁体中文 */}
-            <Grid item xs={12} sm={12} md={6} lg={3}>
-              <TextField
-                select
-                fullWidth
-                size="small"
-                name="translateVariants"
-                value={translateVariants}
-                label={i18n("translate_variants")}
-                helperText={i18n("translate_variants_helper")}
-                onChange={handleChange}
-              >
-                <MenuItem value={true}>{i18n("enable")}</MenuItem>
-                <MenuItem value={false}>{i18n("disable")}</MenuItem>
-              </TextField>
-            </Grid>
-            {/* 是否注入订阅规则 */}
-            <Grid item xs={12} sm={12} md={6} lg={3}>
-              <TextField
-                select
-                fullWidth
-                size="small"
-                name="injectRules"
-                value={injectRules}
-                label={i18n("inject_rules")}
-                onChange={handleChange}
-              >
-                <MenuItem value={true}>{i18n("enable")}</MenuItem>
-                <MenuItem value={false}>{i18n("disable")}</MenuItem>
-              </TextField>
-            </Grid>
-            {/* 日志记录详细层级 (Error/Info/Debug 等) */}
-            <Grid item xs={12} sm={12} md={6} lg={3}>
-              <TextField
-                select
-                fullWidth
-                size="small"
-                name="logLevel"
-                value={logLevel}
-                label={i18n("log_level")}
-                onChange={handleChange}
-              >
-                {Object.values(LogLevel).map(({ value, name }) => (
-                  <MenuItem value={value} key={value}>
-                    {name}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
           </Grid>
         </Box>
+
         <Typography variant="h6" component="h2">
           {i18n("page_translation_defaults")}
         </Typography>
@@ -532,21 +315,6 @@ export default function Settings() {
                 ))}
               </GlobalRuleSelect>
             </Grid>
-            {/* 默认源语言 */}
-            <Grid item xs={12} sm={6} md={4} lg={3}>
-              <GlobalRuleSelect
-                name="fromLang"
-                value={getGlobalRuleValue("fromLang")}
-                label={i18n("from_lang")}
-                onChange={handleGlobalRuleChange}
-              >
-                {OPT_LANGS_FROM.map(([lang, name]) => (
-                  <MenuItem key={lang} value={lang}>
-                    {name}
-                  </MenuItem>
-                ))}
-              </GlobalRuleSelect>
-            </Grid>
             {/* 默认目标语言 */}
             <Grid item xs={12} sm={6} md={4} lg={3}>
               <GlobalRuleSelect
@@ -562,8 +330,10 @@ export default function Settings() {
                 ))}
               </GlobalRuleSelect>
             </Grid>
-            {/* 翻译行为开关 */}
-            {GLOBAL_BOOLEAN_RULE_FIELDS.map(([name, label]) => (
+            {/* 最常用的网页翻译行为开关 */}
+            {GLOBAL_BOOLEAN_RULE_FIELDS.filter(([name]) =>
+              ["transOpen", "transOnly"].includes(name)
+            ).map(([name, label]) => (
               <Grid item xs={12} sm={6} md={4} lg={3} key={name}>
                 <GlobalRuleSelect
                   name={name}
@@ -592,18 +362,6 @@ export default function Settings() {
                 </MenuItem>
               </GlobalRuleSelect>
             </Grid>
-            {/* 译文元素标签 */}
-            <Grid item xs={12} sm={6} md={4} lg={3}>
-              <GlobalRuleSelect
-                name="transTag"
-                value={getGlobalRuleValue("transTag")}
-                label={i18n("translation_element_tag")}
-                onChange={handleGlobalRuleChange}
-              >
-                <MenuItem value="span">{`<span>`}</MenuItem>
-                <MenuItem value="font">{`<font>`}</MenuItem>
-              </GlobalRuleSelect>
-            </Grid>
             {/* 译文样式 */}
             <Grid item xs={12} sm={6} md={4} lg={3}>
               <GlobalRuleSelect
@@ -619,103 +377,8 @@ export default function Settings() {
                 ))}
               </GlobalRuleSelect>
             </Grid>
-            {/* 包裹原文后的样式 */}
-            {String(getGlobalRuleValue("wrapOriginal")) === "true" && (
-              <Grid item xs={12} sm={6} md={4} lg={3}>
-                <GlobalRuleSelect
-                  name="originalTextStyle"
-                  value={getGlobalRuleValue("originalTextStyle")}
-                  label={i18n("original_text_style")}
-                  onChange={handleGlobalRuleChange}
-                >
-                  {allTextStyles.map((item) => (
-                    <MenuItem key={item.styleSlug} value={item.styleSlug}>
-                      {item.styleName}
-                    </MenuItem>
-                  ))}
-                </GlobalRuleSelect>
-              </Grid>
-            )}
-            {/* 仅译文模式下恢复原文的延迟 */}
-            <Grid item xs={12} sm={6} md={4} lg={3}>
-              <ValidationInput
-                fullWidth
-                size="small"
-                label={i18n("transonly_revert_delay")}
-                type="number"
-                name="transOnlyRevertDelay"
-                value={getGlobalRuleValue("transOnlyRevertDelay")}
-                onChange={handleGlobalRuleChange}
-                min={0}
-                max={60}
-              />
-            </Grid>
-            {/* 长段落切分策略 */}
-            <Grid item xs={12} sm={6} md={4} lg={3}>
-              <GlobalRuleSelect
-                name="splitParagraph"
-                value={getGlobalRuleValue("splitParagraph")}
-                label={i18n("split_paragraph")}
-                onChange={handleGlobalRuleChange}
-              >
-                {OPT_SPLIT_PARAGRAPH_ALL.map((item) => (
-                  <MenuItem key={item} value={item}>
-                    {i18n(item)}
-                  </MenuItem>
-                ))}
-              </GlobalRuleSelect>
-            </Grid>
-            {/* 长段落切分阈值 */}
-            <Grid item xs={12} sm={6} md={4} lg={3}>
-              <ValidationInput
-                fullWidth
-                size="small"
-                label={i18n("split_length")}
-                type="number"
-                name="splitLength"
-                value={getGlobalRuleValue("splitLength")}
-                onChange={handleGlobalRuleChange}
-                min={0}
-                max={1000}
-              />
-            </Grid>
-            {/* 生词高亮策略 */}
-            <Grid item xs={12} sm={6} md={4} lg={3}>
-              <GlobalRuleSelect
-                name="highlightWords"
-                value={getGlobalRuleValue("highlightWords")}
-                label={i18n("highlight_words")}
-                onChange={handleGlobalRuleChange}
-              >
-                {OPT_HIGHLIGHT_WORDS_ALL.map((item) => (
-                  <MenuItem key={item} value={item}>
-                    {i18n(item)}
-                  </MenuItem>
-                ))}
-              </GlobalRuleSelect>
-            </Grid>
           </Grid>
         </Box>
-
-        {/* 翻译跳过语言：遇到选中的目标语言时跳过自动网页翻译 */}
-        <TextField
-          select
-          size="small"
-          label={i18n("skip_langs")}
-          helperText={i18n("skip_langs_helper")}
-          name="skipLangs"
-          value={skipLangs}
-          onChange={handleChange}
-          SelectProps={{
-            multiple: true,
-          }}
-        >
-          {OPT_LANGS_TO.map(([langKey, langName]) => (
-            <MenuItem key={langKey} value={langKey}>
-              {langName}
-            </MenuItem>
-          ))}
-        </TextField>
 
         {/* 是否全局隐藏内容页面右侧的悬浮查词小图标 FAB */}
         <TextField
@@ -733,113 +396,500 @@ export default function Settings() {
           <MenuItem value={true}>{i18n("hide")}</MenuItem>
         </TextField>
 
-        <TextField
-          fullWidth
-          size="small"
-          multiline
-          maxRows={10}
-          name="hideExceptionList"
-          value={hideExceptionList}
-          label={i18n("fab_exception_list")}
-          helperText={i18n("fab_exception_list_helper")}
-          onChange={(e) => updateFab({ hideExceptionList: e.target.value })}
-        />
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          spacing={2}
+          useFlexGap
+          flexWrap="wrap"
+        >
+          <Typography
+            variant="h6"
+            component="h2"
+            data-testid="advanced-settings-title"
+          >
+            {i18n("advanced_settings")}
+          </Typography>
+          <ShowMoreButton showMore={showMore} onChange={setShowMore} />
+        </Stack>
 
-        {/* 网页翻译的黑名单域名正则排除列表 (一行一条) */}
-        <TextField
-          size="small"
-          label={i18n("translate_blacklist")}
-          helperText={i18n("pattern_helper")}
-          name="blacklist"
-          value={blacklist}
-          onChange={handleChange}
-          maxRows={10}
-          multiline
-        />
-
-        {/* 扩展专属的高级网络设置 (只在 Extension 模式下展示) */}
-        {isExt ? (
+        {showMore && (
           <>
-            {/* 是否在浏览器关闭/重启时自动清空网页翻译的已缓存译文 */}
-            <TextField
-              select
-              fullWidth
-              size="small"
-              name="clearCache"
-              value={clearCache}
-              label={i18n("if_clear_cache")}
-              onChange={handleChange}
-              helperText={
-                <Link component="button" onClick={handleClearCache}>
-                  {i18n("clear_all_cache_now")}
-                </Link>
-              }
+            {/* 数据导入导出控制条 */}
+            <Stack
+              direction="row"
+              alignItems="center"
+              spacing={2}
+              useFlexGap
+              flexWrap="wrap"
             >
-              <MenuItem value={false}>{i18n("clear_cache_never")}</MenuItem>
-              <MenuItem value={true}>{i18n("clear_cache_restart")}</MenuItem>
-            </TextField>
+              <UploadButton
+                text={i18n("import")}
+                handleImport={handleImport}
+              />
+              <DownloadButton
+                handleData={() => JSON.stringify(setting, null, 2)}
+                text={i18n("export")}
+                fileName={`eh-setting_v2_${Date.now()}.json`}
+              />
+            </Stack>
 
-            {/* 跨域安全 CSP 旁路加载白名单与 Ori 白名单 */}
-            <TextField
-              size="small"
-              label={i18n("disabled_orilist")}
-              helperText={i18n("pattern_helper")}
-              name="orilist"
-              value={orilist}
-              onChange={handleChange}
-              multiline
-            />
-            <TextField
-              size="small"
-              label={i18n("disabled_csplist")}
-              helperText={
-                i18n("pattern_helper") + " " + i18n("disabled_csplist_helper")
-              }
-              name="csplist"
-              value={csplist}
-              onChange={handleChange}
-              multiline
-            />
-
-            <ExtCommands />
-          </>
-        ) : (
-          // 油猴脚本环境运行：渲染脚本侧注册的全局热键录入面板
-          <>
+            {/* 低频运行参数：多数用户无需调整 */}
             <Box>
               <Grid container spacing={2} columns={12}>
+                {/* 点击悬浮球时触发的行为 (直接展示菜单或立即启动全文双语翻译) */}
                 <Grid item xs={12} sm={12} md={6} lg={3}>
-                  <ShortcutItem
-                    action={OPT_SHORTCUT_TRANSLATE}
-                    label={i18n("toggle_translate_shortcut")}
+                  <TextField
+                    select
+                    fullWidth
+                    size="small"
+                    name="fabClickAction"
+                    value={fabClickAction}
+                    label={i18n("fab_click_action")}
+                    onChange={(e) =>
+                      updateFab({ fabClickAction: e.target.value })
+                    }
+                  >
+                    <MenuItem value={0}>{i18n("fab_click_menu")}</MenuItem>
+                    <MenuItem value={1}>
+                      {i18n("fab_click_translate")}
+                    </MenuItem>
+                  </TextField>
+                </Grid>
+                {/* 页面打开时是否预先初始化运行环境 */}
+                <Grid item xs={12} sm={12} md={6} lg={3}>
+                  <TextField
+                    select
+                    fullWidth
+                    size="small"
+                    name="preInit"
+                    value={preInit}
+                    label={i18n("if_pre_init")}
+                    onChange={handleChange}
+                  >
+                    <MenuItem value={true}>{i18n("enable")}</MenuItem>
+                    <MenuItem value={false}>{i18n("disable")}</MenuItem>
+                  </TextField>
+                </Grid>
+                {/* 浏览器右键上下文菜单的展示层级 */}
+                <Grid item xs={12} sm={12} md={6} lg={3}>
+                  <TextField
+                    select
+                    fullWidth
+                    size="small"
+                    name="contextMenuType"
+                    value={contextMenuType}
+                    label={i18n("context_menus")}
+                    onChange={handleChange}
+                  >
+                    <MenuItem value={0}>
+                      {i18n("hide_context_menus")}
+                    </MenuItem>
+                    <MenuItem value={1}>
+                      {i18n("simple_context_menus")}
+                    </MenuItem>
+                    <MenuItem value={2}>
+                      {i18n("secondary_context_menus")}
+                    </MenuItem>
+                  </TextField>
+                </Grid>
+                {/* 单个 DOM 文本块触发网页翻译的最小有效文本长度 */}
+                <Grid item xs={12} sm={12} md={6} lg={3}>
+                  <ValidationInput
+                    fullWidth
+                    size="small"
+                    label={i18n("min_translate_length")}
+                    type="number"
+                    name="minLength"
+                    value={minLength}
+                    onChange={handleChange}
+                    min={1}
+                    max={100}
                   />
                 </Grid>
+                {/* 默认源语言 */}
+                <Grid item xs={12} sm={6} md={4} lg={3}>
+                  <GlobalRuleSelect
+                    name="fromLang"
+                    value={getGlobalRuleValue("fromLang")}
+                    label={i18n("from_lang")}
+                    onChange={handleGlobalRuleChange}
+                  >
+                    {OPT_LANGS_FROM.map(([lang, name]) => (
+                      <MenuItem key={lang} value={lang}>
+                        {name}
+                      </MenuItem>
+                    ))}
+                  </GlobalRuleSelect>
+                </Grid>
+                {/* 允许发起单次网页段落翻译的最长文本限制 */}
                 <Grid item xs={12} sm={12} md={6} lg={3}>
-                  <ShortcutItem
-                    action={OPT_SHORTCUT_TRANSONLY}
-                    label={i18n("toggle_transonly_shortcut")}
+                  <ValidationInput
+                    fullWidth
+                    size="small"
+                    label={i18n("max_translate_length")}
+                    type="number"
+                    name="maxLength"
+                    value={maxLength}
+                    onChange={handleChange}
+                    min={100}
+                    max={100000}
                   />
                 </Grid>
+                {/* 网页中单个纯文本换行符被当作真换行截断句子的数量 */}
                 <Grid item xs={12} sm={12} md={6} lg={3}>
-                  <ShortcutItem
-                    action={OPT_SHORTCUT_STYLE}
-                    label={i18n("toggle_style_shortcut")}
+                  <ValidationInput
+                    fullWidth
+                    size="small"
+                    label={i18n("num_of_newline_characters")}
+                    type="number"
+                    name="newlineLength"
+                    value={newlineLength}
+                    onChange={handleChange}
+                    min={1}
+                    max={1000}
                   />
                 </Grid>
+                {/* DOM 段落网页翻译扫描定时查询轮询间隔时间 (ms) */}
                 <Grid item xs={12} sm={12} md={6} lg={3}>
-                  <ShortcutItem
-                    action={OPT_SHORTCUT_POPUP}
-                    label={i18n("toggle_popup_shortcut")}
+                  <ValidationInput
+                    fullWidth
+                    size="small"
+                    label={i18n("translate_interval")}
+                    type="number"
+                    name="transInterval"
+                    value={transInterval}
+                    onChange={handleChange}
+                    min={1}
+                    max={2000}
                   />
                 </Grid>
+                {/* 全局接口 HTTP 网络请求超时阈值 (s) */}
                 <Grid item xs={12} sm={12} md={6} lg={3}>
-                  <ShortcutItem
-                    action={OPT_SHORTCUT_SETTING}
-                    label={i18n("open_setting_shortcut")}
+                  <ValidationInput
+                    fullWidth
+                    size="small"
+                    label={i18n("http_timeout")}
+                    type="number"
+                    name="httpTimeout"
+                    value={httpTimeout}
+                    onChange={handleChange}
+                    min={1}
+                    max={600}
                   />
+                </Grid>
+                {/* 移动端/触屏端特定的触摸手势快捷翻译触发方式 */}
+                <Grid item xs={12} sm={12} md={6} lg={3}>
+                  <TextField
+                    select
+                    fullWidth
+                    size="small"
+                    name="touchModes"
+                    value={touchModes}
+                    label={i18n("touch_translate_shortcut")}
+                    onChange={handleChange}
+                    SelectProps={{
+                      multiple: true,
+                    }}
+                  >
+                    {[0, 2, 3, 4, 5, 6, 7].map((item) => (
+                      <MenuItem key={item} value={item}>
+                        {i18n(`touch_tap_${item}`)}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+                {/* 网页首选的语言自动检测服务组件 (如 Chrome Builtin, FastText 或 API) */}
+                <Grid item xs={12} sm={12} md={6} lg={3}>
+                  <TextField
+                    select
+                    fullWidth
+                    size="small"
+                    name="langDetector"
+                    value={langDetector}
+                    label={i18n("detected_lang")}
+                    onChange={handleChange}
+                  >
+                    <MenuItem value={"-"}>{i18n("disable")}</MenuItem>
+                    {OPT_LANGDETECTOR_ALL.map((item) => (
+                      <MenuItem value={item} key={item}>
+                        {item}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+                {/* 是否翻译同一语言的不同变体，例如简体中文与繁体中文 */}
+                <Grid item xs={12} sm={12} md={6} lg={3}>
+                  <TextField
+                    select
+                    fullWidth
+                    size="small"
+                    name="translateVariants"
+                    value={translateVariants}
+                    label={i18n("translate_variants")}
+                    helperText={i18n("translate_variants_helper")}
+                    onChange={handleChange}
+                  >
+                    <MenuItem value={true}>{i18n("enable")}</MenuItem>
+                    <MenuItem value={false}>{i18n("disable")}</MenuItem>
+                  </TextField>
+                </Grid>
+                {/* 是否注入订阅规则 */}
+                <Grid item xs={12} sm={12} md={6} lg={3}>
+                  <TextField
+                    select
+                    fullWidth
+                    size="small"
+                    name="injectRules"
+                    value={injectRules}
+                    label={i18n("inject_rules")}
+                    onChange={handleChange}
+                  >
+                    <MenuItem value={true}>{i18n("enable")}</MenuItem>
+                    <MenuItem value={false}>{i18n("disable")}</MenuItem>
+                  </TextField>
                 </Grid>
               </Grid>
             </Box>
+
+            {/* 低频网页翻译行为与兼容性参数 */}
+            <Box>
+              <Grid container spacing={2} columns={12}>
+                {GLOBAL_BOOLEAN_RULE_FIELDS.filter(
+                  ([name]) => !["transOpen", "transOnly"].includes(name)
+                ).map(([name, label]) => (
+                  <Grid item xs={12} sm={6} md={4} lg={3} key={name}>
+                    <GlobalRuleSelect
+                      name={name}
+                      value={getGlobalRuleValue(name)}
+                      label={i18n(label)}
+                      onChange={handleGlobalRuleChange}
+                    >
+                      <MenuItem value="false">{i18n("disable")}</MenuItem>
+                      <MenuItem value="true">{i18n("enable")}</MenuItem>
+                    </GlobalRuleSelect>
+                  </Grid>
+                ))}
+                {/* 译文元素标签 */}
+                <Grid item xs={12} sm={6} md={4} lg={3}>
+                  <GlobalRuleSelect
+                    name="transTag"
+                    value={getGlobalRuleValue("transTag")}
+                    label={i18n("translation_element_tag")}
+                    onChange={handleGlobalRuleChange}
+                  >
+                    <MenuItem value="span">{`<span>`}</MenuItem>
+                    <MenuItem value="font">{`<font>`}</MenuItem>
+                  </GlobalRuleSelect>
+                </Grid>
+                {/* 包裹原文后的样式 */}
+                {String(getGlobalRuleValue("wrapOriginal")) === "true" && (
+                  <Grid item xs={12} sm={6} md={4} lg={3}>
+                    <GlobalRuleSelect
+                      name="originalTextStyle"
+                      value={getGlobalRuleValue("originalTextStyle")}
+                      label={i18n("original_text_style")}
+                      onChange={handleGlobalRuleChange}
+                    >
+                      {allTextStyles.map((item) => (
+                        <MenuItem key={item.styleSlug} value={item.styleSlug}>
+                          {item.styleName}
+                        </MenuItem>
+                      ))}
+                    </GlobalRuleSelect>
+                  </Grid>
+                )}
+                {/* 仅译文模式下恢复原文的延迟 */}
+                <Grid item xs={12} sm={6} md={4} lg={3}>
+                  <ValidationInput
+                    fullWidth
+                    size="small"
+                    label={i18n("transonly_revert_delay")}
+                    type="number"
+                    name="transOnlyRevertDelay"
+                    value={getGlobalRuleValue("transOnlyRevertDelay")}
+                    onChange={handleGlobalRuleChange}
+                    min={0}
+                    max={60}
+                  />
+                </Grid>
+                {/* 长段落切分策略 */}
+                <Grid item xs={12} sm={6} md={4} lg={3}>
+                  <GlobalRuleSelect
+                    name="splitParagraph"
+                    value={getGlobalRuleValue("splitParagraph")}
+                    label={i18n("split_paragraph")}
+                    onChange={handleGlobalRuleChange}
+                  >
+                    {OPT_SPLIT_PARAGRAPH_ALL.map((item) => (
+                      <MenuItem key={item} value={item}>
+                        {i18n(item)}
+                      </MenuItem>
+                    ))}
+                  </GlobalRuleSelect>
+                </Grid>
+                {/* 长段落切分阈值 */}
+                <Grid item xs={12} sm={6} md={4} lg={3}>
+                  <ValidationInput
+                    fullWidth
+                    size="small"
+                    label={i18n("split_length")}
+                    type="number"
+                    name="splitLength"
+                    value={getGlobalRuleValue("splitLength")}
+                    onChange={handleGlobalRuleChange}
+                    min={0}
+                    max={1000}
+                  />
+                </Grid>
+                {/* 生词高亮策略 */}
+                <Grid item xs={12} sm={6} md={4} lg={3}>
+                  <GlobalRuleSelect
+                    name="highlightWords"
+                    value={getGlobalRuleValue("highlightWords")}
+                    label={i18n("highlight_words")}
+                    onChange={handleGlobalRuleChange}
+                  >
+                    {OPT_HIGHLIGHT_WORDS_ALL.map((item) => (
+                      <MenuItem key={item} value={item}>
+                        {i18n(item)}
+                      </MenuItem>
+                    ))}
+                  </GlobalRuleSelect>
+                </Grid>
+              </Grid>
+            </Box>
+
+            {/* 翻译跳过语言：遇到选中的目标语言时跳过自动网页翻译 */}
+            <TextField
+              select
+              size="small"
+              label={i18n("skip_langs")}
+              helperText={i18n("skip_langs_helper")}
+              name="skipLangs"
+              value={skipLangs}
+              onChange={handleChange}
+              SelectProps={{
+                multiple: true,
+              }}
+            >
+              {OPT_LANGS_TO.map(([langKey, langName]) => (
+                <MenuItem key={langKey} value={langKey}>
+                  {langName}
+                </MenuItem>
+              ))}
+            </TextField>
+
+            <TextField
+              fullWidth
+              size="small"
+              multiline
+              maxRows={10}
+              name="hideExceptionList"
+              value={hideExceptionList}
+              label={i18n("fab_exception_list")}
+              helperText={i18n("fab_exception_list_helper")}
+              onChange={(e) => updateFab({ hideExceptionList: e.target.value })}
+            />
+
+            {/* 网页翻译的黑名单域名正则排除列表 (一行一条) */}
+            <TextField
+              size="small"
+              label={i18n("translate_blacklist")}
+              helperText={i18n("pattern_helper")}
+              name="blacklist"
+              value={blacklist}
+              onChange={handleChange}
+              maxRows={10}
+              multiline
+            />
+
+            {/* 扩展专属的高级网络设置 (只在 Extension 模式下展示) */}
+            {isExt ? (
+              <>
+                {/* 是否在浏览器关闭/重启时自动清空网页翻译的已缓存译文 */}
+                <TextField
+                  select
+                  fullWidth
+                  size="small"
+                  name="clearCache"
+                  value={clearCache}
+                  label={i18n("if_clear_cache")}
+                  onChange={handleChange}
+                  helperText={
+                    <Link component="button" onClick={handleClearCache}>
+                      {i18n("clear_all_cache_now")}
+                    </Link>
+                  }
+                >
+                  <MenuItem value={false}>{i18n("clear_cache_never")}</MenuItem>
+                  <MenuItem value={true}>{i18n("clear_cache_restart")}</MenuItem>
+                </TextField>
+
+                {/* 跨域安全 CSP 旁路加载白名单与 Ori 白名单 */}
+                <TextField
+                  size="small"
+                  label={i18n("disabled_orilist")}
+                  helperText={i18n("pattern_helper")}
+                  name="orilist"
+                  value={orilist}
+                  onChange={handleChange}
+                  multiline
+                />
+                <TextField
+                  size="small"
+                  label={i18n("disabled_csplist")}
+                  helperText={
+                    i18n("pattern_helper") + " " + i18n("disabled_csplist_helper")
+                  }
+                  name="csplist"
+                  value={csplist}
+                  onChange={handleChange}
+                  multiline
+                />
+
+                <ExtCommands />
+              </>
+            ) : (
+              // 油猴脚本环境运行：渲染脚本侧注册的全局热键录入面板
+              <>
+                <Box>
+                  <Grid container spacing={2} columns={12}>
+                    <Grid item xs={12} sm={12} md={6} lg={3}>
+                      <ShortcutItem
+                        action={OPT_SHORTCUT_TRANSLATE}
+                        label={i18n("toggle_translate_shortcut")}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={6} lg={3}>
+                      <ShortcutItem
+                        action={OPT_SHORTCUT_TRANSONLY}
+                        label={i18n("toggle_transonly_shortcut")}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={6} lg={3}>
+                      <ShortcutItem
+                        action={OPT_SHORTCUT_STYLE}
+                        label={i18n("toggle_style_shortcut")}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={6} lg={3}>
+                      <ShortcutItem
+                        action={OPT_SHORTCUT_POPUP}
+                        label={i18n("toggle_popup_shortcut")}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={6} lg={3}>
+                      <ShortcutItem
+                        action={OPT_SHORTCUT_SETTING}
+                        label={i18n("open_setting_shortcut")}
+                      />
+                    </Grid>
+                  </Grid>
+                </Box>
+              </>
+            )}
           </>
         )}
       </Stack>

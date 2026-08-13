@@ -41,8 +41,22 @@ jest.mock("../../libs/log", () => ({
   kissLog: jest.fn(),
   LogLevel: { INFO: { value: 3 } },
 }));
-jest.mock("./UploadButton", () => () => null);
-jest.mock("./DownloadButton", () => () => null);
+jest.mock("./UploadButton", () =>
+  ({ text }) =>
+    jest.requireActual("react").createElement(
+      "button",
+      { type: "button", "data-testid": "upload-button" },
+      text
+    )
+);
+jest.mock("./DownloadButton", () =>
+  ({ text }) =>
+    jest.requireActual("react").createElement(
+      "button",
+      { type: "button", "data-testid": "download-button" },
+      text
+    )
+);
 jest.mock("../../hooks/ValidationInput", () => () => null);
 const mockPutRule = jest.fn();
 
@@ -172,5 +186,57 @@ describe("Settings global webpage defaults", () => {
     });
 
     expect(mockPutRule).toHaveBeenCalledWith("*", { toLang: "en" });
+  });
+
+  test("keeps low-frequency settings collapsed until explicitly expanded", async () => {
+    const { container, root } = await renderSettings();
+    const toggle = [...container.querySelectorAll("button")].find(
+      (button) => button.textContent === "more"
+    );
+    const lowFrequencyFields = [
+      "fabClickAction",
+      "contextMenuType",
+      "fromLang",
+      "autoScan",
+      "preInit",
+    ];
+
+    expect(
+      container.querySelector('[data-testid="advanced-settings-title"]')
+        ?.textContent
+    ).toBe("advanced_settings");
+    expect(container.querySelector('[data-testid="upload-button"]')).toBeNull();
+    expect(container.querySelector('[data-testid="download-button"]')).toBeNull();
+    for (const name of lowFrequencyFields) {
+      expect(container.querySelector(`input[name="${name}"]`)).toBeNull();
+    }
+    expect(container.querySelector('input[name="logLevel"]')).toBeNull();
+    expect(toggle).not.toBeUndefined();
+
+    await act(async () => {
+      toggle.click();
+    });
+
+    expect(
+      container.querySelector('[data-testid="upload-button"]')
+    ).not.toBeNull();
+    expect(
+      container.querySelector('[data-testid="download-button"]')
+    ).not.toBeNull();
+    for (const name of lowFrequencyFields) {
+      expect(container.querySelector(`input[name="${name}"]`)).not.toBeNull();
+    }
+    expect(container.querySelector('input[name="logLevel"]')).toBeNull();
+
+    await act(async () => {
+      toggle.click();
+    });
+
+    for (const name of lowFrequencyFields) {
+      expect(container.querySelector(`input[name="${name}"]`)).toBeNull();
+    }
+    expect(container.querySelector('[data-testid="upload-button"]')).toBeNull();
+    expect(container.querySelector('[data-testid="download-button"]')).toBeNull();
+    act(() => root.unmount());
   });
 });
