@@ -26,34 +26,64 @@ jest.mock("../../libs/client", () => ({ isExt: false }));
 jest.mock("./ShortcutInput", () => () => null);
 jest.mock("../../hooks/ValidationInput", () => () => null);
 
-describe("Tranbox language defaults", () => {
-  test("shows no ignored language when legacy settings omit skipLangs", () => {
-    useTranbox.mockReturnValue({
-      tranboxSetting: {
-        transOpen: true,
-        apiSlugs: [],
-        fromLang: "auto",
-        toLang: "zh-CN",
-        tranboxShortcut: [],
-        btnOffsetX: 0,
-        btnOffsetY: 0,
-      },
-      updateTranbox: jest.fn(),
-    });
+function renderTranbox() {
+  useTranbox.mockReturnValue({
+    tranboxSetting: {
+      transOpen: true,
+      apiSlugs: [],
+      fromLang: "auto",
+      toLang: "zh-CN",
+      tranboxShortcut: [],
+      btnOffsetX: 0,
+      btnOffsetY: 0,
+    },
+    updateTranbox: jest.fn(),
+  });
 
-    const container = document.createElement("div");
-    document.body.appendChild(container);
-    const root = createRoot(container);
+  const container = document.createElement("div");
+  document.body.appendChild(container);
+  const root = createRoot(container);
+  act(() => {
+    root.render(<Tranbox />);
+  });
+
+  return {
+    container,
+    cleanup() {
+      act(() => {
+        root.unmount();
+      });
+      container.remove();
+    },
+  };
+}
+
+describe("Tranbox advanced settings", () => {
+  test("hides technical options until expanded", () => {
+    const view = renderTranbox();
+
+    expect(view.container.querySelector("[name='enDict']")).toBeNull();
+    expect(view.container.querySelector("[name='skipLangs']")).toBeNull();
 
     act(() => {
-      root.render(<Tranbox />);
+      view.container.querySelector("button").click();
     });
 
-    expect(container.querySelector("input[name='skipLangs']").value).toBe("");
+    expect(view.container.querySelector("[name='enDict']")).not.toBeNull();
+    expect(view.container.querySelector("[name='skipLangs']")).not.toBeNull();
+    view.cleanup();
+  });
+
+  test("preserves the default ignored-language value when expanded", () => {
+    const view = renderTranbox();
 
     act(() => {
-      root.unmount();
+      view.container.querySelector("button").click();
     });
-    container.remove();
+
+    expect(view.container.querySelector("input[name='skipLangs']").value).toBe(
+      ""
+    );
+    view.cleanup();
   });
 });

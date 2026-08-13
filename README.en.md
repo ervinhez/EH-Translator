@@ -11,6 +11,7 @@ A personalized Chrome bilingual translation extension, forked from the open-sour
 - Default translation provider: DeepSeek (OpenAI-compatible API; requires an API key)
 - New installs show only DeepSeek and Custom by default; other built-in providers remain available from Options.
 - Shortcuts follow the upstream: `Alt+Q` translate / `Alt+C` toggle style / `Alt+K` tranbox / `Alt+S` selection translation / `Alt+O` options
+- Selection, mouse-hover, and subtitle options are organized into everyday and advanced settings; low-frequency parameters are collapsed by default.
 
 ## Features
 

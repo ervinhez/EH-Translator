@@ -1,5 +1,6 @@
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Grid from "@mui/material/Grid";
@@ -25,7 +26,7 @@ import {
 import ShortcutInput from "./ShortcutInput";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { limitNumber } from "../../libs/utils";
 import { useTranbox } from "../../hooks/Tranbox";
 import { isExt } from "../../libs/client";
@@ -33,6 +34,7 @@ import { useApiList } from "../../hooks/Api";
 import ValidationInput from "../../hooks/ValidationInput";
 import { usePromptList } from "../../hooks/Prompt";
 
+import ShowMoreButton from "./ShowMoreButton";
 /**
  * 划词翻译框 (Tranbox) 样式与交互配置面板组件
  */
@@ -49,6 +51,7 @@ export default function Tranbox() {
     () => getDictionaryPromptOptions(prompts),
     [prompts]
   );
+  const [showMore, setShowMore] = useState(false);
 
   // 基础表单输入值变动处理
   const handleChange = (e) => {
@@ -126,30 +129,9 @@ export default function Tranbox() {
           sx={{ width: "fit-content" }}
         />
 
-        {/* 多选下拉：划词检测到列表内的语言时不弹出按钮 */}
-        <TextField
-          select
-          size="small"
-          label={i18n("selection_skip_langs")}
-          helperText={i18n("selection_skip_langs_helper")}
-          name="skipLangs"
-          value={skipLangs}
-          onChange={handleChange}
-          SelectProps={{
-            multiple: true,
-          }}
-        >
-          {OPT_SKIPLANGS_SELECTION.map(([langKey, langName]) => (
-            <MenuItem key={langKey} value={langKey}>
-              {langName}
-            </MenuItem>
-          ))}
-        </TextField>
-
-        {/* 各项具体参数网格配置区 */}
+        {/* 高频设置：翻译接口、语言、触发方式与主要显示行为 */}
         <Box>
           <Grid container spacing={2} columns={12}>
-            {/* 划词翻译框中支持多选并存展示的并行翻译服务 */}
             <Grid item xs={12} sm={12} md={6} lg={3}>
               <TextField
                 select
@@ -159,9 +141,7 @@ export default function Tranbox() {
                 value={apiSlugs}
                 label={i18n("translate_service_multiple")}
                 onChange={handleChange}
-                SelectProps={{
-                  multiple: true,
-                }}
+                SelectProps={{ multiple: true }}
               >
                 {enabledApis.map((api) => (
                   <MenuItem key={api.apiSlug} value={api.apiSlug}>
@@ -170,36 +150,6 @@ export default function Tranbox() {
                 ))}
               </TextField>
             </Grid>
-            {/* 对单个英文单词是否跳过完整的大模型/机翻 (直接使用词典)，以此提高查词效率与节省 token 额度 */}
-            <Grid item xs={12} sm={12} md={6} lg={3}>
-              <TextField
-                fullWidth
-                select
-                size="small"
-                name="singleWordNoTrans"
-                value={singleWordNoTrans}
-                label={i18n("single_word_no_trans")}
-                onChange={handleChange}
-              >
-                <MenuItem value={false}>{i18n("disable")}</MenuItem>
-                <MenuItem value={true}>{i18n("enable")}</MenuItem>
-              </TextField>
-            </Grid>
-            <Grid item xs={12} sm={12} md={6} lg={3}>
-              <TextField
-                fullWidth
-                select
-                size="small"
-                name="autoFavWord"
-                value={autoFavWord}
-                label={i18n("auto_fav_word")}
-                onChange={handleChange}
-              >
-                <MenuItem value={false}>{i18n("disable")}</MenuItem>
-                <MenuItem value={true}>{i18n("enable")}</MenuItem>
-              </TextField>
-            </Grid>
-            {/* 默认源语言 */}
             <Grid item xs={12} sm={12} md={6} lg={3}>
               <TextField
                 fullWidth
@@ -217,7 +167,6 @@ export default function Tranbox() {
                 ))}
               </TextField>
             </Grid>
-            {/* 首选翻译出的目标语言 */}
             <Grid item xs={12} sm={12} md={6} lg={3}>
               <TextField
                 fullWidth
@@ -235,105 +184,6 @@ export default function Tranbox() {
                 ))}
               </TextField>
             </Grid>
-            {/* 次选目标语言 (例如：如果划词内容本身就是首选语言，则翻译为次选语言) */}
-            <Grid item xs={12} sm={12} md={6} lg={3}>
-              <TextField
-                fullWidth
-                select
-                size="small"
-                name="toLang2"
-                value={toLang2}
-                label={i18n("to_lang2")}
-                helperText={i18n("to_lang2_helper")}
-                onChange={handleChange}
-              >
-                <MenuItem value={"-"}>{i18n("disable")}</MenuItem>
-                {OPT_LANGS_TO.map(([lang, name]) => (
-                  <MenuItem key={lang} value={lang}>
-                    {name}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-
-            {/* 本地查词词典选择 */}
-            <Grid item xs={12} sm={12} md={6} lg={3}>
-              <TextField
-                fullWidth
-                select
-                size="small"
-                name="enDict"
-                value={enDict}
-                label={i18n("english_dict")}
-                onChange={handleChange}
-              >
-                <MenuItem value={"-"}>{i18n("disable")}</MenuItem>
-                {OPT_DICT_ALL.map((item) => (
-                  <MenuItem value={item} key={item}>
-                    {item}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            {/* AI 词典所使用的大模型接口；关闭时仅保留默认本地/在线词典。 */}
-            <Grid item xs={12} sm={12} md={6} lg={3}>
-              <TextField
-                fullWidth
-                select
-                size="small"
-                name="aiDictApiSlug"
-                value={aiDictApiSlug}
-                label={i18n("ai_dict_api", "AI词典接口")}
-                onChange={handleChange}
-              >
-                <MenuItem value={"-"}>{i18n("disable")}</MenuItem>
-                {aiEnabledApis.map((api) => (
-                  <MenuItem value={api.apiSlug} key={api.apiSlug}>
-                    {api.apiName}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            {/* AI 词典提示词来源：跟随接口默认配置，或指定全局词典提示词。 */}
-            <Grid item xs={12} sm={12} md={6} lg={3}>
-              <TextField
-                fullWidth
-                select
-                size="small"
-                name="aiDictPromptSlug"
-                value={aiDictPromptSlug}
-                label={i18n("ai_dict_prompt", "AI词典提示词")}
-                onChange={handleChange}
-              >
-                <MenuItem value={PROMPT_MODE_FOLLOW_API}>
-                  {i18n("follow_api_prompt", "接口默认")}
-                </MenuItem>
-                {dictionaryPromptOptions.map((prompt) => (
-                  <MenuItem value={prompt.slug} key={prompt.slug}>
-                    {getPromptDisplayName(prompt, i18n)}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={12} sm={12} md={6} lg={3}>
-              <TextField
-                fullWidth
-                select
-                size="small"
-                name="enSug"
-                value={enSug}
-                label={i18n("english_suggest")}
-                onChange={handleChange}
-              >
-                <MenuItem value={"-"}>{i18n("disable")}</MenuItem>
-                {OPT_SUG_ALL.map((item) => (
-                  <MenuItem value={item} key={item}>
-                    {item}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            {/* 划词翻译框的触发模式 (点击小球触发、选中直接触发、或者带辅助按键) */}
             <Grid item xs={12} sm={12} md={6} lg={3}>
               <TextField
                 fullWidth
@@ -351,25 +201,6 @@ export default function Tranbox() {
                 ))}
               </TextField>
             </Grid>
-            {/* 划词后弹出按钮的定位模式：沿用选区右下角，或跟随鼠标/触摸结束位置 */}
-            <Grid item xs={12} sm={12} md={6} lg={3}>
-              <TextField
-                fullWidth
-                select
-                size="small"
-                name="btnPositionMode"
-                value={btnPositionMode}
-                label={i18n("tranbtn_position_mode")}
-                onChange={handleChange}
-              >
-                {OPT_TRANBOX_BTN_POSITION_ALL.map((item) => (
-                  <MenuItem key={item} value={item}>
-                    {i18n(`tranbtn_position_${item}`)}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            {/* 是否隐藏触发划词翻译的浮动 FAB 小按钮 (隐藏后通常只能通过快捷键调起翻译框) */}
             <Grid item xs={12} sm={12} md={6} lg={3}>
               <TextField
                 fullWidth
@@ -384,7 +215,6 @@ export default function Tranbox() {
                 <MenuItem value={true}>{i18n("hide")}</MenuItem>
               </TextField>
             </Grid>
-            {/* 点击翻译框外任意处时，是否关闭并自动销毁翻译框 */}
             <Grid item xs={12} sm={12} md={6} lg={3}>
               <TextField
                 fullWidth
@@ -399,7 +229,6 @@ export default function Tranbox() {
                 <MenuItem value={true}>{i18n("enable")}</MenuItem>
               </TextField>
             </Grid>
-            {/* 是否开启轻量极简无背景毛玻璃外观样式 */}
             <Grid item xs={12} sm={12} md={6} lg={3}>
               <TextField
                 fullWidth
@@ -414,79 +243,6 @@ export default function Tranbox() {
                 <MenuItem value={true}>{i18n("enable")}</MenuItem>
               </TextField>
             </Grid>
-            {/* 翻译弹框的定位是否紧随选定文字的最下方, 否则固定在相对小图标的偏移位置 */}
-            <Grid item xs={12} sm={12} md={6} lg={3}>
-              <TextField
-                fullWidth
-                select
-                size="small"
-                name="followSelection"
-                value={followSelection}
-                label={i18n("follow_selection")}
-                onChange={handleChange}
-              >
-                <MenuItem value={false}>{i18n("disable")}</MenuItem>
-                <MenuItem value={true}>{i18n("enable")}</MenuItem>
-              </TextField>
-            </Grid>
-
-            {/* 浮动 FAB 触发按钮相对于光标的物理水平偏移量 (X 轴像素) */}
-            <Grid item xs={12} sm={12} md={6} lg={3}>
-              <ValidationInput
-                fullWidth
-                size="small"
-                label={i18n("tranbtn_offset_x")}
-                type="number"
-                name="btnOffsetX"
-                value={btnOffsetX}
-                onChange={handleChange}
-                min={-200}
-                max={200}
-              />
-            </Grid>
-            {/* 浮动 FAB 触发按钮相对于光标的物理垂直偏移量 (Y 轴像素) */}
-            <Grid item xs={12} sm={12} md={6} lg={3}>
-              <ValidationInput
-                fullWidth
-                size="small"
-                label={i18n("tranbtn_offset_y")}
-                type="number"
-                name="btnOffsetY"
-                value={btnOffsetY}
-                onChange={handleChange}
-                min={-200}
-                max={200}
-              />
-            </Grid>
-            {/* 悬浮翻译框相对于光标/按钮的物理水平偏移量 (X 轴像素) */}
-            <Grid item xs={12} sm={12} md={6} lg={3}>
-              <ValidationInput
-                fullWidth
-                size="small"
-                label={i18n("tranbox_offset_x")}
-                type="number"
-                name="boxOffsetX"
-                value={boxOffsetX}
-                onChange={handleChange}
-                min={-200}
-                max={200}
-              />
-            </Grid>
-            {/* 悬浮翻译框相对于光标/按钮的物理垂直偏移量 (Y 轴像素) */}
-            <Grid item xs={12} sm={12} md={6} lg={3}>
-              <ValidationInput
-                fullWidth
-                size="small"
-                label={i18n("tranbox_offset_y")}
-                type="number"
-                name="boxOffsetY"
-                value={boxOffsetY}
-                onChange={handleChange}
-                min={-200}
-                max={200}
-              />
-            </Grid>
-            {/* 翻译文本较多时，翻译框高度是否随着文字自动拉伸，否则启用内部局部纵向滚动条 */}
             <Grid item xs={12} sm={12} md={6} lg={3}>
               <TextField
                 fullWidth
@@ -501,28 +257,6 @@ export default function Tranbox() {
                 <MenuItem value={true}>{i18n("enable")}</MenuItem>
               </TextField>
             </Grid>
-
-            {/* 翻译框内部交互：单击或双击选中文本触发新翻译 */}
-            <Grid item xs={12} sm={12} md={6} lg={3}>
-              <TextField
-                fullWidth
-                select
-                size="small"
-                name="tranboxInteractMode"
-                value={tranboxInteractMode}
-                label={i18n("tranbox_interact_mode")}
-                onChange={handleChange}
-              >
-                <MenuItem value="-">{i18n("disable")}</MenuItem>
-                <MenuItem value={OPT_TRANBOX_INTERACT_CLICK}>
-                  {i18n("tranbox_interact_click")}
-                </MenuItem>
-                <MenuItem value={OPT_TRANBOX_INTERACT_DBLCLICK}>
-                  {i18n("tranbox_interact_dblclick")}
-                </MenuItem>
-              </TextField>
-            </Grid>
-            {/* 油猴脚本下触发调出主动查词输入框的热键录入 */}
             {!isExt && (
               <Grid item xs={12} sm={12} md={6} lg={3}>
                 <ShortcutInput
@@ -535,17 +269,285 @@ export default function Tranbox() {
           </Grid>
         </Box>
 
-        {/* 划词翻译不生效的黑名单域名及正则规则列表 */}
-        <TextField
-          size="small"
-          label={i18n("blacklist")}
-          helperText={i18n("pattern_helper")}
-          name="blacklist"
-          value={blacklist}
-          onChange={handleChange}
-          maxRows={10}
-          multiline
-        />
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          spacing={2}
+          useFlexGap
+          flexWrap="wrap"
+        >
+          <Typography
+            variant="h6"
+            component="h2"
+            data-testid="advanced-settings-title"
+          >
+            {i18n("advanced_settings")}
+          </Typography>
+          <ShowMoreButton showMore={showMore} onChange={setShowMore} />
+        </Stack>
+
+        {showMore && (
+          <>
+            {/* 低频语言过滤与词典、发音设置 */}
+            <TextField
+              select
+              size="small"
+              label={i18n("selection_skip_langs")}
+              helperText={i18n("selection_skip_langs_helper")}
+              name="skipLangs"
+              value={skipLangs}
+              onChange={handleChange}
+              SelectProps={{ multiple: true }}
+            >
+              {OPT_SKIPLANGS_SELECTION.map(([langKey, langName]) => (
+                <MenuItem key={langKey} value={langKey}>
+                  {langName}
+                </MenuItem>
+              ))}
+            </TextField>
+
+            <Box>
+              <Grid container spacing={2} columns={12}>
+                <Grid item xs={12} sm={12} md={6} lg={3}>
+                  <TextField
+                    fullWidth
+                    select
+                    size="small"
+                    name="singleWordNoTrans"
+                    value={singleWordNoTrans}
+                    label={i18n("single_word_no_trans")}
+                    onChange={handleChange}
+                  >
+                    <MenuItem value={false}>{i18n("disable")}</MenuItem>
+                    <MenuItem value={true}>{i18n("enable")}</MenuItem>
+                  </TextField>
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={3}>
+                  <TextField
+                    fullWidth
+                    select
+                    size="small"
+                    name="autoFavWord"
+                    value={autoFavWord}
+                    label={i18n("auto_fav_word")}
+                    onChange={handleChange}
+                  >
+                    <MenuItem value={false}>{i18n("disable")}</MenuItem>
+                    <MenuItem value={true}>{i18n("enable")}</MenuItem>
+                  </TextField>
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={3}>
+                  <TextField
+                    fullWidth
+                    select
+                    size="small"
+                    name="toLang2"
+                    value={toLang2}
+                    label={i18n("to_lang2")}
+                    helperText={i18n("to_lang2_helper")}
+                    onChange={handleChange}
+                  >
+                    <MenuItem value={"-"}>{i18n("disable")}</MenuItem>
+                    {OPT_LANGS_TO.map(([lang, name]) => (
+                      <MenuItem key={lang} value={lang}>
+                        {name}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={3}>
+                  <TextField
+                    fullWidth
+                    select
+                    size="small"
+                    name="enDict"
+                    value={enDict}
+                    label={i18n("english_dict")}
+                    onChange={handleChange}
+                  >
+                    <MenuItem value={"-"}>{i18n("disable")}</MenuItem>
+                    {OPT_DICT_ALL.map((item) => (
+                      <MenuItem value={item} key={item}>
+                        {item}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={3}>
+                  <TextField
+                    fullWidth
+                    select
+                    size="small"
+                    name="aiDictApiSlug"
+                    value={aiDictApiSlug}
+                    label={i18n("ai_dict_api", "AI词典接口")}
+                    onChange={handleChange}
+                  >
+                    <MenuItem value={"-"}>{i18n("disable")}</MenuItem>
+                    {aiEnabledApis.map((api) => (
+                      <MenuItem value={api.apiSlug} key={api.apiSlug}>
+                        {api.apiName}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={3}>
+                  <TextField
+                    fullWidth
+                    select
+                    size="small"
+                    name="aiDictPromptSlug"
+                    value={aiDictPromptSlug}
+                    label={i18n("ai_dict_prompt", "AI词典提示词")}
+                    onChange={handleChange}
+                  >
+                    <MenuItem value={PROMPT_MODE_FOLLOW_API}>
+                      {i18n("follow_api_prompt", "接口默认")}
+                    </MenuItem>
+                    {dictionaryPromptOptions.map((prompt) => (
+                      <MenuItem value={prompt.slug} key={prompt.slug}>
+                        {getPromptDisplayName(prompt, i18n)}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={3}>
+                  <TextField
+                    fullWidth
+                    select
+                    size="small"
+                    name="enSug"
+                    value={enSug}
+                    label={i18n("english_suggest")}
+                    onChange={handleChange}
+                  >
+                    <MenuItem value={"-"}>{i18n("disable")}</MenuItem>
+                    {OPT_SUG_ALL.map((item) => (
+                      <MenuItem value={item} key={item}>
+                        {item}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={3}>
+                  <TextField
+                    fullWidth
+                    select
+                    size="small"
+                    name="btnPositionMode"
+                    value={btnPositionMode}
+                    label={i18n("tranbtn_position_mode")}
+                    onChange={handleChange}
+                  >
+                    {OPT_TRANBOX_BTN_POSITION_ALL.map((item) => (
+                      <MenuItem key={item} value={item}>
+                        {i18n(`tranbtn_position_${item}`)}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={3}>
+                  <TextField
+                    fullWidth
+                    select
+                    size="small"
+                    name="followSelection"
+                    value={followSelection}
+                    label={i18n("follow_selection")}
+                    onChange={handleChange}
+                  >
+                    <MenuItem value={false}>{i18n("disable")}</MenuItem>
+                    <MenuItem value={true}>{i18n("enable")}</MenuItem>
+                  </TextField>
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={3}>
+                  <ValidationInput
+                    fullWidth
+                    size="small"
+                    label={i18n("tranbtn_offset_x")}
+                    type="number"
+                    name="btnOffsetX"
+                    value={btnOffsetX}
+                    onChange={handleChange}
+                    min={-200}
+                    max={200}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={3}>
+                  <ValidationInput
+                    fullWidth
+                    size="small"
+                    label={i18n("tranbtn_offset_y")}
+                    type="number"
+                    name="btnOffsetY"
+                    value={btnOffsetY}
+                    onChange={handleChange}
+                    min={-200}
+                    max={200}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={3}>
+                  <ValidationInput
+                    fullWidth
+                    size="small"
+                    label={i18n("tranbox_offset_x")}
+                    type="number"
+                    name="boxOffsetX"
+                    value={boxOffsetX}
+                    onChange={handleChange}
+                    min={-200}
+                    max={200}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={3}>
+                  <ValidationInput
+                    fullWidth
+                    size="small"
+                    label={i18n("tranbox_offset_y")}
+                    type="number"
+                    name="boxOffsetY"
+                    value={boxOffsetY}
+                    onChange={handleChange}
+                    min={-200}
+                    max={200}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={3}>
+                  <TextField
+                    fullWidth
+                    select
+                    size="small"
+                    name="tranboxInteractMode"
+                    value={tranboxInteractMode}
+                    label={i18n("tranbox_interact_mode")}
+                    onChange={handleChange}
+                  >
+                    <MenuItem value="-">{i18n("disable")}</MenuItem>
+                    <MenuItem value={OPT_TRANBOX_INTERACT_CLICK}>
+                      {i18n("tranbox_interact_click")}
+                    </MenuItem>
+                    <MenuItem value={OPT_TRANBOX_INTERACT_DBLCLICK}>
+                      {i18n("tranbox_interact_dblclick")}
+                    </MenuItem>
+                  </TextField>
+                </Grid>
+              </Grid>
+            </Box>
+
+            {/* 划词翻译不生效的黑名单域名及正则规则列表 */}
+            <TextField
+              size="small"
+              label={i18n("blacklist")}
+              helperText={i18n("pattern_helper")}
+              name="blacklist"
+              value={blacklist}
+              onChange={handleChange}
+              maxRows={10}
+              multiline
+            />
+          </>
+        )}
       </Stack>
     </Box>
   );

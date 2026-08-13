@@ -31,6 +31,7 @@ import { useApiList } from "../../hooks/Api";
 import { usePromptList } from "../../hooks/Prompt";
 import ValidationInput from "../../hooks/ValidationInput";
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import ShowMoreButton from "./ShowMoreButton";
 import { normalizeSubtitleMode } from "../../subtitle/modes";
 
 /**
@@ -292,6 +293,7 @@ export default function SubtitleSetting() {
     () => getSubtitlePromptOptions(prompts),
     [prompts]
   );
+  const [showMore, setShowMore] = useState(false);
 
   // 通用表单变动提交
   const handleChange = (e) => {
@@ -627,6 +629,23 @@ export default function SubtitleSetting() {
           label={i18n("toggle_subtitle_translate")}
           sx={{ width: "fit-content" }}
         />
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          spacing={2}
+          useFlexGap
+          flexWrap="wrap"
+        >
+          <Typography
+            variant="h6"
+            component="h2"
+            data-testid="advanced-settings-title"
+          >
+            {i18n("advanced_settings")}
+          </Typography>
+          <ShowMoreButton showMore={showMore} onChange={setShowMore} />
+        </Stack>
 
         {/* 字幕分句分词策略、翻译引擎、超前预翻译等参数配置网格区域 */}
         <Box>
@@ -665,6 +684,8 @@ export default function SubtitleSetting() {
                 ))}
               </TextField>
             </Grid>
+            {showMore && (
+              <>
             {/* 字幕长句断句首选的大语言 AI 引擎服务商 */}
             <Grid item xs={12} sm={12} md={6} lg={3}>
               <TextField
@@ -717,6 +738,8 @@ export default function SubtitleSetting() {
                 </TextField>
               </Grid>
             )}
+              </>
+            )}
             {/* AI 断句服务与翻译服务不同时，是否丢弃 AI 断句返回的译文并交给翻译服务重翻 */}
             <Grid item xs={12} sm={12} md={6} lg={3}>
               <TextField
@@ -732,6 +755,8 @@ export default function SubtitleSetting() {
                 <MenuItem value={false}>{i18n("disable")}</MenuItem>
               </TextField>
             </Grid>
+            {showMore && (
+              <>
             {/* 系统内置的轻量断句算法类型 (基于固定句尾符号断句，或统计学概率断句) */}
             <Grid item xs={12} sm={12} md={6} lg={3}>
               <TextField
@@ -826,6 +851,8 @@ export default function SubtitleSetting() {
                 max={3600}
               />
             </Grid>
+              </>
+            )}
             {/* 目标翻译出的双语字幕语言 */}
             <Grid item xs={12} sm={12} md={6} lg={3}>
               <TextField
@@ -894,6 +921,8 @@ export default function SubtitleSetting() {
                 <MenuItem value={false}>{i18n("disable")}</MenuItem>
               </TextField>
             </Grid>
+            {showMore && (
+              <>
             {/* 视频插播商业广告时是否自动识别并跳过翻译网络请求 */}
             <Grid item xs={12} sm={12} md={6} lg={3}>
               <TextField
@@ -989,9 +1018,13 @@ export default function SubtitleSetting() {
                 <MenuItem value={false}>{i18n("disable")}</MenuItem>
               </TextField>
             </Grid>
+              </>
+            )}
           </Grid>
         </Box>
 
+        {showMore && (
+          <>
         {/* 字幕外观样式设计及预览器板块 */}
         <Box
           sx={{
@@ -1247,6 +1280,8 @@ export default function SubtitleSetting() {
             </Accordion>
           </Stack>
         </Box>
+          </>
+        )}
       </Stack>
     </Box>
   );

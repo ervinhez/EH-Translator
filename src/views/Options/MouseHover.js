@@ -1,5 +1,6 @@
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 import { useI18n } from "../../hooks/I18n";
 import ShortcutInput from "./ShortcutInput";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -8,7 +9,7 @@ import Switch from "@mui/material/Switch";
 import MenuItem from "@mui/material/MenuItem";
 import { useMouseHoverSetting } from "../../hooks/MouseHover";
 import { useApiList } from "../../hooks/Api";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import Grid from "@mui/material/Grid";
 import {
   DEFAULT_MOUSEHOVER_KEY,
@@ -17,6 +18,7 @@ import {
   OPT_MOUSE_HOVER_DISPLAY_BILINGUAL,
   OPT_MOUSE_HOVER_DISPLAY_BUBBLE,
 } from "../../config";
+import ShowMoreButton from "./ShowMoreButton";
 
 /**
  * 鼠标悬停翻译 (MouseHover) 设置面板组件
@@ -86,6 +88,7 @@ export default function MouseHoverSetting() {
   const selectedApiSlug = enabledApis.some((api) => api.apiSlug === apiSlug)
     ? apiSlug
     : GLOBAL_KEY;
+  const [showMore, setShowMore] = useState(false);
 
   return (
     <Box>
@@ -175,31 +178,52 @@ export default function MouseHoverSetting() {
             )}
           </Grid>
         </Box>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          spacing={2}
+          useFlexGap
+          flexWrap="wrap"
+        >
+          <Typography
+            variant="h6"
+            component="h2"
+            data-testid="advanced-settings-title"
+          >
+            {i18n("advanced_settings")}
+          </Typography>
+          <ShowMoreButton showMore={showMore} onChange={setShowMore} />
+        </Stack>
 
-        {displayMode === OPT_MOUSE_HOVER_DISPLAY_BUBBLE && (
-          <TextField
-            size="small"
-            label={i18n("mousehover_bubble_style")}
-            helperText={i18n("mousehover_bubble_style_helper")}
-            name="bubbleStyle"
-            value={bubbleStyle}
-            onChange={handleBubbleStyleChange}
-            maxRows={12}
-            multiline
-          />
+        {showMore && (
+          <>
+            {displayMode === OPT_MOUSE_HOVER_DISPLAY_BUBBLE && (
+              <TextField
+                size="small"
+                label={i18n("mousehover_bubble_style")}
+                helperText={i18n("mousehover_bubble_style_helper")}
+                name="bubbleStyle"
+                value={bubbleStyle}
+                onChange={handleBubbleStyleChange}
+                maxRows={12}
+                multiline
+              />
+            )}
+
+            {/* 黑名单域名/规则排除输入框 (一行一条规则) */}
+            <TextField
+              size="small"
+              label={i18n("blacklist")}
+              helperText={i18n("pattern_helper")}
+              name="blacklist"
+              value={blacklist}
+              onChange={handleBlacklistChange}
+              maxRows={10}
+              multiline
+            />
+          </>
         )}
-
-        {/* 黑名单域名/规则排除输入框 (一行一条规则) */}
-        <TextField
-          size="small"
-          label={i18n("blacklist")}
-          helperText={i18n("pattern_helper")}
-          name="blacklist"
-          value={blacklist}
-          onChange={handleBlacklistChange}
-          maxRows={10}
-          multiline
-        />
       </Stack>
     </Box>
   );

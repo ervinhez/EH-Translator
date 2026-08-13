@@ -112,4 +112,22 @@ describe("MouseHover bubble translation service", () => {
     });
     view.cleanup();
   });
+  test("hides bubble CSS and blacklist until advanced settings expand", () => {
+    const view = renderMouseHover({
+      useMouseHover: true,
+      displayMode: "bubble",
+      apiSlug: "*",
+    });
+
+    expect(view.container.querySelector("[name='bubbleStyle']")).toBeNull();
+    expect(view.container.querySelector("[name='blacklist']")).toBeNull();
+
+    act(() => {
+      view.container.querySelector("button").click();
+    });
+
+    expect(view.container.querySelector("[name='bubbleStyle']")).not.toBeNull();
+    expect(view.container.querySelector("[name='blacklist']")).not.toBeNull();
+    view.cleanup();
+  });
 });
