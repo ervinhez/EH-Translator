@@ -156,6 +156,110 @@ function getSaveButton(container) {
   );
 }
 
+async function expandAdvanced(container) {
+  const toggle = Array.from(container.querySelectorAll("button")).find(
+    (button) => button.textContent === "more"
+  );
+  if (!toggle) {
+    throw new Error("Unable to find advanced settings toggle");
+  }
+  await act(async () => {
+    toggle.click();
+  });
+  return toggle;
+}
+
+describe("Apis settings visibility", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+    document.body.innerHTML = "";
+  });
+
+  test("keeps core fields visible and collapses advanced settings by default", async () => {
+    const view = await renderApis();
+    const coreFields = ["apiName", "url", "key", "model", "isDisabled"];
+    const advancedFields = [
+      "transAllnow",
+      "rootMargin",
+      "modelListUrl",
+      "temperature",
+      "maxTokens",
+      "useBatchFetch",
+      "batchInterval",
+      "batchSize",
+      "batchLength",
+      "batchConcurrency",
+      "useStream",
+      "streamRenderMode",
+      "useContext",
+      "contextSize",
+      "fetchLimit",
+      "fetchInterval",
+      "httpTimeout",
+      "nobatchPromptSlug",
+      "batchPromptSlug",
+      "subtitlePromptSlug",
+      "dictPromptSlug",
+      "thinkingMode",
+      "placeholder",
+      "placetag",
+      "placetagFormat",
+      "aiTerms",
+      "customHeader",
+      "customBody",
+      "reqHook",
+      "resHook",
+    ];
+
+    for (const name of coreFields) {
+      expect(view.container.querySelector(`[name="${name}"]`)).not.toBeNull();
+    }
+    expect(getSaveButton(view.container)).not.toBeUndefined();
+    expect(
+      Array.from(view.container.querySelectorAll("button")).find(
+        (button) => button.textContent === "click_test"
+      )
+    ).not.toBeUndefined();
+    for (const name of advancedFields) {
+      expect(view.container.querySelector(`[name="${name}"]`)).toBeNull();
+    }
+
+    const toggle = await expandAdvanced(view.container);
+
+    for (const name of advancedFields) {
+      if (name === "streamRenderMode") continue;
+      expect(view.container.querySelector(`[name="${name}"]`)).not.toBeNull();
+    }
+    expect(
+      view.container.querySelector('[name="streamRenderMode"]')
+    ).toBeNull();
+    for (const name of coreFields) {
+      expect(view.container.querySelector(`[name="${name}"]`)).not.toBeNull();
+    }
+
+    await act(async () => {
+      Simulate.change(getInput(view.container, "useStream"), {
+        target: { name: "useStream", value: true },
+      });
+    });
+    expect(
+      view.container.querySelector('[name="streamRenderMode"]')
+    ).not.toBeNull();
+
+    await act(async () => {
+      toggle.click();
+    });
+    for (const name of coreFields) {
+      expect(view.container.querySelector(`[name="${name}"]`)).not.toBeNull();
+    }
+    for (const name of advancedFields) {
+      expect(view.container.querySelector(`[name="${name}"]`)).toBeNull();
+    }
+
+    view.unmount();
+  });
+});
+
 describe("Apis model list", () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -286,6 +390,8 @@ describe("Apis model list", () => {
         })
     );
     const view = await renderApis();
+    await expandAdvanced(view.container);
+
 
     await act(async () => {
       Simulate.focus(getInput(view.container, "model"));
@@ -331,6 +437,8 @@ describe("Apis model list", () => {
           })
       );
     const view = await renderApis();
+    await expandAdvanced(view.container);
+
 
     await act(async () => {
       Simulate.focus(getInput(view.container, "model"));
@@ -380,6 +488,8 @@ describe("Apis model list", () => {
   test("resets model list error when url or key changes", async () => {
     fetchModelCatalog.mockRejectedValue(new Error("network failed"));
     const view = await renderApis();
+    await expandAdvanced(view.container);
+
     const modelInput = getInput(view.container, "model");
     const modelListUrlInput = getInput(view.container, "modelListUrl");
 
@@ -423,6 +533,8 @@ describe("Apis batch concurrency", () => {
         useContext: true,
       })
     );
+    await expandAdvanced(view.container);
+
     const concurrencyInput = getInput(view.container, "batchConcurrency");
 
     expect(concurrencyInput.value).toBe("1");
@@ -445,6 +557,8 @@ describe("Apis temperature input", () => {
     const openaiView = await renderApis(
       createApi({ apiType: OPT_TRANS_OPENAI })
     );
+    await expandAdvanced(openaiView.container);
+
     expect(
       openaiView.container.querySelector('input[name="temperature"]')
     ).not.toBeNull();
@@ -453,6 +567,8 @@ describe("Apis temperature input", () => {
     const geminiView = await renderApis(
       createApi({ apiType: OPT_TRANS_GEMINI })
     );
+    await expandAdvanced(geminiView.container);
+
     expect(
       geminiView.container.querySelector('input[name="temperature"]')
     ).toBeNull();
@@ -479,6 +595,8 @@ describe("Apis static thinking normalization", () => {
       }),
       update
     );
+    await expandAdvanced(view.container);
+
     const effortInput = getInput(view.container, "thinkingEffort");
     expect(effortInput.value).toBe("_default");
 
@@ -509,6 +627,8 @@ describe("Apis static thinking normalization", () => {
         thinkingEffort: "none",
       })
     );
+    await expandAdvanced(view.container);
+
 
     await act(async () => {
       Simulate.change(getInput(view.container, "thinkingMode"), {
@@ -548,6 +668,8 @@ describe("Apis static thinking normalization", () => {
         thinkingEffort: "minimal",
       })
     );
+    await expandAdvanced(view.container);
+
 
     await act(async () => {
       Simulate.change(getInput(view.container, "thinkingMode"), {
@@ -589,6 +711,8 @@ describe("Apis unknown model thinking warning", () => {
       const view = await renderApis(
         createApi({ model: "unknown-model", thinkingMode })
       );
+      await expandAdvanced(view.container);
+
       const modeInput = getInput(view.container, "thinkingMode");
 
       expect(modeInput.getAttribute("aria-invalid")).toBe("true");
@@ -608,6 +732,7 @@ describe("Apis unknown model thinking warning", () => {
     const view = await renderApis(
       createApi({ model: "unknown-model", thinkingMode: "auto" })
     );
+    await expandAdvanced(view.container);
 
     expect(
       getInput(view.container, "thinkingMode").getAttribute("aria-invalid")
