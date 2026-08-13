@@ -37,7 +37,6 @@ import {
   tryInitDefaultData,
   runDataMigration,
 } from "./libs/storage";
-import { trySyncSettingAndRules } from "./libs/sync";
 import { fetchHandle, fetchStreamNative } from "./libs/fetch";
 import { tryClearCaches, getHttpCache, putHttpCache } from "./libs/cache";
 import { sendTabMsg } from "./libs/msg";
@@ -523,7 +522,6 @@ browser.runtime.onStartup.addListener(async () => {
   addContextMenus(contextMenuType);
 
   updateCspRules({ csplist, orilist });
-  trySyncSettingAndRules();
   trySyncAllSubRules({ subrulesList });
 });
 

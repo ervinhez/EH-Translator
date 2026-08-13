@@ -1,7 +1,6 @@
-import { STOKEY_WORDS, KV_WORDS_KEY } from "../config";
+import { STOKEY_WORDS } from "../config";
 import { useCallback, useMemo } from "react";
 import { useStorage } from "./Storage";
-import { debounceSyncMeta } from "../libs/storage";
 
 const DEFAULT_FAVWORDS = {};
 
@@ -9,20 +8,10 @@ const DEFAULT_FAVWORDS = {};
  * 生词本管理的自定义 Hook，支持生词的收藏、取消收藏、批量合并与清空
  */
 export function useFavWords() {
-  // 通过 useStorage 获取生词本数据并返回保存函数
-  const { data: favWords, save: saveWords } = useStorage(
+  // 通过 useStorage 获取生词本数据并返回本地保存函数
+  const { data: favWords, save } = useStorage(
     STOKEY_WORDS,
-    DEFAULT_FAVWORDS,
-    KV_WORDS_KEY
-  );
-
-  // 包装保存生词本数据的方法，在保存后自动触发防抖云同步 (WebDAV 等)
-  const save = useCallback(
-    (objOrFn) => {
-      saveWords(objOrFn);
-      debounceSyncMeta(KV_WORDS_KEY);
-    },
-    [saveWords]
+    DEFAULT_FAVWORDS
   );
 
   /**

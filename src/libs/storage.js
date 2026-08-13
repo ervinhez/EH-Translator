@@ -274,17 +274,11 @@ export const putTranBox = (obj) => putObj(STOKEY_TRANBOX, obj);
 // 节流处理高频更新的 TranBox 位置写入
 export const debouncePutTranBox = debounce(putTranBox, 300);
 
-// --- 云同步元数据 (Sync Settings & Timestamps) 存取 ---
-export const getSync = () => getObj(STOKEY_SYNC);
-export const getSyncWithDefault = async () => (await getSync()) || DEFAULT_SYNC;
+// --- 订阅规则缓存元数据存取 ---
+// STOKEY_SYNC is retained for compatibility with existing installations.
+export const getSyncWithDefault = async () =>
+  (await getObj(STOKEY_SYNC)) || DEFAULT_SYNC;
 export const putSync = (obj) => putObj(STOKEY_SYNC, obj);
-export const putSyncMeta = async (key) => {
-  const { syncMeta = {} } = await getSyncWithDefault();
-  syncMeta[key] = { ...(syncMeta[key] || {}), updateAt: Date.now() };
-  await putSync({ syncMeta });
-};
-// 节流处理同步时间元数据的更新
-export const debounceSyncMeta = debounce(putSyncMeta, 300);
 
 // --- 百度云服务授权 Token 存取 ---
 export const getBdauth = () => getObj(STOKEY_BDAUTH);

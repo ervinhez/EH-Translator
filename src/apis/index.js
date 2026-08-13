@@ -4,7 +4,6 @@ import {
   URL_CACHE_TRAN,
   URL_CACHE_BINGDICT,
   URL_CACHE_DICT,
-  KV_SALT_SYNC,
   OPT_LANGS_TO_SPEC,
   OPT_LANGS_FROM_SPEC,
   OPT_LANGS_SPEC_DEFAULT,
@@ -19,7 +18,7 @@ import {
   defaultNobatchUserPrompt,
   defaultDictUserPrompt,
 } from "../config";
-import { sha256, withTimeout } from "../libs/utils";
+import { withTimeout } from "../libs/utils";
 import {
   isSameTranslationLanguage,
   normalizeLanguageCode,
@@ -127,77 +126,6 @@ async function getPromptCacheSig(apiSetting = {}, promptScope, glossary) {
   return (await getCacheDigest(promptText, PROMPT_CACHE_SALT)).slice(0, 16);
 }
 
-/**
- * 同步数据
- * @param {*} url
- * @param {*} key
- * @param {*} data
- * @return/**
- * 跨端/多终端规则与设置数据同步接口。
- * @param {string} url 同步接口的服务器 URL
- * @param {string} key 同步密钥
- * @param {Object} data 待同步的最新设置与规则数据
- * @returns {Promise<Object>} 接口返回的同步判定结果
- */
-export const apiSyncData = async (url, key, data) =>
-  fetchData(url, {
-    headers: {
-      "Content-type": "application/json",
-      // 对密钥进行 sha256 签名，保障同步的鉴权安全
-      Authorization: `Bearer ${await sha256(key, KV_SALT_SYNC)}`,
-    },
-    method: "POST",
-    body: JSON.stringify(data),
-  });
-
-const GITHUB_GIST_API = "https://api.github.com/gists";
-
-const getGistHeaders = (token) => ({
-  Accept: "application/vnd.github+json",
-  Authorization: `Bearer ${token}`,
-  "Content-type": "application/json",
-  "X-GitHub-Api-Version": "2022-11-28",
-});
-
-export const apiListGists = async (token) =>
-  fetchData(`${GITHUB_GIST_API}?per_page=100`, {
-    method: "GET",
-    headers: getGistHeaders(token),
-  });
-
-export const apiCreateGist = async (token, file, description) =>
-  fetchData(GITHUB_GIST_API, {
-    method: "POST",
-    headers: getGistHeaders(token),
-    body: JSON.stringify({
-      description,
-      public: false,
-      files: {
-        [file.key]: {
-          content: file.content,
-        },
-      },
-    }),
-  });
-
-export const apiGetGist = async (gistId, token) =>
-  fetchData(`${GITHUB_GIST_API}/${gistId}`, {
-    method: "GET",
-    headers: getGistHeaders(token),
-  });
-
-export const apiUpdateGistFile = async (gistId, token, key, content) =>
-  fetchData(`${GITHUB_GIST_API}/${gistId}`, {
-    method: "PATCH",
-    headers: getGistHeaders(token),
-    body: JSON.stringify({
-      files: {
-        [key]: {
-          content,
-        },
-      },
-    }),
-  });
 
 /**
  * 通用轻量数据拉取函数。
@@ -205,8 +133,6 @@ export const apiUpdateGistFile = async (gistId, token, key, content) =>
  * @returns {Promise<*>} 拉取的数据内容
  */
 export const apiFetch = (url) => fetchData(url);
-export const apiFetchText = (url) =>
-  fetchData(url, undefined, { expect: "text" });
 
 /**
  * 谷歌语言识别 API。

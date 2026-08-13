@@ -2,8 +2,6 @@ import { act } from "react";
 import { createRoot } from "react-dom/client";
 import { useStorage } from "./Storage";
 import { storage } from "../libs/storage";
-import { syncData } from "../libs/sync";
-import { isOptions } from "../libs/browser";
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -12,22 +10,6 @@ jest.mock("../libs/storage", () => ({
     getObj: jest.fn(),
     setObj: jest.fn(() => Promise.resolve()),
     del: jest.fn(() => Promise.resolve()),
-  },
-}));
-
-jest.mock("../libs/sync", () => ({
-  syncData: jest.fn(() => Promise.resolve()),
-}));
-
-jest.mock("../libs/browser", () => ({
-  isOptions: jest.fn(() => true),
-}));
-
-jest.mock("./DebouncedCallback", () => ({
-  useDebouncedCallback: (callback) => {
-    const debounced = (...args) => callback(...args);
-    debounced.cancel = jest.fn();
-    return debounced;
   },
 }));
 
@@ -42,10 +24,7 @@ function createHookHost() {
   const hookResult = {};
 
   function TestComponent() {
-    Object.assign(
-      hookResult,
-      useStorage("local-setting", { local: true }, "eh-setting_v2.json")
-    );
+    Object.assign(hookResult, useStorage("local-setting", { local: true }));
     return null;
   }
 
@@ -79,82 +58,33 @@ async function waitForLoaded(hookResult) {
   }
 }
 
-describe("useStorage remote sync", () => {
+describe("useStorage local persistence", () => {
   beforeEach(() => {
-    jest.useFakeTimers();
     jest.clearAllMocks();
-    globalThis.__EH_CONTEXT__ = "options";
     storage.getObj.mockResolvedValue({ local: true });
     storage.setObj.mockResolvedValue(undefined);
     storage.del.mockResolvedValue(undefined);
-    syncData.mockResolvedValue(undefined);
-    isOptions.mockReturnValue(true);
   });
 
-  afterEach(() => {
-    delete globalThis.__EH_CONTEXT__;
-    jest.useRealTimers();
-  });
-
-  test("syncs user saves after debounce", async () => {
+  test("loads local data and persists user saves", async () => {
     const host = createHookHost();
     host.render();
     await waitForLoaded(host.hookResult);
-    await flushEffects();
     expect(host.hookResult.isLoading).toBe(false);
-    expect(isOptions()).toBe(true);
 
-    syncData.mockClear();
-    jest.clearAllTimers();
-
+    storage.setObj.mockClear();
     await act(async () => {
       host.hookResult.save({ changed: true });
     });
-
     await flushEffects();
+
     expect(storage.setObj).toHaveBeenCalledWith("local-setting", {
       changed: true,
     });
-    act(() => {
-      jest.advanceTimersByTime(3000);
-    });
-    await flushEffects();
-
-    expect(syncData).toHaveBeenCalledWith("eh-setting_v2.json", {
-      changed: true,
-    });
-
     host.unmount();
   });
 
-  test("does not remote sync data loaded through reload", async () => {
-    const host = createHookHost();
-    host.render();
-    await waitForLoaded(host.hookResult);
-    await flushEffects();
-
-    syncData.mockClear();
-    jest.clearAllTimers();
-    storage.getObj.mockResolvedValueOnce({ reloaded: true });
-
-    await act(async () => {
-      await host.hookResult.reload();
-    });
-
-    await flushEffects();
-    act(() => {
-      jest.advanceTimersByTime(3000);
-    });
-    await flushEffects();
-
-    expect(syncData).not.toHaveBeenCalledWith("eh-setting_v2.json", {
-      reloaded: true,
-    });
-
-    host.unmount();
-  });
-
-  test("does not update state when reload returns equivalent data", async () => {
+  test("does not write when reload returns equivalent data", async () => {
     const host = createHookHost();
     host.render();
     await waitForLoaded(host.hookResult);
@@ -162,14 +92,12 @@ describe("useStorage remote sync", () => {
 
     storage.setObj.mockClear();
     storage.getObj.mockResolvedValueOnce({ local: true });
-
     await act(async () => {
       await host.hookResult.reload();
     });
     await flushEffects();
 
     expect(storage.setObj).not.toHaveBeenCalled();
-
     host.unmount();
   });
 });

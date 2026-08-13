@@ -15,7 +15,6 @@ import {
 } from "../config";
 import { loadOrFetchSubRules } from "./subRules";
 import { getRulesWithDefault, setRules, getDisabledSubRules } from "./storage";
-import { trySyncRules } from "./sync";
 import { kissLog } from "./log";
 
 /**
@@ -398,7 +397,7 @@ export const checkRules = (rules) => {
 
 /**
  * 保存或更新单条用户自定义规则。
- * 检查是否存在冲突并进行属性合并，最后同步更新规则列表。
+ * 检查是否存在冲突并进行属性合并，最后更新本地规则列表。
  * @param {Object} curRule 待保存的规则对象
  */
 export const saveRule = async (curRule) => {
@@ -458,6 +457,4 @@ export const saveRule = async (curRule) => {
   rules.unshift(newRule);
   await setRules(rules);
 
-  // 触发跨端/多终端规则同步
-  trySyncRules();
 };

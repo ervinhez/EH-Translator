@@ -4,8 +4,6 @@ import Setting from "./Setting";
 import Layout from "./Layout";
 import { SettingProvider } from "../../hooks/Setting";
 import ThemeProvider from "../../hooks/Theme";
-import { useEffect, useState } from "react";
-import { trySyncRules, trySyncSetting, trySyncWords } from "../../libs/sync";
 import { AlertProvider } from "../../hooks/Alert";
 import { ConfirmProvider } from "../../hooks/Confirm";
 import Apis from "./Apis";
@@ -15,46 +13,12 @@ import FavWords from "./FavWords";
 import MouseHoverSetting from "./MouseHover";
 import SubtitleSetting from "./Subtitle";
 import StylesSetting from "./StylesSetting";
-import Backdrop from "@mui/material/Backdrop";
-import CircularProgress from "@mui/material/CircularProgress";
-import { kissLog } from "../../libs/log";
 
-const getOptionsStartupSyncTasks = () => {
-  const hashPath = window.location.hash.replace(/^#/, "") || "/";
-
-  if (hashPath === "/words" || hashPath.startsWith("/words/")) {
-    return {
-      requiredSync: trySyncWords,
-      backgroundSyncs: [trySyncSetting, trySyncRules],
-    };
-  }
-
-  return {
-    requiredSync: trySyncSetting,
-    backgroundSyncs: [trySyncRules, trySyncWords],
-  };
-};
 
 /**
  * 选项设置中心 (Options) 根入口组件
  */
 export default function Options() {
-  const [syncingRequiredData, setSyncingRequiredData] = useState(true); // 阻塞当前页面必须的数据同步，避免页面组件过早访问 storage
-
-  useEffect(() => {
-    (async () => {
-      // 只等待当前入口页必须的数据，其他同步任务放到后台继续执行。
-      const { requiredSync, backgroundSyncs } = getOptionsStartupSyncTasks();
-      await requiredSync();
-
-      // 所有必须数据同步完成后，允许页面其他部分开始访问 storage 接口
-      setSyncingRequiredData(false);
-
-      void Promise.all(backgroundSyncs.map((sync) => sync())).catch((err) => {
-        kissLog("sync options background", err?.message || err);
-      });
-    })();
-  }, []);
 
   return (
     <SettingProvider context="options">
@@ -78,17 +42,6 @@ export default function Options() {
                 </Route>
               </Routes>
             </HashRouter>
-            <Backdrop
-              data-testid="options-sync-backdrop"
-              aria-label="syncing required data"
-              open={syncingRequiredData}
-              sx={(theme) => ({
-                color: "#fff",
-                zIndex: theme.zIndex.modal + 1,
-              })}
-            >
-              <CircularProgress color="inherit" size={72} />
-            </Backdrop>
           </ConfirmProvider>
         </AlertProvider>
       </ThemeProvider>

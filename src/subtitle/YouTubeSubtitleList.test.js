@@ -6,7 +6,6 @@ jest.mock("../libs/storage.js", () => ({
   getSettingWithDefault: jest.fn(() => Promise.resolve({ darkMode: "light" })),
   getWordsWithDefault: jest.fn(),
   setWords: jest.fn(),
-  debounceSyncMeta: jest.fn(),
 }));
 
 jest.mock("../apis/index.js", () => ({

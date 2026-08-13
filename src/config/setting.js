@@ -1,6 +1,6 @@
 /**
  * @file setting.js
- * @description 应用默认全局设置定义模块。定义快捷键、默认输入框即时翻译规则、划词翻译与词典面板配置、字幕样式及同步 WebDAV 基础结构。
+ * @description 应用默认全局设置定义模块。定义快捷键、默认输入框即时翻译规则、划词翻译与词典面板配置及字幕样式。
  */
 
 import { LogLevel } from "../libs/log";
@@ -46,19 +46,12 @@ export const DEFAULT_BLACKLIST = [
 export const DEFAULT_CSPLIST = []; // 默认禁用 CSP 安全策略的网址列表
 export const DEFAULT_ORILIST = ["https://dict.youdao.com"]; // 默认在跨域请求中需要重写 Origin 请求头的域名
 
-// --- 配置同步设置 ---
-export const OPT_SYNCTYPE_WORKER = "EH-Worker"; // 自建 Cloudflare Worker 同步方案
-export const OPT_SYNCTYPE_WEBDAV = "WebDAV"; // 通用 WebDAV 网盘同步方案
-export const OPT_SYNCTYPE_GIST = "GitHub Gist"; // GitHub Gist 同步方案
+// --- 订阅规则缓存元数据 ---
+// Keep this shared shape for existing installations: only subscription-rule
+// refresh timestamps are persisted under STOKEY_SYNC.
 export const DEFAULT_SYNC = {
-  syncType: OPT_SYNCTYPE_WORKER, // 默认同步方式
-  syncUrl: "", // 数据同步服务器端点
-  syncUser: "", // 同步用户名
-  syncKey: "", // 同步密码或 Token
-  syncEncryptKey: "", // 同步数据端到端加密口令
-  syncMeta: {}, // 存储同步的元信息 (如文件 ETag/修改时间等)
   subRulesSyncAt: 0, // 上一次订阅规则同步的时间戳
-  dataCaches: {}, // 各类缓存项的最近同步时间
+  dataCaches: {}, // 各订阅规则源的最近更新时间
 };
 
 // --- 划词/选区翻译配置 ---

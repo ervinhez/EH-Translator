@@ -1,9 +1,5 @@
-import { EVENT_EH_FAVORITE_WORD_CHANGE, KV_WORDS_KEY } from "../config";
-import {
-  debounceSyncMeta,
-  getWordsWithDefault,
-  setWords,
-} from "../libs/storage";
+import { EVENT_EH_FAVORITE_WORD_CHANGE } from "../config";
+import { getWordsWithDefault, setWords } from "../libs/storage";
 
 function createWordData({ phonetic, definition, examples }) {
   const wordData = {
@@ -29,7 +25,6 @@ function createWordData({ phonetic, definition, examples }) {
 
 async function saveWords(words) {
   await setWords(words);
-  debounceSyncMeta(KV_WORDS_KEY);
 }
 
 function notifyFavoriteWordChange(word, isFavorite) {
